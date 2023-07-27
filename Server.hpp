@@ -55,8 +55,8 @@ class Server
 				virtual const char* what() const throw();
 		};
 	private:
-		int server_fd_;
-		int server_sock_;
+		int clientSocket_;
+		int serverSocket_;
 		uint16_t port_;
 		std::string connection_pd_;
 		struct sockaddr_in address_;
