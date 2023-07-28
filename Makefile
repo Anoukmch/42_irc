@@ -12,7 +12,10 @@ HEADER		:= Client.hpp \
 				Channel.hpp \
 				Server.hpp
 
-OBJS		:= $(SRCS:%.cpp=%.o)
+M_SRCS		= $(addprefix ./sources/, $(SRCS))
+M_HEADER	= $(addprefix ./includes/, $(HEADER))
+
+OBJS		:= $(M_SRCS:%.cpp=%.o)
 
 # ************************************** #
 #   COLORS                               #
@@ -27,12 +30,12 @@ YELLOW		=	\e[93;5;226m
 
 .PHONY: all clean fclean re
 
-$(NAME) : $(OBJS) $(HEADER)
+$(NAME) : $(OBJS) $(M_HEADER)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $@
 	@printf "$(GREEN)Successful compilation\n$(RESET)"
 #@printf "$(_SUCCESS) $(GREEN)Successful compilation\n$(RESET)"
 
-%.o: %.cpp $(HEADER)
+%.o: %.cpp $(M_HEADER)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 all: $(NAME)

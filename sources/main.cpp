@@ -1,9 +1,9 @@
 #include <iostream>
 #include <string>
 
-#include "Server.hpp"
-#include "Client.hpp"
-#include "Channel.hpp"
+#include "../includes/Server.hpp"
+#include "../includes/Client.hpp"
+#include "../includes/Channel.hpp"
 
 // ./ircserv <port> <password>
 int main(int argc, char *argv[])
