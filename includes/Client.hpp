@@ -18,6 +18,8 @@
 
 # include <sys/socket.h>
 
+# include "Server.hpp"
+
 #define RESET       "\033[0m"               /* Reset */
 #define RED         "\033[31m"              /* Red */
 #define GREEN       "\033[32m"              /* Green */
@@ -28,7 +30,7 @@ class Client
 {
     public:
 		Client(); //Default Constructor
-		Client(int fd);
+		Client(int fd, std::string password);
 		Client(const Client &copyclass); //Copy Constructor
 		Client& operator= (const Client& copyop); //copy assignment operator
 		~Client(); //Destructor
@@ -46,8 +48,12 @@ class Client
 		void ReceiveCommand();
 		void SendData();
 
+		void CheckCommand(std::string buf);
+		void PassCommand(std::string buf);
+
 	private:
 		int ClientFd_;
+		std::string pwd_;
 		std::string nickname_;
 		std::string username_;
 };

@@ -51,7 +51,7 @@ class Server
 		// void set_mode(std::string& mode);
 
 		// // GETTER
-		// std::string get_topic();
+		std::string getPassword();
 		// std::string get_mode();
 
 		~Server(); //Destructor

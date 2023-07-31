@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/07/31 14:25:15 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/07/31 16:56:40 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ void Server::acceptConnection()
     }
     pollfd tmp = {.revents = 0, .events = EVENTS, .fd = new_client_fd};
     PollStructs_.push_back(tmp);
-    ConnectedClients_.push_back(new Client(new_client_fd));
+    ConnectedClients_.push_back(new Client(new_client_fd, connection_pd_));
     std::cout << "Accept Connection" << std::endl;
 }
 
@@ -135,6 +135,11 @@ void Server::CheckForDisconnections()
 // }
 
 // // GETTER
+
+std::string Server::getPassword()
+{
+    return(connection_pd_);
+}
 
 // std::string Server::get_topic()
 // {
