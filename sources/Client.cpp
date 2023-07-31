@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/07/28 14:41:17 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/07/31 14:29:47 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,12 @@
 
 Client::Client()
 {
+    std::cout << "Default Constructor" << std::endl;
+}
+
+Client::Client(int fd) : ClientFd_(fd)
+{
+    
     std::cout << "Default Constructor" << std::endl;
 }
 
@@ -63,3 +69,26 @@ std::string Client::get_username()
     return(username_);
 }
 
+// OTHER
+
+void Client::ConnectionClosing()
+{
+    
+}
+
+void Client::ReceiveCommand()
+{
+    char buffer[512];
+    std::cout << "BUFFER: " << buffer << std::endl;
+    ssize_t received = recv(ClientFd_, buffer, sizeof(buffer), 0);
+    if (received <= 0)
+        return ;
+    std::cout << "Receive Command" << std::endl;
+    
+    
+}
+
+void Client::SendData()
+{
+    
+}

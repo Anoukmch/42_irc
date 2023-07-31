@@ -16,6 +16,8 @@
 # include <iostream>
 # include <vector>
 
+# include <sys/socket.h>
+
 #define RESET       "\033[0m"               /* Reset */
 #define RED         "\033[31m"              /* Red */
 #define GREEN       "\033[32m"              /* Green */
@@ -26,6 +28,7 @@ class Client
 {
     public:
 		Client(); //Default Constructor
+		Client(int fd);
 		Client(const Client &copyclass); //Copy Constructor
 		Client& operator= (const Client& copyop); //copy assignment operator
 		~Client(); //Destructor
@@ -38,7 +41,13 @@ class Client
 		std::string get_nickname();
 		std::string get_username();
 
+		// OTHER
+		void ConnectionClosing();
+		void ReceiveCommand();
+		void SendData();
+
 	private:
+		int ClientFd_;
 		std::string nickname_;
 		std::string username_;
 };

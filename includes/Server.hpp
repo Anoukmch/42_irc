@@ -25,9 +25,12 @@
 #include <arpa/inet.h>
 #include <fstream>
 #include <unistd.h>
+#include <poll.h>
 
 #include "Client.hpp"
 #include "Channel.hpp"
+
+#define EVENTS (POLLIN | POLLOUT | POLLERR)
 
 class Client;
 class Channel;
@@ -37,10 +40,12 @@ class Server
     public:
 		Server(uint16_t port, std::string password);
 
+		void MainLoop();
 		void server_setup();
 		void acceptConnection();
-		void handleClient();
-		void broadcastMessage();
+		void CheckForDisconnections();
+		// void handleClient();
+		// void broadcastMessage();
 		// // SETTER
 		// void set_topic(std::string& topic);
 		// void set_mode(std::string& mode);
@@ -55,12 +60,15 @@ class Server
 				virtual const char* what() const throw();
 		};
 	private:
-		int clientSocket_;
 		int serverSocket_;
 		uint16_t port_;
 		std::string connection_pd_;
 		struct sockaddr_in address_;
 		std::string mode_;
+
+		std::vector<pollfd>PollStructs_;
+		std::vector<Client*>ConnectedClients_;
+
 		std::vector<Client> clients_;
 		std::vector<Channel> channels_;
 		Server(); //Default Constructor

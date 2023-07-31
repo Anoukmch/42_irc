@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/07/28 14:41:25 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/07/31 14:25:15 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,31 @@ void Server::server_setup()
         std::cout << "Listen from Server ";
         throw SetupError();
     }
-    acceptConnection();
+
+    pollfd tmp = {.revents = 0, .events = EVENTS, .fd = serverSocket_};
+    PollStructs_.push_back(tmp);
+    
+}
+
+void Server::MainLoop()
+{
+    while(true)
+    {
+        if(poll(PollStructs_.data(), PollStructs_.size(), 100) == -1)
+            return ;
+        if(PollStructs_[0].revents & POLLIN)
+            acceptConnection();
+        for(unsigned int i = 1; i < PollStructs_.size(); i++)
+        {
+            if(PollStructs_[i].revents & POLLERR)
+                ConnectedClients_[i-1]->ConnectionClosing();
+            else if(PollStructs_[i].revents & POLLIN)
+                ConnectedClients_[i-1]->ReceiveCommand();
+            if(PollStructs_[i].revents & POLLOUT)
+                ConnectedClients_[i-1]->SendData();
+        }
+        CheckForDisconnections();
+    }
 }
 
 void Server::acceptConnection()
@@ -82,29 +106,21 @@ void Server::acceptConnection()
     // When does while end ????
     // accept function blocks until a client connects to the server
     int address_length = sizeof(address_);
-    clientSocket_ = accept(serverSocket_, (struct sockaddr*)&address_, (socklen_t*)&address_length);
-    if (clientSocket_ == -1)
+    int new_client_fd = accept(serverSocket_, (struct sockaddr*)&address_, (socklen_t*)&address_length);
+    if (new_client_fd == -1)
     {
         std::cout << "Accept ";
         throw SetupError();
     }
-    // EXAMPLE: SENDING MESSAGE TO CLIENT
-    const char* message = "Welcome to the IRC server!\n";
-    send(clientSocket_, message, strlen(message), 0);
-    // EXAMPLE: RECEIVING DATA FROM CLIENT
-    char buffer[1024];
-    int bytesRead = recv(clientSocket_, buffer, sizeof(buffer), 0);
-    if (bytesRead > 0) {
-        buffer[bytesRead] = '\0'; // Null-terminate the received data
-        std::cout << "Received from client: " << buffer << std::endl;
-    } else if (bytesRead == 0) {
-        // The client closed the connection
-        std::cout << "Client disconnected." << std::endl;
-    } else {
-        // Error occurred while receiving
-        std::cerr << "Error while receiving data from the client." << std::endl;
-    }
-    close (clientSocket_);
+    pollfd tmp = {.revents = 0, .events = EVENTS, .fd = new_client_fd};
+    PollStructs_.push_back(tmp);
+    ConnectedClients_.push_back(new Client(new_client_fd));
+    std::cout << "Accept Connection" << std::endl;
+}
+
+void Server::CheckForDisconnections()
+{
+    
 }
 
 // // SETTER

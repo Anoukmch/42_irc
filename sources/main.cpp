@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
         try
         {
             serv.server_setup();
+            serv.MainLoop();
         }
         catch(const std::exception& e)
         {
