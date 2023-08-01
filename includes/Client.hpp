@@ -19,6 +19,7 @@
 # include <sys/socket.h>
 
 # include "Server.hpp"
+# include "Messages.hpp"
 
 #define RESET       "\033[0m"               /* Reset */
 #define RED         "\033[31m"              /* Red */

@@ -1,9 +1,151 @@
-#include <iostream>
-#include <sstream>
+#include "../includes/Messages.hpp"
 
-#include "../inc/ServerReponse.hpp"
-#include "../inc/config.hpp"
-#include "../inc/Print.hpp"
+
+// COMMAND REPLIES
+
+std::string RPL_NICKCHANGE(const std::string& old_nick, const std::string& new_nick, const std::string& user) 
+{ 
+	std::cout << GREEN << "User changed his nickname from " << old_nick << " to " << new_nick << "!" << RESET << "\n";
+	return std::string(":") + old_nick + "!" + user + "@" + HOST + " " + "NICK" + " :" + new_nick + "\r\n";
+}
+
+std::string RPL_CAP()
+{
+	std::cout << GREEN << "Server-capabilities were sent to client!" << RESET << "\n";
+	return std::string(":") + SERVERNAME + " CAP * LS :cap reply...\r\n"; 
+}
+
+std::string RPL_JOIN(const std::string& nick, const std::string& user, const std::string& channel_name)
+{
+	std::cout << GREEN << nick << " joined channel " << channel_name << "!" << RESET << "\n";
+	return std::string(":") + nick + "!" + user + "@" + HOST + " JOIN " + channel_name + " * :" + user + "\r\n";
+}
+
+std::string RPL_PING(const std::string& nick, const std::string& token)
+{
+	std::cout << GREEN << nick << " pinged this server! " << RESET << "\n";
+	return std::string(":") + SERVERNAME + " PONG " + SERVERNAME + " :" + token + "\r\n";
+}
+
+std::string RPL_SETMODECLIENT(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& mode, const std::string& target)
+{
+	std::cout << GREEN << nick << " adjusted the mode of " << target << " by " << mode << RESET << "\n";
+	return std::string(":") + nick + "!" + user + "@" + HOST + " MODE " + channel_name + " " + mode + " " + target + "\r\n";
+}
+
+std::string RPL_PART(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string reason)
+{
+	std::cout << GREEN << nick << " just parted channel " << channel_name + " because of: " + reason + "!" << RESET << "\n";
+	return std::string(":") + nick + "!" + user + "@" + HOST + " PART " + channel_name + " " + reason + "!" +  "\r\n";
+}
+
+std::string	RPL_PRIVMSG(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg)
+{
+	std::cout << GREEN << nick << " send message " << msg + " to " + target +  "!" << RESET << "\n";
+	return std::string(":") + nick + "!" + user + "@" + HOST + " PRIVMSG " + target + " :" + msg + "\r\n";
+}
+
+std::string	RPL_NOTICE(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg)
+{
+	std::cout << GREEN << nick << " send message " << msg + " to " + target +  "!" << RESET << "\n";
+	return std::string(":") + nick + "!" + user + "@" + HOST + " NOTICE " + target + " :" + msg + "\r\n";
+}
+
+std::string RPL_TOPICCHANGE(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& topic)
+{
+	std::cout << GREEN << nick << " set the topic of " << channel_name << " to " << topic << "!" << RESET << "\n";
+	return std::string(":") + nick + "!" + user + "@" + HOST + " TOPIC " + channel_name + " :" + topic + "\r\n";
+}
+
+std::string RPL_KICK(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target, const std::string reason)
+{
+	std::cout << GREEN << nick << " kicked " << target << " of " << channel_name << " because: " << reason << "!" << RESET << "\n";
+	return std::string(":") +  nick + "!" + user + "@" + HOST + " KICK " + channel_name + " " + target + " :" + reason + "\r\n";
+}
+
+std::string RPL_QUIT(const std::string& nick, const std::string& user)
+{
+	std::cout << GREEN << nick << " left the server!" << RESET << "\n";
+	return std::string(":") + nick + "!" + user + "@" + HOST + " " + "QUIT :" + "Goodbye!" + "\r\n";
+}
+
+std::string RPL_BOT(const std::string& nick, const std::string& channel_name, const std::string& msg)
+{
+	std::cout << GREEN << nick << " requested a bot on " << channel_name << "!" << RESET << "\n";
+	std::string partial_msg, total_msg;
+	std::istringstream iss(msg);
+	while(getline(iss, partial_msg, '\n'))
+		total_msg = total_msg + ":BLACKJACKBOT!BOT@" + SERVERNAME + " NOTICE " + channel_name + " :" + partial_msg + "\r\n";
+	return total_msg;
+}
+
+std::string	RPL_INVITED(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target)
+{
+	std::cout << GREEN << target << " has been invited " << " to " << channel_name << " by " << nick << "!" << RESET << "\n";
+	return std::string(":") + nick + "!" + user + "@" + HOST + " INVITE " + target + " :" + channel_name + "\r\n";
+}
+
+
+// NUMERIC REPLIES
+
+std::string RPL_WELCOME(const std::string& nick, const std::string user) 
+{
+	std::cout << GREEN << "User: " << user << " succesfully registered to the server, using nick " << nick << "!" << RESET << "\n";
+	return std::string(":") + SERVERNAME + " 001 " + nick + " :Welcome to the ft_irc network " + nick + "!" + user + "@" + HOST + "\r\n";
+}
+
+std::string RPL_NAMREPLY(const std::string& nick, const std::string& channel_name, const std::string& names_list)
+{
+	return std::string(":") + SERVERNAME + " 353 " + nick + " = " + channel_name + " :" +  names_list + "\r\n";
+}
+
+std::string RPL_ENDOFNAMES(const std::string& nick, const std::string& channel_name)
+{
+	std::cout << GREEN << nick << " requested client-list of channel " << channel_name  << "!"<< RESET << "\n";
+	return std::string(":")  + SERVERNAME + " 366 " + nick + " " + channel_name + " :END of NAMES list\r\n";
+}
+
+std::string RPL_MODEUSER(const std::string& nick, const std::string& mode)
+{
+	std::cout << GREEN << nick << " set his mode to " << mode << RESET << "\n";
+	return std::string(":") + SERVERNAME + " 221 " + nick + " " + mode + "\r\n";
+}
+
+std::string RPL_CHANNELMODEIS(const std::string& nick, const std::string& channel_name, const std::string& mode)
+{
+	std::cout << GREEN << nick << "requested " << channel_name << "'s mode: " << mode << RESET << "\n";
+	return std::string(":") + SERVERNAME + " 324 " + nick + " " + channel_name + " " + mode + "\r\n";
+}
+
+std::string RPL_SETMODECHANNEL(const std::string& nick, const std::string& channel_name, const std::string& mode)
+{
+	std::cout << GREEN << nick << "set " << channel_name << "'s mode to " << mode << "!" << RESET << "\n";
+	return std::string(":") + SERVERNAME + " 324 " + nick + " " + channel_name + " " + mode + "\r\n";
+}
+
+std::string RPL_YOUREOPER(const std::string& nick, const std::string& target)
+{
+	std::cout << GREEN << nick << " make " << target << " a server operator!" << RESET << "\n";
+	return std::string(":") + SERVERNAME + " 381 " + "PASS :You are now an IRC operator\r\n";
+}
+
+std::string	RPL_INVITING(const std::string& nick, const std::string& channel_name, const std::string& target)
+{
+	std::cout << GREEN << nick << " invited " << target << " to " << channel_name << "!" << RESET << "\n";
+	return std::string(":") + SERVERNAME + " 341 " + nick + " " + target + " " + channel_name + "\r\n";
+}
+
+std::string RPL_NOTOPIC(const std::string& nick, const std::string& channel_name)
+{
+	std::cout << GREEN << nick << " requested the topic of " << channel_name << " but no topic was set!" << RESET << "\n";
+	return std::string(":") + SERVERNAME + " 331 " + nick + " " + channel_name + " :No topic is set\r\n";
+}
+
+std::string RPL_TOPIC(const std::string& nick, const std::string& channel_name, const std::string& topic)
+{
+	std::cout << GREEN << nick << " requested the topic of " << channel_name << ": " << topic << "!" << RESET << "\n";
+	return std::string(":") + SERVERNAME + " 332 " + nick + " " + channel_name + " :" + topic + "\r\n";
+}
 
 // ERROR REPLIES
 
@@ -119,149 +261,4 @@ std::string ERR_INVITEONLYCHAN(const std::string& nick, const std::string& chann
 {
 	std::cout << RED << nick << " tried joining " << channel_name << " but he was not invited!" << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 473 " + nick + " " + channel_name + " : Cannot join channel (+i) - you must be invited\r\n";
-}
-
-// COMMAND REPLIES
-
-std::string RPL_NICKCHANGE(const std::string& old_nick, const std::string& new_nick, const std::string& user) 
-{ 
-	std::cout << GREEN << "User changed his nickname from " << old_nick << " to " << new_nick << "!" << RESET << "\n";
-	return std::string(":") + old_nick + "!" + user + "@" + HOST + " " + "NICK" + " :" + new_nick + "\r\n";
-}
-
-std::string RPL_CAP()
-{
-	std::cout << GREEN << "Server-capabilities were sent to client!" << RESET << "\n";
-	return std::string(":") + SERVERNAME + " CAP * LS :cap reply...\r\n"; 
-}
-
-std::string RPL_JOIN(const std::string& nick, const std::string& user, const std::string& channel_name)
-{
-	std::cout << GREEN << nick << " joined channel " << channel_name << "!" << RESET << "\n";
-	return std::string(":") + nick + "!" + user + "@" + HOST + " JOIN " + channel_name + " * :" + user + "\r\n";
-}
-
-std::string RPL_PING(const std::string& nick, const std::string& token)
-{
-	std::cout << GREEN << nick << " pinged this server! " << RESET << "\n";
-	return std::string(":") + SERVERNAME + " PONG " + SERVERNAME + " :" + token + "\r\n";
-}
-
-std::string RPL_SETMODECLIENT(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& mode, const std::string& target)
-{
-	std::cout << GREEN << nick << " adjusted the mode of " << target << " by " << mode << RESET << "\n";
-	return std::string(":") + nick + "!" + user + "@" + HOST + " MODE " + channel_name + " " + mode + " " + target + "\r\n";
-}
-
-std::string RPL_PART(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string reason)
-{
-	std::cout << GREEN << nick << " just parted channel " << channel_name + " because of: " + reason + "!" << RESET << "\n";
-	return std::string(":") + nick + "!" + user + "@" + HOST + " PART " + channel_name + " " + reason + "!" +  "\r\n";
-}
-
-std::string	RPL_PRIVMSG(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg)
-{
-	std::cout << GREEN << nick << " send message " << msg + " to " + target +  "!" << RESET << "\n";
-	return std::string(":") + nick + "!" + user + "@" + HOST + " PRIVMSG " + target + " :" + msg + "\r\n";
-}
-
-std::string	RPL_NOTICE(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg)
-{
-	std::cout << GREEN << nick << " send message " << msg + " to " + target +  "!" << RESET << "\n";
-	return std::string(":") + nick + "!" + user + "@" + HOST + " NOTICE " + target + " :" + msg + "\r\n";
-}
-
-std::string RPL_TOPICCHANGE(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& topic)
-{
-	std::cout << GREEN << nick << " set the topic of " << channel_name << " to " << topic << "!" << RESET << "\n";
-	return std::string(":") + nick + "!" + user + "@" + HOST + " TOPIC " + channel_name + " :" + topic + "\r\n";
-}
-
-std::string RPL_KICK(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target, const std::string reason)
-{
-	std::cout << GREEN << nick << " kicked " << target << " of " << channel_name << " because: " << reason << "!" << RESET << "\n";
-	return std::string(":") +  nick + "!" + user + "@" + HOST + " KICK " + channel_name + " " + target + " :" + reason + "\r\n";
-}
-
-std::string RPL_QUIT(const std::string& nick, const std::string& user)
-{
-	std::cout << GREEN << nick << " left the server!" << RESET << "\n";
-	return std::string(":") + nick + "!" + user + "@" + HOST + " " + "QUIT :" + "Goodbye!" + "\r\n";
-}
-
-// std::string RPL_BOT(const std::string& nick, const std::string& channel_name, const std::string& msg)
-// {
-// 	std::cout << GREEN << nick << " requested a bot on " << channel_name << "!" << RESET << "\n";
-// 	std::string partial_msg, total_msg;
-// 	std::istringstream iss(msg);
-// 	while(getline(iss, partial_msg, '\n'))
-// 		total_msg = total_msg + ":BLACKJACKBOT!BOT@" + SERVERNAME + " NOTICE " + channel_name + " :" + partial_msg + "\r\n";
-// 	return total_msg;
-// }
-
-std::string	RPL_INVITED(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target)
-{
-	std::cout << GREEN << target << " has been invited " << " to " << channel_name << " by " << nick << "!" << RESET << "\n";
-	return std::string(":") + nick + "!" + user + "@" + HOST + " INVITE " + target + " :" + channel_name + "\r\n";
-}
-
-// NUMERIC REPLIES
-
-std::string RPL_WELCOME(const std::string& nick, const std::string user) 
-{
-	std::cout << GREEN << "User: " << user << " succesfully registered to the server, using nick " << nick << "!" << RESET << "\n";
-	return std::string(":") + SERVERNAME + " 001 " + nick + " :Welcome to the ft_irc network " + nick + "!" + user + "@" + HOST + "\r\n";
-}
-
-std::string RPL_NAMREPLY(const std::string& nick, const std::string& channel_name, const std::string& names_list)
-{
-	return std::string(":") + SERVERNAME + " 353 " + nick + " = " + channel_name + " :" +  names_list + "\r\n";
-}
-
-std::string RPL_ENDOFNAMES(const std::string& nick, const std::string& channel_name)
-{
-	std::cout << GREEN << nick << " requested client-list of channel " << channel_name  << "!"<< RESET << "\n";
-	return std::string(":")  + SERVERNAME + " 366 " + nick + " " + channel_name + " :END of NAMES list\r\n";
-}
-
-std::string RPL_MODEUSER(const std::string& nick, const std::string& mode)
-{
-	std::cout << GREEN << nick << " set his mode to " << mode << RESET << "\n";
-	return std::string(":") + SERVERNAME + " 221 " + nick + " " + mode + "\r\n";
-}
-
-std::string RPL_CHANNELMODEIS(const std::string& nick, const std::string& channel_name, const std::string& mode)
-{
-	std::cout << GREEN << nick << "requested " << channel_name << "'s mode: " << mode << RESET << "\n";
-	return std::string(":") + SERVERNAME + " 324 " + nick + " " + channel_name + " " + mode + "\r\n";
-}
-
-std::string RPL_SETMODECHANNEL(const std::string& nick, const std::string& channel_name, const std::string& mode)
-{
-	std::cout << GREEN << nick << "set " << channel_name << "'s mode to " << mode << "!" << RESET << "\n";
-	return std::string(":") + SERVERNAME + " 324 " + nick + " " + channel_name + " " + mode + "\r\n";
-}
-
-std::string RPL_YOUREOPER(const std::string& nick, const std::string& target)
-{
-	std::cout << GREEN << nick << " make " << target << " a server operator!" << RESET << "\n";
-	return std::string(":") + SERVERNAME + " 381 " + "PASS :You are now an IRC operator\r\n";
-}
-
-std::string	RPL_INVITING(const std::string& nick, const std::string& channel_name, const std::string& target)
-{
-	std::cout << GREEN << nick << " invited " << target << " to " << channel_name << "!" << RESET << "\n";
-	return std::string(":") + SERVERNAME + " 341 " + nick + " " + target + " " + channel_name + "\r\n";
-}
-
-std::string RPL_NOTOPIC(const std::string& nick, const std::string& channel_name)
-{
-	std::cout << GREEN << nick << " requested the topic of " << channel_name << " but no topic was set!" << RESET << "\n";
-	return std::string(":") + SERVERNAME + " 331 " + nick + " " + channel_name + " :No topic is set\r\n";
-}
-
-std::string RPL_TOPIC(const std::string& nick, const std::string& channel_name, const std::string& topic)
-{
-	std::cout << GREEN << nick << " requested the topic of " << channel_name << ": " << topic << "!" << RESET << "\n";
-	return std::string(":") + SERVERNAME + " 332 " + nick + " " + channel_name + " :" + topic + "\r\n";
 }

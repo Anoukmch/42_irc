@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/01 11:35:05 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/01 11:55:29 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,8 +110,6 @@ void Client::PassCommand(std::string buf)
     if (pwd_ != buf)
         std::cout << "WRONG PWD" << std::endl; //SPECIAL MESSAGE
 
-    std::cout << GREEN << "User: " << user << " succesfully registered to the server, using nick " << nick << "!" << RESET << "\n";
-    output_ = std::string(":") + SERVERNAME + " 001 " + nick + " :Welcome to the ft_irc network " + nick + "!" + user + "@" + HOST + "\r\n";
     // std::cout << buf.size() << std::endl;
 }
 
