@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/01 16:10:08 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/01 16:12:04 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ void Client::SendData()
     if(output_.empty())
         return ;
     send(ClientFd_, output_.data(), output_.size(), 0);
-    output_.clear();
+    output_ = "";
 }
 
 void Client::CheckCommand(std::string buf)
