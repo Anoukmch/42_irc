@@ -19,14 +19,15 @@
 
 # include <sys/socket.h>
 
-# include "Server.hpp"
-# include "Messages.hpp"
+#include "Server.hpp"
+#include "Messages.hpp"
 
 #define RESET       "\033[0m"               /* Reset */
 #define RED         "\033[31m"              /* Red */
 #define GREEN       "\033[32m"              /* Green */
 #define YELLOW      "\033[33m"              /* Yellow */
 #define PURPLE      "\033[35m"              /* Purple */
+
 
 class Client
 {
@@ -66,8 +67,7 @@ class Client
 		std::string output_;
 		std::string params_;
 
-		// std::string commands_[16];
-		// void (Client::*fp[16])();
+
 		// COMMANDS
 		void PassCmd();
 		void CapCmd();

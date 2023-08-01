@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/01 13:07:02 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/01 14:45:34 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Client::Client()
 
 Client::Client(int fd, std::string password) : ClientFd_(fd), pwd_(password)
 {
-    std::cout << "Default Constructor" << std::endl;
+    std::cout << "Constructor" << std::endl;
 }
 
 Client::Client(const Client &copyclass)
@@ -154,11 +154,23 @@ void Client::NickCmd()
         return ;
     }
 
-    // MUST BE UNIQUE
-    // IF NOT -> ERR_NICKNAMEINUSE
-    // ONLY 9 CHARACTERS ?
-    // ... ???
-    // CHECK THAT NICKNAME IS VALID BEFORE CHANGING!!!
+    // ONLY 8 CHARACTERS ????
+    // CHECK FOR SOME SPECIAL SIGNS, ...
+    // if(params_.find(' ') != std::string::npos
+    //     || params_.find(',') != std::string::npos || params_.find('?') != std::string::npos
+    //     || params_.find('!') != std::string::npos || params_.find('@') != std::string::npos
+    //     || params_.find('.') != std::string::npos || params_[0] == '$' || params_[0] == ':'
+    //     || params_[0] == '&' || params_[0] == '#')
+    // {
+    //     output_ = Messages::ERR_ERRONEUSNICKNAME(nickname_, params_);
+    //     return ;
+    // }
+
+    // CHECK FOR UNIQUE NICKNAME
+    // ERR_NICKCOLLISION
+    
+    // if(Server::IsUniqueNickname(params_) == false)
+    //     std::cout << "WORKS!" << std::endl;
     std::cout << "HERE" << std::endl;
     if (nickname_.empty() == true)
     {
