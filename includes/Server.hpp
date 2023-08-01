@@ -47,6 +47,7 @@ class Server
 
 
 		static bool IsUniqueNickname(std::string poss_nick);
+		static void AddChannel(std::string topic);
 
 		// void handleClient();
 		// void broadcastMessage();
@@ -73,8 +74,9 @@ class Server
 		static std::vector<pollfd>PollStructs_;
 		static std::vector<Client*>ConnectedClients_;
 
-		std::vector<Client> clients_;
-		std::vector<Channel> channels_;
+		static std::vector<Channel*>channels_;
+
+		// std::vector<Client> clients_;
 		Server(); //Default Constructor
 		Server(const Server &copyclass); //Copy Constructor
 		Server& operator= (const Server& copyop); //copy assignment operator

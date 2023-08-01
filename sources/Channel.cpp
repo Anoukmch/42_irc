@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/07/28 14:41:11 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/01 15:55:44 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,11 @@
 Channel::Channel()
 {
     std::cout << "Default Constructor" << std::endl;
+}
+
+Channel::Channel(std::string topic) : topic_(topic)
+{
+    std::cout << "Constructor" << std::endl;
 }
 
 Channel::Channel(const Channel &copyclass)

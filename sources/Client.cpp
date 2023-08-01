@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/01 15:50:35 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/01 16:05:38 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,6 +195,7 @@ void Client::UserCmd()
     
 }
 
+// DIFFERENCE BETWEEN TOPIC AND NAME???
 void Client::JoinCmd()
 {
     if(params_.empty() == true)
@@ -209,7 +210,9 @@ void Client::JoinCmd()
         output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_);
         return ;
     }
-    Server::channel_.pushback()
+    Server::AddChannel(params_);
+    // CREATES CHANNEL
+    output_ = Messages::RPL_JOIN(nickname_, username_, params_);
 }
 
 void Client::PingCmd()

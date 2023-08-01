@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/01 15:04:02 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/01 16:02:06 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 std::vector<pollfd> Server::PollStructs_;
 std::vector<Client*> Server::ConnectedClients_;
+std::vector<Channel*> Server::channels_;
+
 struct sockaddr_in Server::address_;
 int Server::serverSocket_;
 
@@ -140,6 +142,12 @@ bool Server::IsUniqueNickname(std::string poss_nick)
     }
     return(true);   
 }
+
+void Server::AddChannel(std::string topic)
+{
+    channels_.push_back(new Channel(topic));
+}
+
 
 // // SETTER
 
