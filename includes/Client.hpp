@@ -56,6 +56,9 @@ class Client
 		std::string pwd_;
 		std::string nickname_;
 		std::string username_;
+
+		std::string buffer_;
+		std::string output_;
 };
 
 #endif

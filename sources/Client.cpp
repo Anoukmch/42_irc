@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/07/31 16:59:01 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/01 11:09:26 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ void Client::ConnectionClosing()
     
 }
 
+// END OF MESSAGE ALWAYS \r\n ????
 void Client::ReceiveCommand()
 {
     std::cout << "Receive Command" << std::endl;
@@ -83,26 +84,52 @@ void Client::ReceiveCommand()
     if (received <= 0)
         return ;
     buffer[received] = '\0';
-    std::cout << "BUFFER: " << buffer << std::endl;
-    CheckCommand(buffer);
+    buffer_ = std::string(buffer);
+
+    size_t rc = buffer_.find("\r\n");
+    if(rc != std::string::npos)
+        buffer_ = buffer_.substr(0, rc);
+
+    std::cout << "buffer_: " << buffer_ << std::endl;
+
+    CheckCommand(buffer_);
     
 }
 void Client::CheckCommand(std::string buf)
 {
     if(buf.substr(0, buf.find(' ')) == "PASS")
-        PassCommand(buf.substr(buf.find(' ')+1, buf.find('\n')));
+        PassCommand(buf.substr(buf.find(' ')+1, buf.size()));
 }
-
+//        ERR_NEEDMOREPARAMS              ERR_ALREADYREGISTRED
 void Client::PassCommand(std::string buf)
 {
-    std::cout << "BUF: " << buf << std::endl;
+    std::cout << "BUF SIZE: " << buf.size() << std::endl;
     if (pwd_ != buf)
         std::cout << "WRONG PWD" << std::endl;
+    std::string nick = "jmatheis";
+    std::string user = "jmatheis";
+    std::string HOST = "localhost";
+    std::string SERVERNAME = "ircserv";
+    std::cout << GREEN << "User: " << user << " succesfully registered to the server, using nick " << nick << "!" << RESET << "\n";
+    output_ = std::string(":") + SERVERNAME + " 001 " + nick + " :Welcome to the ft_irc network " + nick + "!" + user + "@" + HOST + "\r\n";
     // std::cout << buf.size() << std::endl;
-        
 }
+
+// std::string RPL_WELCOME(const std::string& nick, const std::string user) 
+// {
+// 	std::cout << GREEN << "User: " << user << " succesfully registered to the server, using nick " << nick << "!" << RESET << "\n";
+// 	return std::string(":") + SERVERNAME + " 001 " + nick + " :Welcome to the ft_irc network " + nick + "!" + user + "@" + HOST + "\r\n";
+// }
 
 void Client::SendData()
 {
+    // if (output_.Empty())
+	// 		return;
+		// while (output_buffer.HoldsMessage())
+		// {
+		// 	std::string output = output_buffer.GetMessageCR();
+		// 	send(GetFd(), output.data(), output.size(), 0);
+		// }
     
+    send(ClientFd_, output_.data(), output_.size(), 0);
 }
