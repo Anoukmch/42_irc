@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/01 11:55:29 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/01 12:45:53 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,39 +95,116 @@ void Client::ReceiveCommand()
     CheckCommand(buffer_);
     
 }
-void Client::CheckCommand(std::string buf)
-{
-    std::string cmd = buf.substr(0, buf.find(' '));
-    std::string params = buf.substr(buf.find(' ')+1, buf.size());
-    if(cmd == "PASS")
-        PassCommand(params);
-}
-
-//        ERR_NEEDMOREPARAMS              ERR_ALREADYREGISTRED
-void Client::PassCommand(std::string buf)
-{
-    std::cout << "BUF SIZE: " << buf.size() << std::endl;
-    if (pwd_ != buf)
-        std::cout << "WRONG PWD" << std::endl; //SPECIAL MESSAGE
-
-    // std::cout << buf.size() << std::endl;
-}
-
-// std::string RPL_WELCOME(const std::string& nick, const std::string user) 
-// {
-// 	std::cout << GREEN << "User: " << user << " succesfully registered to the server, using nick " << nick << "!" << RESET << "\n";
-// 	return std::string(":") + SERVERNAME + " 001 " + nick + " :Welcome to the ft_irc network " + nick + "!" + user + "@" + HOST + "\r\n";
-// }
 
 void Client::SendData()
 {
-    // if (output_.Empty())
-	// 		return;
-		// while (output_buffer.HoldsMessage())
-		// {
-		// 	std::string output = output_buffer.GetMessageCR();
-		// 	send(GetFd(), output.data(), output.size(), 0);
-		// }
-    
+    if(output_.empty())
+        return ;
     send(ClientFd_, output_.data(), output_.size(), 0);
+}
+
+void Client::CheckCommand(std::string buf)
+{
+    std::string cmd = buf.substr(0, buf.find(' '));
+    params_ = buf.substr(buf.find(' ')+1, buf.size());
+
+    std::string cmds[16] = { "PASS", "CAP", "NICK", "USER", "JOIN", "PING", "MODE",
+        "NAMES", "PART", "PRIVMSG", "INVITE", "TOPIC", "KICK", "OPER", "NOTICE", "QUIT"};
+	void (Client::*fp[16])(void) = {&Client::PassCmd, &Client::CapCmd, &Client::NickCmd,
+        &Client::UserCmd, &Client::JoinCmd, &Client::PingCmd, &Client::ModeCmd, &Client::NamesCmd,
+        &Client::PartCmd, &Client::PrivmsgCmd, &Client::InviteCmd, &Client::TopicCmd,
+        &Client::KickCmd, &Client::OperCmd, &Client::NoticeCmd, &Client::QuitCmd};
+
+    for(int i = 0; i < 16; i++)
+    {
+        if(cmd == cmds[i])
+        {
+            (this->*fp[i])();
+            return ;
+        }
+    }
+}
+
+// COMMANDS
+
+void Client::PassCmd()
+{
+    if (pwd_ != params_)
+        std::cout << "WRONG PWD" << std::endl;
+    // Check for multiple params, ...
+}
+
+void Client::CapCmd()
+{
+    
+}
+
+void Client::NickCmd()
+{
+    
+}
+
+void Client::UserCmd()
+{
+    
+}
+
+void Client::JoinCmd()
+{
+    
+}
+
+void Client::PingCmd()
+{
+    
+}
+
+void Client::ModeCmd()
+{
+    
+}
+
+void Client::NamesCmd()
+{
+    
+}
+
+void Client::PartCmd()
+{
+    
+}
+
+void Client::PrivmsgCmd()
+{
+    
+}
+
+void Client::InviteCmd()
+{
+    
+}
+
+void Client::TopicCmd()
+{
+    
+}
+
+void Client::KickCmd()
+{
+    
+}
+
+void Client::OperCmd()
+{
+    
+}
+
+void Client::NoticeCmd()
+{
+    
+}
+
+void Client::QuitCmd()
+{
+    
 }

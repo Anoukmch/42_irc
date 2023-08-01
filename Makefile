@@ -7,11 +7,12 @@ SRCS		:= main.cpp \
 				Client.cpp \
 				Channel.cpp \
 				Server.cpp \
-				
+				Messages.cpp
 
 HEADER		:= Client.hpp \
 				Channel.hpp \
-				Server.hpp
+				Server.hpp \
+				Messages.hpp
 
 M_SRCS		= $(addprefix ./sources/, $(SRCS))
 M_HEADER	= $(addprefix ./includes/, $(HEADER))

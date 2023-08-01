@@ -7,6 +7,12 @@
 #define YELLOW      "\033[33m"              /* Yellow */
 #define PURPLE      "\033[35m"              /* Purple */
 
+#include <iostream>
+#include <sstream>
+
+#define HOST "localhost"
+#define SERVERNAME "ircserv"
+
 class Messages
 {
     public:

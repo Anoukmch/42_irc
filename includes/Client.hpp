@@ -15,6 +15,7 @@
 
 # include <iostream>
 # include <vector>
+# include <string>
 
 # include <sys/socket.h>
 
@@ -26,9 +27,6 @@
 #define GREEN       "\033[32m"              /* Green */
 #define YELLOW      "\033[33m"              /* Yellow */
 #define PURPLE      "\033[35m"              /* Purple */
-
-#define HOST "localhost"
-#define SERVERNAME "ircserv"
 
 class Client
 {
@@ -53,7 +51,8 @@ class Client
 		void SendData();
 
 		void CheckCommand(std::string buf);
-		void PassCommand(std::string buf);
+		// void PassCommand(std::string buf);
+
 
 	private:
 		int ClientFd_;
@@ -65,6 +64,27 @@ class Client
 
 		std::string buffer_;
 		std::string output_;
+		std::string params_;
+
+		// std::string commands_[16];
+		// void (Client::*fp[16])();
+		// COMMANDS
+		void PassCmd();
+		void CapCmd();
+		void NickCmd();
+		void UserCmd();
+		void JoinCmd();
+		void PingCmd();
+		void ModeCmd();
+		void NamesCmd();
+		void PartCmd();
+		void PrivmsgCmd();
+		void InviteCmd();
+		void TopicCmd();
+		void KickCmd();
+		void OperCmd();
+		void NoticeCmd();
+		void QuitCmd();
 };
 
 #endif
