@@ -26,6 +26,9 @@
 #define YELLOW      "\033[33m"              /* Yellow */
 #define PURPLE      "\033[35m"              /* Purple */
 
+#define HOST "localhost"
+#define SERVERNAME "ircserv"
+
 class Client
 {
     public:
@@ -53,6 +56,8 @@ class Client
 
 	private:
 		int ClientFd_;
+
+		// PASS, NICK AND USER COMMAND
 		std::string pwd_;
 		std::string nickname_;
 		std::string username_;

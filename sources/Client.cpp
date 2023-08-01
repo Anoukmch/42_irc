@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/01 11:09:26 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/01 11:35:05 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,19 +97,19 @@ void Client::ReceiveCommand()
 }
 void Client::CheckCommand(std::string buf)
 {
-    if(buf.substr(0, buf.find(' ')) == "PASS")
-        PassCommand(buf.substr(buf.find(' ')+1, buf.size()));
+    std::string cmd = buf.substr(0, buf.find(' '));
+    std::string params = buf.substr(buf.find(' ')+1, buf.size());
+    if(cmd == "PASS")
+        PassCommand(params);
 }
+
 //        ERR_NEEDMOREPARAMS              ERR_ALREADYREGISTRED
 void Client::PassCommand(std::string buf)
 {
     std::cout << "BUF SIZE: " << buf.size() << std::endl;
     if (pwd_ != buf)
-        std::cout << "WRONG PWD" << std::endl;
-    std::string nick = "jmatheis";
-    std::string user = "jmatheis";
-    std::string HOST = "localhost";
-    std::string SERVERNAME = "ircserv";
+        std::cout << "WRONG PWD" << std::endl; //SPECIAL MESSAGE
+
     std::cout << GREEN << "User: " << user << " succesfully registered to the server, using nick " << nick << "!" << RESET << "\n";
     output_ = std::string(":") + SERVERNAME + " 001 " + nick + " :Welcome to the ft_irc network " + nick + "!" + user + "@" + HOST + "\r\n";
     // std::cout << buf.size() << std::endl;

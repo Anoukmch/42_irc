@@ -6,7 +6,8 @@ CXXFLAGS	:= -Wall -Werror -Wextra -std=c++98
 SRCS		:= main.cpp \
 				Client.cpp \
 				Channel.cpp \
-				Server.cpp
+				Server.cpp \
+				
 
 HEADER		:= Client.hpp \
 				Channel.hpp \
