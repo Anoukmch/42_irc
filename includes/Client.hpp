@@ -33,7 +33,7 @@ class Client
 {
     public:
 		Client(); //Default Constructor
-		Client(int fd, std::string password);
+		Client(int fd);
 		Client(const Client &copyclass); //Copy Constructor
 		Client& operator= (const Client& copyop); //copy assignment operator
 		~Client(); //Destructor
@@ -65,6 +65,8 @@ class Client
 
 		std::string buffer_;
 		std::string output_;
+
+		std::string cmd_;
 		std::string params_;
 
 

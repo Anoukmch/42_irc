@@ -6,11 +6,17 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/01 14:13:05 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/01 15:04:02 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+
+std::vector<pollfd> Server::PollStructs_;
+std::vector<Client*> Server::ConnectedClients_;
+struct sockaddr_in Server::address_;
+int Server::serverSocket_;
+
 
 Server::Server()
 {
@@ -114,13 +120,25 @@ void Server::acceptConnection()
     }
     pollfd tmp = {.revents = 0, .events = EVENTS, .fd = new_client_fd};
     PollStructs_.push_back(tmp);
-    ConnectedClients_.push_back(new Client(new_client_fd, connection_pd_));
+    ConnectedClients_.push_back(new Client(new_client_fd));
     std::cout << "Accept Connection" << std::endl;
 }
 
 void Server::CheckForDisconnections()
 {
     
+}
+
+bool Server::IsUniqueNickname(std::string poss_nick)
+{
+    std::vector<Client*>::iterator it = ConnectedClients_.begin();
+    while(it != ConnectedClients_.end())
+    {
+        if(poss_nick == (*it)->get_nickname())
+            return(false);
+        it++;
+    }
+    return(true);   
 }
 
 // // SETTER

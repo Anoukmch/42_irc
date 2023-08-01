@@ -40,10 +40,14 @@ class Server
     public:
 		Server(uint16_t port, std::string password);
 
-		void MainLoop();
-		void server_setup();
-		void acceptConnection();
-		void CheckForDisconnections();
+		static void MainLoop();
+		static void server_setup();
+		static void acceptConnection();
+		static void CheckForDisconnections();
+
+
+		static bool IsUniqueNickname(std::string poss_nick);
+
 		// void handleClient();
 		// void broadcastMessage();
 		// // SETTER
@@ -60,14 +64,14 @@ class Server
 				virtual const char* what() const throw();
 		};
 	private:
-		int serverSocket_;
+		static int serverSocket_;
 		uint16_t port_;
 		std::string connection_pd_;
-		struct sockaddr_in address_;
-		std::string mode_;
+		static struct sockaddr_in address_;
+		static std::string mode_;
 
-		std::vector<pollfd>PollStructs_;
-		std::vector<Client*>ConnectedClients_;
+		static std::vector<pollfd>PollStructs_;
+		static std::vector<Client*>ConnectedClients_;
 
 		std::vector<Client> clients_;
 		std::vector<Channel> channels_;
