@@ -23,13 +23,13 @@ class Messages
 		static std::string RPL_PING(const std::string& nick, const std::string& token);
 		static std::string RPL_SETMODECLIENT(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& mode, const std::string& target);
 		static std::string RPL_PART(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string reason);
-		static std::string	RPL_PRIVMSG(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg);
-		static std::string	RPL_NOTICE(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg);
+		static std::string RPL_PRIVMSG(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg);
+		static std::string RPL_NOTICE(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg);
 		static std::string RPL_TOPICCHANGE(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& topic);
 		static std::string RPL_KICK(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target, const std::string reason);
 		static std::string RPL_QUIT(const std::string& nick, const std::string& user);
 		static std::string RPL_BOT(const std::string& nick, const std::string& channel_name, const std::string& msg);
-		static std::string	RPL_INVITED(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target);
+		static std::string RPL_INVITED(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target);
 
 		// NUMERIC MESSAGES
 		static std::string RPL_WELCOME(const std::string& nick, const std::string user);
@@ -39,7 +39,7 @@ class Messages
 		static std::string RPL_CHANNELMODEIS(const std::string& nick, const std::string& channel_name, const std::string& mode);
 		static std::string RPL_SETMODECHANNEL(const std::string& nick, const std::string& channel_name, const std::string& mode);
 		static std::string RPL_YOUREOPER(const std::string& nick, const std::string& target);
-		static std::string	RPL_INVITING(const std::string& nick, const std::string& channel_name, const std::string& target);
+		static std::string RPL_INVITING(const std::string& nick, const std::string& channel_name, const std::string& target);
 		static std::string RPL_NOTOPIC(const std::string& nick, const std::string& channel_name);
 		static std::string RPL_TOPIC(const std::string& nick, const std::string& channel_name, const std::string& topic);
 

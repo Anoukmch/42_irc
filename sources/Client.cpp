@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/01 12:45:53 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/01 13:07:02 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ Client& Client::operator= (const Client& copyop)
     std::cout << "Copy Assignment Operator" << std::endl;
     if(this != &copyop)
     {
-        nickname_ = copyop.nickname_;
-        username_ = copyop.username_;
+        // nickname_ = copyop.nickname_;
+        // username_ = copyop.username_;
     }
     return(*this);
 }
@@ -129,8 +129,15 @@ void Client::CheckCommand(std::string buf)
 
 void Client::PassCmd()
 {
+    // if user not connected check that PASS cmd is there
+    
+    if (params_.empty())
+        std::cout << "NO PARAMS";
     if (pwd_ != params_)
+    {
+        
         std::cout << "WRONG PWD" << std::endl;
+    }
     // Check for multiple params, ...
 }
 
@@ -141,7 +148,28 @@ void Client::CapCmd()
 
 void Client::NickCmd()
 {
-    
+    if(params_.empty() == true)
+    {
+        output_ = Messages::ERR_NONICKNAMEGIVEN();
+        return ;
+    }
+
+    // MUST BE UNIQUE
+    // IF NOT -> ERR_NICKNAMEINUSE
+    // ONLY 9 CHARACTERS ?
+    // ... ???
+    // CHECK THAT NICKNAME IS VALID BEFORE CHANGING!!!
+    std::cout << "HERE" << std::endl;
+    if (nickname_.empty() == true)
+    {
+        nickname_ = params_;
+        output_ = Messages::RPL_WELCOME(nickname_, username_);
+    }
+    else if (nickname_.empty() == false)
+    {
+        output_ = Messages::RPL_NICKCHANGE(nickname_, params_, username_);
+        nickname_ = params_;
+    }
 }
 
 void Client::UserCmd()
