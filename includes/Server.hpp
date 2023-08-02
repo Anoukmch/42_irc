@@ -40,6 +40,7 @@ class Server
     public:
 		Server(uint16_t port, std::string password);
 
+		static bool ValidPort();
 		static void MainLoop();
 		static void server_setup();
 		static void acceptConnection();
