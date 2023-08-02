@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/02 16:01:54 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/02 16:07:07 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ Client::Client()
     std::cout << "Default Constructor" << std::endl;
 }
 
-Client::Client(int fd) : ClientFd_(fd)
+Client::Client(int fd) : ClientFd_(fd), ClientState_(-1)
 {
     std::cout << "Constructor" << std::endl;
 }
@@ -181,6 +181,7 @@ void Client::PassCmd()
         std::cout << "WRONG PWD" << std::endl;
     }
     // Check for multiple params, ...
+    ClientState_ = PASS;
 }
 
 void Client::CapCmd()
@@ -209,6 +210,8 @@ void Client::NickCmd()
 
     // PROBLEM WHEN CONNECTING WITH SAME NICK, SERVER CLOSES!!!!
     // CHECK FOR UNIQUE NICKNAME
+    if (ClientState_ != PASS)
+         output_ = Messages::ERR_NOTREGISTERED(cmd_);
     if(Server::IsUniqueNickname(params_[0]) == false)
     {
         output_ = Messages::ERR_NICKNAMEINUSE(params_[0]);
@@ -224,12 +227,23 @@ void Client::NickCmd()
         output_ = Messages::RPL_NICKCHANGE(nickname_, params_[0], username_);
         nickname_ = params_[0];
     }
+    if (ClientState_ == PASS)
+        ClientState_ == REGISTERED;
+    else if (ClientState_ == REGISTERED)
+        output_ = Messages::RPL_WELCOME(nickname_, username_);
 }
 
 void Client::UserCmd()
 {
-   if (params_.size() != 3 || trailing_.empty())
-        Messages::ERR_NEEDMOREPARAMS(cmd_);
+    if (params_.size() != 3 || trailing_.empty())
+         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+    if (ClientState_ != PASS)
+         output_ = Messages::ERR_NOTREGISTERED(cmd_);
+    username_ = trailing_;
+    if (ClientState_ == PASS)
+        ClientState_ == REGISTERED;
+    else if (ClientState_ == REGISTERED)
+        output_ = Messages::RPL_WELCOME(nickname_, username_);
 }
 
 // DIFFERENCE BETWEEN TOPIC AND NAME???

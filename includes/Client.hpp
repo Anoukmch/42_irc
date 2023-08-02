@@ -31,6 +31,7 @@
 
 class Client
 {
+
     public:
 		Client(); //Default Constructor
 		Client(int fd);
@@ -56,8 +57,15 @@ class Client
 
 		void SetCmdParamsTrailing(std::string buf);
 
+		enum State
+		{
+			PASS,
+			REGISTERED
+		};
+
 	private:
 		int ClientFd_;
+		int ClientState_;
 
 		// PASS, NICK AND USER COMMAND
 		std::string pwd_;
