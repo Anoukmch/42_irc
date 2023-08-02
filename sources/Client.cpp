@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/02 16:53:25 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/02 17:29:03 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,7 @@ void Client::SendData()
 
 void Client::SetCmdParamsTrailing(std::string buf)
 {
+    std::cout << "BUF: " << buf << std::endl;
     std::string tmp;
     if (buf.find(' ') == std::string::npos)
     {
@@ -128,7 +129,7 @@ void Client::SetCmdParamsTrailing(std::string buf)
     else
     {
         tmp = buf.substr(buf.find(' ') + 1, buf.find(':') - (buf.find(' ')+1));
-        trailing_ = buf.substr(buf.find(':')+1, buf.size()-(buf.find(':')+1));
+        trailing_ = buf.substr(buf.find(':'), buf.size()-(buf.find(':')));
     }
 
     std::istringstream stream(tmp);
@@ -186,7 +187,7 @@ void Client::PassCmd()
 
 void Client::CapCmd()
 {
-
+    output_ = Messages::RPL_CAP();
 }
 
 void Client::NickCmd()
@@ -298,7 +299,8 @@ void Client::InviteCmd()
 
 void Client::TopicCmd()
 {
-    if(params_.size() < 1 || params_.size() > 1)
+    if(params_.size() < 1 || params_.size() > 1
+        || (params_.size() != 1 && trailing_ != ""))
     {
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
