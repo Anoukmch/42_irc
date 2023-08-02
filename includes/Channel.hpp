@@ -22,12 +22,12 @@
 #define YELLOW      "\033[33m"              /* Yellow */
 #define PURPLE      "\033[35m"              /* Purple */
 
+# include "Server.hpp"
+
 class Channel
 {
     public:
-		Channel(); //Default Constructor
-		Channel(const Channel &copyclass); //Copy Constructor
-		Channel& operator= (const Channel& copyop); //copy assignment operator
+		Channel(std::string topic);
 		~Channel(); //Destructor
 
 		// SETTER
@@ -39,6 +39,10 @@ class Channel
 		std::string get_mode();
 
 	private:
+		Channel(); //Default Constructor
+		Channel(const Channel &copyclass); //Copy Constructor
+		Channel& operator= (const Channel& copyop); //copy assignment operator
+
 		std::string topic_;
 		std::string mode_;
 };

@@ -19,8 +19,8 @@
 
 # include <sys/socket.h>
 
-# include "Server.hpp"
-# include "Messages.hpp"
+#include "Server.hpp"
+#include "Messages.hpp"
 
 #define RESET       "\033[0m"               /* Reset */
 #define RED         "\033[31m"              /* Red */
@@ -28,11 +28,12 @@
 #define YELLOW      "\033[33m"              /* Yellow */
 #define PURPLE      "\033[35m"              /* Purple */
 
+
 class Client
 {
     public:
 		Client(); //Default Constructor
-		Client(int fd, std::string password);
+		Client(int fd);
 		Client(const Client &copyclass); //Copy Constructor
 		Client& operator= (const Client& copyop); //copy assignment operator
 		~Client(); //Destructor
@@ -53,6 +54,7 @@ class Client
 		void CheckCommand(std::string buf);
 		// void PassCommand(std::string buf);
 
+		void SetCmdParamsTrailing(std::string buf);
 
 	private:
 		int ClientFd_;
@@ -64,10 +66,12 @@ class Client
 
 		std::string buffer_;
 		std::string output_;
-		std::string params_;
 
-		// std::string commands_[16];
-		// void (Client::*fp[16])();
+		std::string cmd_;
+		std::vector<std::string> params_;
+		std::string trailing_;
+
+
 		// COMMANDS
 		void PassCmd();
 		void CapCmd();

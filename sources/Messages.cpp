@@ -28,8 +28,8 @@ Messages::~Messages()
 
 // COMMAND REPLIES
 
-std::string Messages::RPL_NICKCHANGE(const std::string& old_nick, const std::string& new_nick, const std::string& user) 
-{ 
+std::string Messages::RPL_NICKCHANGE(const std::string& old_nick, const std::string& new_nick, const std::string& user)
+{
 	std::cout << GREEN << "User changed his nickname from " << old_nick << " to " << new_nick << "!" << RESET << "\n";
 	return std::string(":") + old_nick + "!" + user + "@" + HOST + " " + "NICK" + " :" + new_nick + "\r\n";
 }
@@ -37,7 +37,7 @@ std::string Messages::RPL_NICKCHANGE(const std::string& old_nick, const std::str
 std::string Messages::RPL_CAP()
 {
 	std::cout << GREEN << "Server-capabilities were sent to client!" << RESET << "\n";
-	return std::string(":") + SERVERNAME + " CAP * LS :cap reply...\r\n"; 
+	return std::string(":") + SERVERNAME + " CAP * LS :cap reply...\r\n";
 }
 
 std::string Messages::RPL_JOIN(const std::string& nick, const std::string& user, const std::string& channel_name)
@@ -113,7 +113,7 @@ std::string	Messages::RPL_INVITED(const std::string& nick, const std::string& us
 
 // NUMERIC REPLIES
 
-std::string Messages::RPL_WELCOME(const std::string& nick, const std::string user) 
+std::string Messages::RPL_WELCOME(const std::string& nick, const std::string user)
 {
 	std::cout << GREEN << "User: " << user << " succesfully registered to the server, using nick " << nick << "!" << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 001 " + nick + " :Welcome to the ft_irc network " + nick + "!" + user + "@" + HOST + "\r\n";
@@ -174,38 +174,38 @@ std::string Messages::RPL_TOPIC(const std::string& nick, const std::string& chan
 
 // ERROR REPLIES
 
-std::string Messages::ERR_NEEDMOREPARAMS(const std::string& command) 
-{ 
-	std::cout << RED << command << ": more Parameters needed to execute command: " << command << "!" << RESET << "\n";
+std::string Messages::ERR_NEEDMOREPARAMS(const std::string& command)
+{
+	std::cout << RED << command << ": Change the amount of parameters to execute command: " << command << "!" << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 461 " + command + " :Not enough parameters\r\n";
 }
 
 std::string Messages::ERR_PASSWDMISMATCH()
-{ 
+{
 	std::cout << RED << "User provided invalid password!" << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 464 " + "PASS" + " :Password incorrect\r\n";
 }
 
-std::string Messages::ERR_ALREADYREGISTRED() 
-{ 
+std::string Messages::ERR_ALREADYREGISTRED()
+{
 	std::cout << RED << "User tried to re-authenticate!" << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 462 " ":Already registered in\r\n";
 }
 
-std::string Messages::ERR_NICKNAMEINUSE(const std::string& nick) 
-{ 
+std::string Messages::ERR_NICKNAMEINUSE(const std::string& nick)
+{
 	std::cout << RED << "User tried claiming nickname already in use!" << RESET << "\n";
-	return std::string(":") + SERVERNAME " 433 " + nick + " :Nickname is already in use\r\n"; 
+	return std::string(":") + SERVERNAME " 433 " + nick + " :Nickname is already in use\r\n";
 }
 
-std::string Messages::ERR_NONICKNAMEGIVEN() 
-{ 
+std::string Messages::ERR_NONICKNAMEGIVEN()
+{
 	std::cout << RED << "User did not provide nickname!" << RESET << "\n";
-	return std::string(":") + SERVERNAME + " 431 " + "NICK" + " :Nickname not given\r\n"; 
+	return std::string(":") + SERVERNAME + " 431 " + "NICK" + " :Nickname not given\r\n";
 }
 
 std::string Messages::ERR_NOTREGISTERED(const std::string& command)
-{		
+{
 	std::cout << RED << "User tried executing command " << command << " but was not registred!" << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 451 " + ":You have not registered\r\n";
 }

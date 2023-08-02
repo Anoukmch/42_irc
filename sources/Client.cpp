@@ -6,7 +6,11 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2023/08/02 13:17:28 by amechain         ###   ########.fr       */
+=======
+/*   Updated: 2023/08/02 12:51:33 by jmatheis         ###   ########.fr       */
+>>>>>>> 9b34d7e6f87e520af22b8487e799cc9ba2ac1f24
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +21,9 @@ Client::Client()
     std::cout << "Default Constructor" << std::endl;
 }
 
-Client::Client(int fd, std::string password) : ClientFd_(fd), pwd_(password)
+Client::Client(int fd) : ClientFd_(fd)
 {
-    std::cout << "Default Constructor" << std::endl;
+    std::cout << "Constructor" << std::endl;
 }
 
 Client::Client(const Client &copyclass)
@@ -78,7 +82,7 @@ void Client::ConnectionClosing()
 // END OF MESSAGE ALWAYS \r\n ????
 void Client::ReceiveCommand()
 {
-    std::cout << "Receive Command" << std::endl;
+    // std::cout << "Receive Command" << std::endl;
     char buffer[512];
     ssize_t received = recv(ClientFd_, buffer, sizeof(buffer), 0);
     if (received <= 0)
@@ -90,7 +94,7 @@ void Client::ReceiveCommand()
     if(rc != std::string::npos)
         buffer_ = buffer_.substr(0, rc);
 
-    std::cout << "buffer_: " << buffer_ << std::endl;
+    // std::cout << "buffer_: " << buffer_ << std::endl;
 
     CheckCommand(buffer_);
 
@@ -98,15 +102,54 @@ void Client::ReceiveCommand()
 
 void Client::SendData()
 {
+    while(params_.empty() != true)
+        params_.pop_back();
+    params_.clear();
+    cmd_ = "";
+    trailing_ = "";
+    buffer_ = "";
+
     if(output_.empty())
         return ;
+
     send(ClientFd_, output_.data(), output_.size(), 0);
+    output_ = "";
+}
+
+void Client::SetCmdParamsTrailing(std::string buf)
+{
+    std::string tmp;
+    if (buf.find(' ') == std::string::npos)
+    {
+        cmd_ = buf;
+        return ;
+    }
+    else
+        cmd_ = buf.substr(0, buf.find(' '));
+
+    if(buf.find(':') == std::string::npos)
+        tmp = buf.substr(buf.find(' ') + 1, buf.size());
+    else
+    {
+        tmp = buf.substr(buf.find(' ') + 1, buf.find(':') - (buf.find(' ')+1));
+        trailing_ = buf.substr(buf.find(':'), buf.size());
+    }
+
+    std::istringstream stream(tmp);
+    std::string token;
+    while(stream >> token)
+        params_.push_back(token);
+
+    // PRINTING EVERYTHING CMD, PARAMS & TRAILING
+    std::cout << "Command: " << cmd_ << std::endl;
+    for(unsigned int i = 0; i < params_.size(); i++)
+        std::cout << "Param[" << i << "]: " << params_[i] << std::endl;
+    std::cout << "Trailing: " << trailing_ << std::endl;
 }
 
 void Client::CheckCommand(std::string buf)
 {
-    std::string cmd = buf.substr(0, buf.find(' '));
-    params_ = buf.substr(buf.find(' ')+1, buf.size());
+    SetCmdParamsTrailing(buf);
 
     std::string cmds[16] = { "PASS", "CAP", "NICK", "USER", "JOIN", "PING", "MODE",
         "NAMES", "PART", "PRIVMSG", "INVITE", "TOPIC", "KICK", "OPER", "NOTICE", "QUIT"};
@@ -117,7 +160,7 @@ void Client::CheckCommand(std::string buf)
 
     for(int i = 0; i < 16; i++)
     {
-        if(cmd == cmds[i])
+        if(cmd_ == cmds[i])
         {
             (this->*fp[i])();
             return ;
@@ -129,13 +172,16 @@ void Client::CheckCommand(std::string buf)
 
 void Client::PassCmd()
 {
-    // if user not connected check that PASS cmd is there
+    // CHECK IF USER ALREADY REGISTERED
+    // ERR_ALREADYREGISTERED
 
     if (params_.empty())
-        std::cout << "NO PARAMS";
-    if (pwd_ != params_)
     {
-
+        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        return ;
+    }
+    if (Server::getPassword() != params_[0])
+    {
         std::cout << "WRONG PWD" << std::endl;
     }
     // Check for multiple params, ...
@@ -153,39 +199,61 @@ void Client::NickCmd()
         output_ = Messages::ERR_NONICKNAMEGIVEN();
         return ;
     }
+    // ONLY 8 CHARACTERS ????
+    // CHECK FOR SOME SPECIAL SIGNS, ...
+    // if(params_.find(' ') != std::string::npos
+    //     || params_.find(',') != std::string::npos || params_.find('?') != std::string::npos
+    //     || params_.find('!') != std::string::npos || params_.find('@') != std::string::npos
+    //     || params_.find('.') != std::string::npos || params_[0] == '$' || params_[0] == ':'
+    //     || params_[0] == '&' || params_[0] == '#')
+    // {
+    //     output_ = Messages::ERR_ERRONEUSNICKNAME(nickname_, params_);
+    //     return ;
+    // }
 
-    // MUST BE UNIQUE
-    // IF NOT -> ERR_NICKNAMEINUSE
-    // ONLY 9 CHARACTERS ?
-    // ... ???
-    // CHECK THAT NICKNAME IS VALID BEFORE CHANGING!!!
-    std::cout << "HERE" << std::endl;
+    // PROBLEM WHEN CONNECTING WITH SAME NICK, SERVER CLOSES!!!!
+    // CHECK FOR UNIQUE NICKNAME
+    if(Server::IsUniqueNickname(params_[0]) == false)
+    {
+        output_ = Messages::ERR_NICKNAMEINUSE(params_[0]);
+        return;
+    }
     if (nickname_.empty() == true)
     {
-        nickname_ = params_;
+        nickname_ = params_[0];
         output_ = Messages::RPL_WELCOME(nickname_, username_);
     }
     else if (nickname_.empty() == false)
     {
-        output_ = Messages::RPL_NICKCHANGE(nickname_, params_, username_);
-        nickname_ = params_;
+        output_ = Messages::RPL_NICKCHANGE(nickname_, params_[0], username_);
+        nickname_ = params_[0];
     }
 }
 
 void Client::UserCmd(std::string param)
 {
-    // std::string command;
-    // std::string param1;
-    // std::string param2;
-    // std::string trailing;
-
-
-    // int arg = sscanf(param.c_str(), "%*s-%*s-%*s-%*s", command, param1, param2, trailing);
+   if (params_.size() != 3 || trailing_.empty())
+        Messages::ERR_NEEDMOREPARAMS(cmd_);
 }
 
+// DIFFERENCE BETWEEN TOPIC AND NAME???
 void Client::JoinCmd()
 {
-
+    if(params_.size() < 1)
+    {
+        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        return ;
+    }
+    if(params_[0][0] != '&' && params_[0][0] != '#')
+    {
+        // ADD ANOTHER ERROR MESSAGE HERE?
+        // INVALID CHANNEL NAME ???
+        output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
+        return ;
+    }
+    Server::AddChannel(params_[0]);
+    // CREATES CHANNEL
+    output_ = Messages::RPL_JOIN(nickname_, username_, params_[0]);
 }
 
 void Client::PingCmd()

@@ -6,11 +6,19 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/07/31 16:56:40 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/02 12:50:59 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+
+std::vector<pollfd> Server::PollStructs_;
+std::vector<Client*> Server::ConnectedClients_;
+std::vector<Channel*> Server::channels_;
+
+struct sockaddr_in Server::address_;
+int Server::serverSocket_;
+std::string Server::connection_pd_;
 
 Server::Server()
 {
@@ -41,9 +49,10 @@ Server::~Server()
     close(serverSocket_); //this is a c function, use another one from c++!!!
 }
 
-Server::Server(uint16_t port, std::string password) : port_(port), connection_pd_(password)
+Server::Server(uint16_t port, std::string password) : port_(port)
 {
     serverSocket_ = 0;
+    connection_pd_ = password;
     address_.sin_family = AF_INET;
     address_.sin_addr.s_addr = INADDR_ANY;
     address_.sin_port = port_;
@@ -114,7 +123,7 @@ void Server::acceptConnection()
     }
     pollfd tmp = {.revents = 0, .events = EVENTS, .fd = new_client_fd};
     PollStructs_.push_back(tmp);
-    ConnectedClients_.push_back(new Client(new_client_fd, connection_pd_));
+    ConnectedClients_.push_back(new Client(new_client_fd));
     std::cout << "Accept Connection" << std::endl;
 }
 
@@ -122,6 +131,24 @@ void Server::CheckForDisconnections()
 {
     
 }
+
+bool Server::IsUniqueNickname(std::string poss_nick)
+{
+    std::vector<Client*>::iterator it = ConnectedClients_.begin();
+    while(it != ConnectedClients_.end())
+    {
+        if(poss_nick == (*it)->get_nickname())
+            return(false);
+        it++;
+    }
+    return(true);   
+}
+
+void Server::AddChannel(std::string topic)
+{
+    channels_.push_back(new Channel(topic));
+}
+
 
 // // SETTER
 
