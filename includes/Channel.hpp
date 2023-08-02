@@ -31,7 +31,7 @@ class Channel
 		~Channel(); //Destructor
 
 		// SETTER
-		void set_topic(std::string& topic);
+		void set_topic(std::string topic);
 		void set_mode(std::string& mode);
 
 		// GETTER

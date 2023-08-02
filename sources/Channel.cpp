@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/02 15:31:32 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/02 16:53:43 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ Channel::~Channel()
 
 // SETTER
 
-void Channel::set_topic(std::string& topic)
+void Channel::set_topic(std::string topic)
 {
     topic_ = topic;
 }
