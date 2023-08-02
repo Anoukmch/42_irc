@@ -38,8 +38,9 @@ class Channel;
 class Server
 {
     public:
-		Server(uint16_t port, std::string password);
+		Server(std::string port, std::string password);
 
+		static bool ValidPort();
 		static void MainLoop();
 		static void server_setup();
 		static void acceptConnection();
@@ -66,7 +67,8 @@ class Server
 		};
 	private:
 		static int serverSocket_;
-		uint16_t port_;
+		static std::string portstring_;
+		static uint16_t port_;
 		static std::string connection_pd_;
 		static struct sockaddr_in address_;
 		static std::string mode_;

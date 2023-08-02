@@ -6,11 +6,14 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/02 12:50:59 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/02 14:09:48 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+
+std::string Server::portstring_;
+uint16_t Server::port_;
 
 std::vector<pollfd> Server::PollStructs_;
 std::vector<Client*> Server::ConnectedClients_;
@@ -19,7 +22,6 @@ std::vector<Channel*> Server::channels_;
 struct sockaddr_in Server::address_;
 int Server::serverSocket_;
 std::string Server::connection_pd_;
-
 Server::Server()
 {
     serverSocket_ = 0;
@@ -49,18 +51,40 @@ Server::~Server()
     close(serverSocket_); //this is a c function, use another one from c++!!!
 }
 
-Server::Server(uint16_t port, std::string password) : port_(port)
+Server::Server(std::string port, std::string password)
 {
-    serverSocket_ = 0;
+    portstring_ = port;
     connection_pd_ = password;
+    
+    serverSocket_ = 0;
     address_.sin_family = AF_INET;
     address_.sin_addr.s_addr = INADDR_ANY;
     address_.sin_port = port_;
     // INPUT HANDLING
 }
 
+bool Server::ValidPort()
+{
+    for(unsigned int i = 0; i < portstring_.size(); i++)
+    {
+        if(std::isdigit(portstring_[i]) == false)
+            return(false);
+    }
+    
+    int tmp = std::atoi(portstring_.c_str());
+    if (tmp <= 0 || tmp > 65536)
+        return(false);
+    port_ = htons(tmp);
+    return(true);
+}
+
 void Server::server_setup()
 {
+    if(ValidPort() == false)
+    {
+        std::cout << "Invalid Port ";
+        throw SetupError();
+    }
     if ((serverSocket_ = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
         std::cout << "Opening Socket ";

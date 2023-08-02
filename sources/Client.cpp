@@ -3,14 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2023/08/02 13:17:28 by amechain         ###   ########.fr       */
-=======
-/*   Updated: 2023/08/02 12:51:33 by jmatheis         ###   ########.fr       */
->>>>>>> 9b34d7e6f87e520af22b8487e799cc9ba2ac1f24
+/*   Updated: 2023/08/02 14:00:52 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,7 +226,7 @@ void Client::NickCmd()
     }
 }
 
-void Client::UserCmd(std::string param)
+void Client::UserCmd()
 {
    if (params_.size() != 3 || trailing_.empty())
         Messages::ERR_NEEDMOREPARAMS(cmd_);

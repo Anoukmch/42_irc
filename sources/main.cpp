@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
         std::cout << "Error: Wrong number of arguments" << std::endl;
     else
     {
-        Server serv(htons(std::atoi(argv[1])), argv[2]);
+        Server serv(argv[1], argv[2]);
         try
         {
             serv.server_setup();
