@@ -27,7 +27,7 @@
 class Channel
 {
     public:
-		Channel(std::string topic);
+		Channel(std::string name);
 		~Channel(); //Destructor
 
 		// SETTER
@@ -37,12 +37,14 @@ class Channel
 		// GETTER
 		std::string get_topic();
 		std::string get_mode();
+		std::string get_name();
 
 	private:
 		Channel(); //Default Constructor
 		Channel(const Channel &copyclass); //Copy Constructor
 		Channel& operator= (const Channel& copyop); //copy assignment operator
 
+		std::string name_;
 		std::string topic_;
 		std::string mode_;
 };

@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/02 14:00:52 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/02 16:01:54 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,7 @@ void Client::PassCmd()
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
     }
-    if (Server::getPassword() != params_[0])
+    if (Server::CheckPassword(params_[0]) == false)
     {
         std::cout << "WRONG PWD" << std::endl;
     }
@@ -284,7 +284,30 @@ void Client::InviteCmd()
 
 void Client::TopicCmd()
 {
-
+    if(params_.size() < 1 || params_.size() > 2)
+    {
+        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        return ;
+    }
+    Channel* c = Server::GetChannel(params_[0]);
+    if (c == nullptr)
+    {
+        output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
+        return ;
+    }
+    if(params_.size() == 1)
+    {
+        if(c->get_topic() == "")
+            output_ = Messages::RPL_NOTOPIC(nickname_, params_[0]);
+        else
+            output_ = Messages::RPL_TOPIC(nickname_, params_[0],c->get_topic());
+        return ;
+    }
+    else if(params_.size() == 2 && trailing_ == "")
+    {
+        c->set_topic(params_[1]);
+        output_ = Messages::RPL_TOPICCHANGE(nickname_, username_, params_[0], params_[1]);
+    }
 }
 
 void Client::KickCmd()

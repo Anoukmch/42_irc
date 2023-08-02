@@ -48,8 +48,9 @@ class Server
 
 
 		static bool IsUniqueNickname(std::string poss_nick);
-		static void AddChannel(std::string topic);
-
+		static void AddChannel(std::string name);
+		static bool CheckPassword(std::string pass);
+		static Channel* GetChannel(std::string name);
 		// void handleClient();
 		// void broadcastMessage();
 		// // SETTER
@@ -57,7 +58,7 @@ class Server
 		// void set_mode(std::string& mode);
 
 		// // GETTER
-		static std::string getPassword();
+		// static std::string getPassword();
 		// std::string get_mode();
 
 		~Server(); //Destructor

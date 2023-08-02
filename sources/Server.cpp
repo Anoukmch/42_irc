@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/02 14:14:33 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/02 15:33:14 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,9 +144,16 @@ bool Server::IsUniqueNickname(std::string poss_nick)
     return(true);   
 }
 
-void Server::AddChannel(std::string topic)
+void Server::AddChannel(std::string name)
 {
-    channels_.push_back(new Channel(topic));
+    channels_.push_back(new Channel(name));
+}
+
+bool Server::CheckPassword(std::string pass)
+{
+    if(connection_pd_ != pass)
+        return(false);
+    return(true);
 }
 
 
@@ -163,10 +170,20 @@ void Server::AddChannel(std::string topic)
 
 // // GETTER
 
-std::string Server::getPassword()
+Channel* Server::GetChannel(std::string name)
 {
-    return(connection_pd_);
+    for(unsigned int i = 0; i < channels_.size(); i++)
+    {
+        if(channels_[i]->get_name() == name)
+            return(channels_[i]);
+    }
+    return(nullptr);
 }
+
+// std::string Server::getPassword()
+// {
+//     return(connection_pd_);
+// }
 
 // std::string Server::get_topic()
 // {
