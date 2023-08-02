@@ -6,14 +6,11 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/02 14:12:31 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/02 14:14:33 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-
-std::string Server::portstring_;
-uint16_t Server::port_;
 
 std::vector<pollfd> Server::PollStructs_;
 std::vector<Client*> Server::ConnectedClients_;
@@ -51,9 +48,8 @@ Server::~Server()
     close(serverSocket_); //this is a c function, use another one from c++!!!
 }
 
-Server::Server(std::string port, std::string password)
+Server::Server(uint16_t port, std::string password) : port_(port)
 {
-    portstring_ = port;
     connection_pd_ = password;
     
     serverSocket_ = 0;
@@ -63,28 +59,8 @@ Server::Server(std::string port, std::string password)
     // INPUT HANDLING
 }
 
-bool Server::ValidPort()
-{
-    for(unsigned int i = 0; i < portstring_.size(); i++)
-    {
-        if(std::isdigit(portstring_[i]) == false)
-            return(false);
-    }
-
-    int tmp = std::atoi(portstring_.c_str());
-    if (tmp <= 0)
-        return(false);
-    port_ = htons(tmp);
-    return(true);
-}
-
 void Server::server_setup()
 {
-    if(ValidPort() == false)
-    {
-        std::cout << "Invalid Port ";
-        throw SetupError();
-    }
     if ((serverSocket_ = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
         std::cout << "Opening Socket ";
