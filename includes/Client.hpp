@@ -54,6 +54,7 @@ class Client
 		void CheckCommand(std::string buf);
 		// void PassCommand(std::string buf);
 
+		void SetCmdParamsTrailing(std::string buf);
 
 	private:
 		int ClientFd_;
@@ -67,7 +68,8 @@ class Client
 		std::string output_;
 
 		std::string cmd_;
-		std::string params_;
+		std::vector<std::string> params_;
+		std::string trailing_;
 
 
 		// COMMANDS

@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/01 16:12:04 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/02 12:36:15 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,16 +98,54 @@ void Client::ReceiveCommand()
 
 void Client::SendData()
 {
+    while(params_.empty() != true)
+        params_.pop_back();
+    params_.clear();
+    cmd_ = "";
+    trailing_ = "";
+    buffer_ = "";
+
     if(output_.empty())
         return ;
+
     send(ClientFd_, output_.data(), output_.size(), 0);
     output_ = "";
 }
 
+void Client::SetCmdParamsTrailing(std::string buf)
+{
+    std::string tmp;
+    if (buf.find(' ') == std::string::npos)
+    {
+        cmd_ = buf;
+        return ;
+    }
+    else
+        cmd_ = buf.substr(0, buf.find(' '));
+
+    if(buf.find(':') == std::string::npos)
+        tmp = buf.substr(buf.find(' ') + 1, buf.size());
+    else
+    {
+        tmp = buf.substr(buf.find(' ') + 1, buf.find(':') - (buf.find(' ')+1));
+        trailing_ = buf.substr(buf.find(':'), buf.size());
+    }
+
+    std::istringstream stream(tmp);
+    std::string token;
+    while(stream >> token)
+        params_.push_back(token);
+
+    // PRINTING EVERYTHING CMD, PARAMS & TRAILING
+    std::cout << "Command: " << cmd_ << std::endl;
+    for(unsigned int i = 0; i < params_.size(); i++)
+        std::cout << "Param[" << i << "]: " << params_[i] << std::endl;
+    std::cout << "Trailing: " << trailing_ << std::endl;    
+}
+
 void Client::CheckCommand(std::string buf)
 {
-    cmd_ = buf.substr(0, buf.find(' '));
-    params_ = buf.substr(buf.find(' ')+1, buf.size());
+    SetCmdParamsTrailing(buf);
 
     std::string cmds[16] = { "PASS", "CAP", "NICK", "USER", "JOIN", "PING", "MODE",
         "NAMES", "PART", "PRIVMSG", "INVITE", "TOPIC", "KICK", "OPER", "NOTICE", "QUIT"};
@@ -138,10 +176,8 @@ void Client::PassCmd()
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
     }
-        std::cout << "NO PARAMS";
-    if (pwd_ != params_)
+    if (pwd_ != params_[0])
     {
-        
         std::cout << "WRONG PWD" << std::endl;
     }
     // Check for multiple params, ...
@@ -173,20 +209,20 @@ void Client::NickCmd()
     
     // PROBLEM WHEN CONNECTING WITH SAME NICK, SERVER CLOSES!!!!
     // CHECK FOR UNIQUE NICKNAME
-    if(Server::IsUniqueNickname(params_) == false)
+    if(Server::IsUniqueNickname(params_[0]) == false)
     {
-        output_ = Messages::ERR_NICKNAMEINUSE(params_);
+        output_ = Messages::ERR_NICKNAMEINUSE(params_[0]);
         return;
     }
     if (nickname_.empty() == true)
     {
-        nickname_ = params_;
+        nickname_ = params_[0];
         output_ = Messages::RPL_WELCOME(nickname_, username_);
     }
     else if (nickname_.empty() == false)
     {
-        output_ = Messages::RPL_NICKCHANGE(nickname_, params_, username_);
-        nickname_ = params_;
+        output_ = Messages::RPL_NICKCHANGE(nickname_, params_[0], username_);
+        nickname_ = params_[0];
     }
 }
 
@@ -198,21 +234,21 @@ void Client::UserCmd()
 // DIFFERENCE BETWEEN TOPIC AND NAME???
 void Client::JoinCmd()
 {
-    if(params_.empty() == true)
+    if(params_.size() < 1)
     {
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
     }
-    if(params_[0] != '&' && params_[0] != '#')
+    if(params_[0][0] != '&' && params_[0][0] != '#')
     {
         // ADD ANOTHER ERROR MESSAGE HERE?
         // INVALID CHANNEL NAME ???
-        output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_);
+        output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
         return ;
     }
-    Server::AddChannel(params_);
+    Server::AddChannel(params_[0]);
     // CREATES CHANNEL
-    output_ = Messages::RPL_JOIN(nickname_, username_, params_);
+    output_ = Messages::RPL_JOIN(nickname_, username_, params_[0]);
 }
 
 void Client::PingCmd()
