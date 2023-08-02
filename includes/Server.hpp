@@ -56,7 +56,7 @@ class Server
 		// void set_mode(std::string& mode);
 
 		// // GETTER
-		std::string getPassword();
+		static std::string getPassword();
 		// std::string get_mode();
 
 		~Server(); //Destructor
@@ -67,7 +67,7 @@ class Server
 	private:
 		static int serverSocket_;
 		uint16_t port_;
-		std::string connection_pd_;
+		static std::string connection_pd_;
 		static struct sockaddr_in address_;
 		static std::string mode_;
 

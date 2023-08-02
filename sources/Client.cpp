@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/02 12:36:15 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/02 12:51:33 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,7 @@ void Client::PassCmd()
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
     }
-    if (pwd_ != params_[0])
+    if (Server::getPassword() != params_[0])
     {
         std::cout << "WRONG PWD" << std::endl;
     }

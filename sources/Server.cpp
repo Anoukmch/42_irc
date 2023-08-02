@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/01 16:09:19 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/02 12:50:59 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ std::vector<Channel*> Server::channels_;
 
 struct sockaddr_in Server::address_;
 int Server::serverSocket_;
-
+std::string Server::connection_pd_;
 
 Server::Server()
 {
@@ -49,9 +49,10 @@ Server::~Server()
     close(serverSocket_); //this is a c function, use another one from c++!!!
 }
 
-Server::Server(uint16_t port, std::string password) : port_(port), connection_pd_(password)
+Server::Server(uint16_t port, std::string password) : port_(port)
 {
     serverSocket_ = 0;
+    connection_pd_ = password;
     address_.sin_family = AF_INET;
     address_.sin_addr.s_addr = INADDR_ANY;
     address_.sin_port = port_;
