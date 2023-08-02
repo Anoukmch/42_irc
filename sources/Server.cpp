@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/02 14:09:48 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/02 14:12:31 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,9 +70,9 @@ bool Server::ValidPort()
         if(std::isdigit(portstring_[i]) == false)
             return(false);
     }
-    
+
     int tmp = std::atoi(portstring_.c_str());
-    if (tmp <= 0 || tmp > 65536)
+    if (tmp <= 0)
         return(false);
     port_ = htons(tmp);
     return(true);
