@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/01 13:07:02 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/02 13:17:28 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ std::string Client::get_username()
 
 void Client::ConnectionClosing()
 {
-    
+
 }
 
 // END OF MESSAGE ALWAYS \r\n ????
@@ -93,7 +93,7 @@ void Client::ReceiveCommand()
     std::cout << "buffer_: " << buffer_ << std::endl;
 
     CheckCommand(buffer_);
-    
+
 }
 
 void Client::SendData()
@@ -130,12 +130,12 @@ void Client::CheckCommand(std::string buf)
 void Client::PassCmd()
 {
     // if user not connected check that PASS cmd is there
-    
+
     if (params_.empty())
         std::cout << "NO PARAMS";
     if (pwd_ != params_)
     {
-        
+
         std::cout << "WRONG PWD" << std::endl;
     }
     // Check for multiple params, ...
@@ -143,7 +143,7 @@ void Client::PassCmd()
 
 void Client::CapCmd()
 {
-    
+
 }
 
 void Client::NickCmd()
@@ -172,67 +172,73 @@ void Client::NickCmd()
     }
 }
 
-void Client::UserCmd()
+void Client::UserCmd(std::string param)
 {
-    
+    // std::string command;
+    // std::string param1;
+    // std::string param2;
+    // std::string trailing;
+
+
+    // int arg = sscanf(param.c_str(), "%*s-%*s-%*s-%*s", command, param1, param2, trailing);
 }
 
 void Client::JoinCmd()
 {
-    
+
 }
 
 void Client::PingCmd()
 {
-    
+
 }
 
 void Client::ModeCmd()
 {
-    
+
 }
 
 void Client::NamesCmd()
 {
-    
+
 }
 
 void Client::PartCmd()
 {
-    
+
 }
 
 void Client::PrivmsgCmd()
 {
-    
+
 }
 
 void Client::InviteCmd()
 {
-    
+
 }
 
 void Client::TopicCmd()
 {
-    
+
 }
 
 void Client::KickCmd()
 {
-    
+
 }
 
 void Client::OperCmd()
 {
-    
+
 }
 
 void Client::NoticeCmd()
 {
-    
+
 }
 
 void Client::QuitCmd()
 {
-    
+
 }
