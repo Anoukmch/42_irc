@@ -46,6 +46,12 @@ std::string Messages::RPL_JOIN(const std::string& nick, const std::string& user,
 	return std::string(":") + nick + "!" + user + "@" + HOST + " JOIN " + channel_name + " * :" + user + "\r\n";
 }
 
+std::string Messages::RPL_JOIN_WITHKEY(const std::string& nick, const std::string& user, const std::string& channel_name, std::string key)
+{
+	std::cout << GREEN << nick << " joined channel " << channel_name << " with key " << key << "!" << RESET << "\n";
+	return std::string(":") + nick + "!" + user + "@" + HOST + " JOIN " + channel_name + " * :" + user + "\r\n";
+}
+
 std::string Messages::RPL_PING(const std::string& nick, const std::string& token)
 {
 	std::cout << GREEN << nick << " pinged this server! " << RESET << "\n";

@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/03 12:25:24 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/03 15:23:12 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,11 @@ void Channel::set_mode(std::string& mode)
     mode_ = mode;
 }
 
+void Channel::set_key(std::string key)
+{
+    key_ = key;
+}
+
 // GETTER
 
 std::string Channel::get_name()
@@ -73,6 +78,11 @@ std::string Channel::get_topic()
 std::string Channel::get_mode()
 {
     return(mode_);
+}
+
+std::string Channel::get_key()
+{
+    return(key_);
 }
 
 // OTHER
