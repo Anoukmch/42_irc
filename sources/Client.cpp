@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/03 12:04:20 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/03 12:26:31 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,11 @@ std::string Client::get_nickname()
 std::string Client::get_username()
 {
     return(username_);
+}
+
+int Client::get_state()
+{
+    return(ClientState_);
 }
 
 // OTHER
@@ -210,7 +215,7 @@ void Client::NickCmd()
 
     // PROBLEM WHEN CONNECTING WITH SAME NICK, SERVER CLOSES!!!!
     // CHECK FOR UNIQUE NICKNAME
-    else if(Server::IsUniqueNickname(params_[0]) == false)
+    else if(server_->IsUniqueNickname(params_[0]) == false)
         output_ = Messages::ERR_NICKNAMEINUSE(params_[0]);
     else
     {
@@ -351,5 +356,26 @@ void Client::NoticeCmd()
 
 void Client::QuitCmd()
 {
+    if(params_.size() > 1)
+    {
+        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        return ;
+    }
 
+    std::vector<Channel*>::iterator it = channels_.begin();
+    while(it != channels_.end())
+    {
+        (*it)->RemoveClientFromChannel(this);
+        it++;
+    }
+    if(params_.size() == 0 && trailing_ == "")
+    {
+        output_ = Messages::RPL_QUIT(nickname_, username_);
+        ClientState_ = DISCONNECTED;
+    }
+    else
+    {
+        // RESPONSE WITH MESSAGE???
+        // output_ = Messages::
+    }
 }

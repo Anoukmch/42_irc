@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/03 12:01:09 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/03 12:14:21 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,10 +122,19 @@ void Server::acceptConnection()
 
 void Server::CheckForDisconnections()
 {
-    for(unsigned int i = 0; i < ConnectedClients_.size(), i++)
+    if(ConnectedClients_.empty() == true)
+        return ;
+    
+    std::vector<Client*>::iterator it = ConnectedClients_.begin();
+    while(it != ConnectedClients_.end())
     {
-        if(ConnectedClients_[i]->)
+        if((*it)->get_state() == 2) //2 is DISCONNECTED
+            it = ConnectedClients_.erase(it);
+        else
+            it++;
+        
     }
+    // CHECK AS WELL FOR CHANNELS
 }
 
 bool Server::IsUniqueNickname(std::string poss_nick)

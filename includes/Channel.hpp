@@ -43,6 +43,7 @@ class Channel
 		std::string get_name();
 
 		void AddClientToChannel(Client* c);
+		void RemoveClientFromChannel(Client* c);
 	private:
 		Channel(); //Default Constructor
 		Channel(const Channel &copyclass); //Copy Constructor

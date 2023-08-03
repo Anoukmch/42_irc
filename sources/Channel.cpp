@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/03 11:51:19 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/03 12:25:24 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,4 +80,16 @@ std::string Channel::get_mode()
 void Channel::AddClientToChannel(Client* c)
 {
     clients_.push_back(c);
+}
+
+void Channel::RemoveClientFromChannel(Client* c)
+{
+    std::vector<Client*>::iterator it = clients_.begin();
+    while(it != clients_.end())
+    {
+        if(c == *it) //2 is DISCONNECTED
+            it = clients_.erase(it);
+        else
+            it++;
+    }
 }
