@@ -94,6 +94,12 @@ std::string Messages::RPL_QUIT(const std::string& nick, const std::string& user)
 	return std::string(":") + nick + "!" + user + "@" + HOST + " " + "QUIT :" + "Goodbye!" + "\r\n";
 }
 
+std::string Messages::RPL_QUIT_MESSAGE(const std::string& nick, const std::string& user, std::string mess)
+{
+	std::cout << GREEN << nick << " left the server: " << mess << RESET << "\n";
+	return std::string(":") + nick + "!" + user + "@" + HOST + " " + "QUIT :" + "Goodbye!" + "\r\n";
+}
+
 std::string Messages::RPL_BOT(const std::string& nick, const std::string& channel_name, const std::string& msg)
 {
 	std::cout << GREEN << nick << " requested a bot on " << channel_name << "!" << RESET << "\n";

@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/03 12:14:21 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/03 13:27:32 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,15 +125,18 @@ void Server::CheckForDisconnections()
     if(ConnectedClients_.empty() == true)
         return ;
     
-    std::vector<Client*>::iterator it = ConnectedClients_.begin();
-    while(it != ConnectedClients_.end())
+    for(unsigned int i = 1; i < ConnectedClients_.size(); i++)
     {
-        if((*it)->get_state() == 2) //2 is DISCONNECTED
-            it = ConnectedClients_.erase(it);
+        if(ConnectedClients_[i]->get_state() == 2)
+        {
+            PollStructs_.erase(PollStructs_.begin()+(i+1));
+            delete ConnectedClients_[i];
+            ConnectedClients_.erase(ConnectedClients_.begin());
+        }
         else
-            it++;
-        
+            i++;
     }
+
     // CHECK AS WELL FOR CHANNELS
 }
 

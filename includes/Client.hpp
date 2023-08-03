@@ -49,6 +49,7 @@ class Client
 		std::string get_nickname();
 		std::string get_username();
 		int get_state();
+		int get_fd();
 
 		// OTHER
 		void ConnectionClosing();

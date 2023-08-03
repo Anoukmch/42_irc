@@ -28,6 +28,7 @@ class Messages
 		static std::string RPL_TOPICCHANGE(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& topic);
 		static std::string RPL_KICK(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target, const std::string reason);
 		static std::string RPL_QUIT(const std::string& nick, const std::string& user);
+		static std::string RPL_QUIT_MESSAGE(const std::string& nick, const std::string& user, std::string mess);
 		static std::string RPL_BOT(const std::string& nick, const std::string& channel_name, const std::string& msg);
 		static std::string RPL_INVITED(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target);
 

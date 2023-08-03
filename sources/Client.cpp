@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/03 12:26:31 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/03 13:20:56 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,11 @@ int Client::get_state()
     return(ClientState_);
 }
 
+int Client::get_fd()
+{
+    return(ClientFd_);
+}
+
 // OTHER
 
 void Client::ConnectionClosing()
@@ -92,15 +97,18 @@ void Client::ReceiveCommand()
         return ;
     buffer[received] = '\0';
     buffer_ = std::string(buffer);
-
+    
+    // FOR WEECHAT
     size_t rc = buffer_.find("\r\n");
     if(rc != std::string::npos)
         buffer_ = buffer_.substr(0, rc);
 
-    // std::cout << "buffer_: " << buffer_ << std::endl;
+    // FOR NC
+    size_t nl = buffer_.find("\n");
+    if(nl != std::string::npos)
+        buffer_ = buffer_.substr(0, nl);
 
     CheckCommand(buffer_);
-
 }
 
 void Client::SendData()
@@ -121,7 +129,6 @@ void Client::SendData()
 
 void Client::SetCmdParamsTrailing(std::string buf)
 {
-    std::cout << "BUF: " << buf << std::endl;
     std::string tmp;
     if (buf.find(' ') == std::string::npos)
     {
@@ -356,26 +363,28 @@ void Client::NoticeCmd()
 
 void Client::QuitCmd()
 {
-    if(params_.size() > 1)
+    if(params_.size() > 0)
     {
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
     }
 
-    std::vector<Channel*>::iterator it = channels_.begin();
-    while(it != channels_.end())
+    if(channels_.empty() == false)
     {
-        (*it)->RemoveClientFromChannel(this);
-        it++;
+        std::vector<Channel*>::iterator it = channels_.begin();
+        while(it != channels_.end())
+        {
+            (*it)->RemoveClientFromChannel(this);
+            it++;
+        }
     }
-    if(params_.size() == 0 && trailing_ == "")
+
+    if(params_.size() == 0)
     {
-        output_ = Messages::RPL_QUIT(nickname_, username_);
+        if (trailing_ == "")
+            output_ = Messages::RPL_QUIT(nickname_, username_);
+        else
+            output_ = Messages::RPL_QUIT_MESSAGE(nickname_, username_, trailing_);
         ClientState_ = DISCONNECTED;
-    }
-    else
-    {
-        // RESPONSE WITH MESSAGE???
-        // output_ = Messages::
     }
 }
