@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/02 15:33:14 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/03 09:53:35 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ Server::~Server()
 Server::Server(uint16_t port, std::string password) : port_(port)
 {
     connection_pd_ = password;
-    
+
     serverSocket_ = 0;
     address_.sin_family = AF_INET;
     address_.sin_addr.s_addr = INADDR_ANY;
@@ -85,7 +85,7 @@ void Server::server_setup()
 
     pollfd tmp = {.revents = 0, .events = EVENTS, .fd = serverSocket_};
     PollStructs_.push_back(tmp);
-    
+
 }
 
 void Server::MainLoop()
@@ -129,7 +129,7 @@ void Server::acceptConnection()
 
 void Server::CheckForDisconnections()
 {
-    
+
 }
 
 bool Server::IsUniqueNickname(std::string poss_nick)
@@ -141,7 +141,7 @@ bool Server::IsUniqueNickname(std::string poss_nick)
             return(false);
         it++;
     }
-    return(true);   
+    return(true);
 }
 
 void Server::AddChannel(std::string name)

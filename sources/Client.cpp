@@ -6,11 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2023/08/03 09:17:14 by amechain         ###   ########.fr       */
-=======
-/*   Updated: 2023/08/02 17:29:03 by jmatheis         ###   ########.fr       */
->>>>>>> 8fcbbbcd4d0774940ebae412fafa1f0cee9caee9
+/*   Updated: 2023/08/03 10:36:07 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +76,7 @@ void Client::ConnectionClosing()
 }
 
 // END OF MESSAGE ALWAYS \r\n ????
+// Check if command is wrong, example "PASSpwd" (no space between command and param)
 void Client::ReceiveCommand()
 {
     // std::cout << "Receive Command" << std::endl;
@@ -173,20 +170,18 @@ void Client::CheckCommand(std::string buf)
 
 void Client::PassCmd()
 {
-    // CHECK IF USER ALREADY REGISTERED
-    // ERR_ALREADYREGISTERED
-
-    if (params_.empty())
+    if ( ClientState_ >= REGISTERED) // What if password already validated but not yet registered?
+        output_ = Messages::ERR_ALREADYREGISTRED();
+    else if (params_.empty())
     {
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
     }
-    if (Server::CheckPassword(params_[0]) == false)
-    {
-        std::cout << "WRONG PWD" << std::endl;
-    }
+    else if (Server::CheckPassword(params_[0]) == false)
+        output_ = Messages::ERR_PASSWDMISMATCH();
     // Check for multiple params, ...
-    ClientState_ = PASS;
+    else
+        ClientState_ = PASS;
 }
 
 void Client::CapCmd()
@@ -217,18 +212,19 @@ void Client::NickCmd()
     else if(Server::IsUniqueNickname(params_[0]) == false)
         output_ = Messages::ERR_NICKNAMEINUSE(params_[0]);
     else if (nickname_.empty() == false)
-        output_ = Messages::RPL_NICKCHANGE(nickname_, params_[0], username_);
+        output_ = Messages::RPL_NICKCHANGE(nickname_, params_[0], username_); // CHANGE
     else if (ClientState_ == PASS && !username_.empty())
     {
         ClientState_ = REGISTERED;
         output_ = Messages::RPL_WELCOME(nickname_, username_);
     }
-    nickname_ = params_[0];
+    if(params_.empty() == false)
+        nickname_ = params_[0];
 }
 
 void Client::UserCmd() // How to change your username afterwards ? Bc USER is just at the begining
 {
-    if (params_.size() != 3 || trailing_.empty())
+    if (params_.size() != 3 || trailing_.empty()) // Does the trailing need to start with ":" ?
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
     else if ((params_[1] != "0" && params_[1] != "*")
         || (params_[2] != "0" && params_[2] != "*"))
