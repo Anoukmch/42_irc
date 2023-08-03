@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/03 16:00:28 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/03 16:12:36 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -256,7 +256,7 @@ void Client::UserCmd() // How to change your username afterwards ? Bc USER is ju
     username_ = trailing_;
 }
 
-// DIFFERENCE BETWEEN TOPIC AND NAME???
+// CHANNEL = FULL?, TOO MANY CHANNELS?, INVITEONLY CHANNEL?
 void Client::JoinCmd()
 {
     if(params_.size() < 1 || params_.size() > 2)
@@ -264,48 +264,42 @@ void Client::JoinCmd()
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
     }
-    if(params_[0][0] != '&' && params_[0][0] != '#')
-    {
-        output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
-        return ;
-    }
-    if(params_.size() == 1)
-    {
-        std::stringstream name(params_[0]);
-        std::string token;
-        while(getline(name, token, ','))
-        {
-            server_->AddChannel(params_[0]);
-            server_->GetLastChannel()->AddClientToChannel(this);
-            channels_.push_back((server_->GetLastChannel()));
-            output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token)); //MULTIPLE MESSAGES!!!!
-        }
-    }
-    else if(params_.size() == 2)
+    std::vector<std::string>::iterator it;
+    std::vector<std::string>keys;
+    if(params_.size() == 2)
     {
         std::stringstream key(params_[1]);
         std::string ke;
-        std::vector<std::string>keys;
         while(getline(key, ke, ','))
             keys.push_back(ke);
-        std::stringstream name(params_[0]);
-        std::string token;
-        std::vector<std::string>::iterator it = keys.begin();
-        while(getline(name, token, ','))
-        {
-            server_->AddChannel(params_[0]);
-            server_->GetLastChannel()->AddClientToChannel(this);
-            channels_.push_back((server_->GetLastChannel()));
-            if (it != keys.end())
-            {
-                server_->GetLastChannel()->set_key(*it);
-                output_ = output_.append(Messages::RPL_JOIN_WITHKEY(nickname_, username_, token, *it)); //MULTIPLE MESSAGES!!!!
-                it++;
-            }
-            else
-                output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token)); //MULTIPLE MESSAGES!!!!
-        }        
+        it = keys.begin();
     }
+    std::stringstream name(params_[0]);
+    std::string token;
+    while(getline(name, token, ','))
+    {
+        if(token[0] != '&' && token[0] != '#')
+        {
+            output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
+            return ;
+        }            
+    }
+    std::stringstream name2(params_[0]);
+    while(getline(name2, token, ','))
+    {
+        std::cout << "HERE" << std::endl;
+        server_->AddChannel(params_[0]);
+        server_->GetLastChannel()->AddClientToChannel(this);
+        channels_.push_back((server_->GetLastChannel()));
+        if (keys.empty()== false && it != keys.end())
+        {
+            server_->GetLastChannel()->set_key(*it);
+            output_ = output_.append(Messages::RPL_JOIN_WITHKEY(nickname_, username_, token, *it)); //MULTIPLE MESSAGES!!!!
+            it++;
+        }
+        else
+            output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token)); //MULTIPLE MESSAGES!!!!
+    } 
 }
 
 void Client::PingCmd()
