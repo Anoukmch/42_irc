@@ -40,17 +40,19 @@ class Server
     public:
 		Server(uint16_t port, std::string password);
 
-		static bool ValidPort();
-		static void MainLoop();
-		static void server_setup();
-		static void acceptConnection();
-		static void CheckForDisconnections();
+		bool ValidPort();
+		void MainLoop();
+		void server_setup();
+		void acceptConnection();
+		void CheckForDisconnections();
 
 
-		static bool IsUniqueNickname(std::string poss_nick);
-		static void AddChannel(std::string name);
-		static bool CheckPassword(std::string pass);
-		static Channel* GetChannel(std::string name);
+		bool IsUniqueNickname(std::string poss_nick);
+		void AddChannel(std::string name);
+		bool CheckPassword(std::string pass);
+		Channel* GetChannel(std::string name);
+		Channel* GetLastChannel();
+
 		// void handleClient();
 		// void broadcastMessage();
 		// // SETTER
@@ -67,18 +69,16 @@ class Server
 				virtual const char* what() const throw();
 		};
 	private:
-		static int serverSocket_;
+		int serverSocket_;
 		uint16_t port_;
-		static std::string connection_pd_;
-		static struct sockaddr_in address_;
-		static std::string mode_;
+		std::string connection_pd_;
+		struct sockaddr_in address_;
+		std::string mode_;
+		std::vector<pollfd>PollStructs_;
 
-		static std::vector<pollfd>PollStructs_;
-		static std::vector<Client*>ConnectedClients_;
+		std::vector<Client*>ConnectedClients_;
+		std::vector<Channel*>channels_;
 
-		static std::vector<Channel*>channels_;
-
-		// std::vector<Client> clients_;
 		Server(); //Default Constructor
 		Server(const Server &copyclass); //Copy Constructor
 		Server& operator= (const Server& copyop); //copy assignment operator

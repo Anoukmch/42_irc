@@ -22,7 +22,10 @@
 #define YELLOW      "\033[33m"              /* Yellow */
 #define PURPLE      "\033[35m"              /* Purple */
 
+# include "Client.hpp"
 # include "Server.hpp"
+
+class Client;
 
 class Channel
 {
@@ -39,10 +42,13 @@ class Channel
 		std::string get_mode();
 		std::string get_name();
 
+		void AddClientToChannel(Client* c);
 	private:
 		Channel(); //Default Constructor
 		Channel(const Channel &copyclass); //Copy Constructor
 		Channel& operator= (const Channel& copyop); //copy assignment operator
+
+		std::vector<Client*> clients_;
 
 		std::string name_;
 		std::string topic_;

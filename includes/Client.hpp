@@ -20,6 +20,7 @@
 # include <sys/socket.h>
 
 #include "Server.hpp"
+#include "Channel.hpp"
 #include "Messages.hpp"
 
 #define RESET       "\033[0m"               /* Reset */
@@ -28,13 +29,14 @@
 #define YELLOW      "\033[33m"              /* Yellow */
 #define PURPLE      "\033[35m"              /* Purple */
 
+class Server;
 
 class Client
 {
 
     public:
 		Client(); //Default Constructor
-		Client(int fd);
+		Client(int fd, Server* server);
 		Client(const Client &copyclass); //Copy Constructor
 		Client& operator= (const Client& copyop); //copy assignment operator
 		~Client(); //Destructor
@@ -46,6 +48,7 @@ class Client
 		// GETTER
 		std::string get_nickname();
 		std::string get_username();
+		int get_clientstate();
 
 		// OTHER
 		void ConnectionClosing();
@@ -60,7 +63,8 @@ class Client
 		enum State
 		{
 			PASS,
-			REGISTERED
+			REGISTERED,
+			DISCONNECTED
 		};
 
 	private:
@@ -79,6 +83,8 @@ class Client
 		std::vector<std::string> params_;
 		std::string trailing_;
 
+		std::vector<Channel*> channels_;
+		Server* server_;
 
 		// COMMANDS
 		void PassCmd();

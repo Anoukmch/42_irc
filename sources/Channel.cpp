@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/02 16:53:43 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/03 11:51:19 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,3 +75,9 @@ std::string Channel::get_mode()
     return(mode_);
 }
 
+// OTHER
+
+void Channel::AddClientToChannel(Client* c)
+{
+    clients_.push_back(c);
+}

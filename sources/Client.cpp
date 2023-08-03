@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/03 10:36:07 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/03 11:56:21 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,13 @@ Client::Client()
     std::cout << "Default Constructor" << std::endl;
 }
 
-Client::Client(int fd) : ClientFd_(fd), ClientState_(-1)
+Client::Client(int fd, Server* server) : ClientFd_(fd), ClientState_(-1), server_(server)
 {
     std::cout << "Constructor" << std::endl;
 }
 
-Client::Client(const Client &copyclass)
+Client::Client(const Client &copyclass) : ClientFd_(copyclass.ClientFd_)
+        , ClientState_(copyclass.ClientState_), server_(copyclass.server_)
 {
     std::cout << "Copy Constructor" << std::endl;
     *this = copyclass;
@@ -177,7 +178,7 @@ void Client::PassCmd()
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
     }
-    else if (Server::CheckPassword(params_[0]) == false)
+    else if (server_->CheckPassword(params_[0]) == false)
         output_ = Messages::ERR_PASSWDMISMATCH();
     // Check for multiple params, ...
     else
@@ -209,7 +210,7 @@ void Client::NickCmd()
     // CHECK FOR UNIQUE NICKNAME
     else if (ClientState_ < PASS)
         output_ = Messages::ERR_NOTREGISTERED(cmd_);
-    else if(Server::IsUniqueNickname(params_[0]) == false)
+    else if(server_->IsUniqueNickname(params_[0]) == false)
         output_ = Messages::ERR_NICKNAMEINUSE(params_[0]);
     else if (nickname_.empty() == false)
         output_ = Messages::RPL_NICKCHANGE(nickname_, params_[0], username_); // CHANGE
@@ -251,12 +252,15 @@ void Client::JoinCmd()
     }
     if(params_[0][0] != '&' && params_[0][0] != '#')
     {
-        // ADD ANOTHER ERROR MESSAGE HERE?
-        // INVALID CHANNEL NAME ???
+        // ADD ANOTHER ERROR MESSAGE HERE? INVALID CHANNEL NAME?
         output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
         return ;
     }
-    Server::AddChannel(params_[0]);
+    // ADD CHANNEL TO CLIENT LIST
+    // ADD CLIENT TO CHANNEL LIST
+    server_->AddChannel(params_[0]);
+    server_->GetLastChannel()->AddClientToChannel(this);
+    channels_.push_back((server_->GetLastChannel()));
     // CREATES CHANNEL
     output_ = Messages::RPL_JOIN(nickname_, username_, params_[0]);
 }
@@ -299,7 +303,7 @@ void Client::TopicCmd()
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
     }
-    Channel* c = Server::GetChannel(params_[0]);
+    Channel* c = server_->GetChannel(params_[0]);
     if (c == nullptr)
     {
         output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
