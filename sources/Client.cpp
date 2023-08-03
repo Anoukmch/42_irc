@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/03 11:56:21 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/03 12:04:20 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,7 +192,9 @@ void Client::CapCmd()
 
 void Client::NickCmd()
 {
-    if(params_.empty() == true)
+    if (ClientState_ < PASS)
+        output_ = Messages::ERR_NOTREGISTERED(cmd_);
+    else if(params_.empty() == true)
         output_ = Messages::ERR_NONICKNAMEGIVEN();
     // ONLY 8 CHARACTERS ????
     // CHECK FOR SOME SPECIAL SIGNS, ...
@@ -208,19 +210,19 @@ void Client::NickCmd()
 
     // PROBLEM WHEN CONNECTING WITH SAME NICK, SERVER CLOSES!!!!
     // CHECK FOR UNIQUE NICKNAME
-    else if (ClientState_ < PASS)
-        output_ = Messages::ERR_NOTREGISTERED(cmd_);
-    else if(server_->IsUniqueNickname(params_[0]) == false)
+    else if(Server::IsUniqueNickname(params_[0]) == false)
         output_ = Messages::ERR_NICKNAMEINUSE(params_[0]);
-    else if (nickname_.empty() == false)
-        output_ = Messages::RPL_NICKCHANGE(nickname_, params_[0], username_); // CHANGE
-    else if (ClientState_ == PASS && !username_.empty())
+    else
     {
-        ClientState_ = REGISTERED;
-        output_ = Messages::RPL_WELCOME(nickname_, username_);
-    }
-    if(params_.empty() == false)
+        if (nickname_.empty() == false)
+            output_ = Messages::RPL_NICKCHANGE(nickname_, params_[0], username_);
+        else if (ClientState_ == PASS && !username_.empty())
+        {
+            ClientState_ = REGISTERED;
+            output_ = Messages::RPL_WELCOME(nickname_, username_);
+        }
         nickname_ = params_[0];
+    }
 }
 
 void Client::UserCmd() // How to change your username afterwards ? Bc USER is just at the begining
@@ -229,7 +231,7 @@ void Client::UserCmd() // How to change your username afterwards ? Bc USER is ju
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
     else if ((params_[1] != "0" && params_[1] != "*")
         || (params_[2] != "0" && params_[2] != "*"))
-        output_ = Messages::ERR_UMODEUNKNOWNFLAG(cmd_);
+        output_ = Messages::ERR_UMODEUNKNOWNFLAG(nickname_); // Space
     else if (ClientState_ < PASS) // Is PASS = 0 ?
         output_ = Messages::ERR_NOTREGISTERED(cmd_);
     else if (!nickname_.empty())
