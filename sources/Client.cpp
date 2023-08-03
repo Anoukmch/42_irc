@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/02 16:07:07 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/03 09:17:14 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,10 +192,7 @@ void Client::CapCmd()
 void Client::NickCmd()
 {
     if(params_.empty() == true)
-    {
         output_ = Messages::ERR_NONICKNAMEGIVEN();
-        return ;
-    }
     // ONLY 8 CHARACTERS ????
     // CHECK FOR SOME SPECIAL SIGNS, ...
     // if(params_.find(' ') != std::string::npos
@@ -210,40 +207,37 @@ void Client::NickCmd()
 
     // PROBLEM WHEN CONNECTING WITH SAME NICK, SERVER CLOSES!!!!
     // CHECK FOR UNIQUE NICKNAME
-    if (ClientState_ != PASS)
-         output_ = Messages::ERR_NOTREGISTERED(cmd_);
-    if(Server::IsUniqueNickname(params_[0]) == false)
-    {
+    else if (ClientState_ < PASS)
+        output_ = Messages::ERR_NOTREGISTERED(cmd_);
+    else if(Server::IsUniqueNickname(params_[0]) == false)
         output_ = Messages::ERR_NICKNAMEINUSE(params_[0]);
-        return;
-    }
-    if (nickname_.empty() == true)
-    {
-        nickname_ = params_[0];
-        output_ = Messages::RPL_WELCOME(nickname_, username_);
-    }
     else if (nickname_.empty() == false)
-    {
         output_ = Messages::RPL_NICKCHANGE(nickname_, params_[0], username_);
-        nickname_ = params_[0];
-    }
-    if (ClientState_ == PASS)
-        ClientState_ == REGISTERED;
-    else if (ClientState_ == REGISTERED)
+    else if (ClientState_ == PASS && !username_.empty())
+    {
+        ClientState_ = REGISTERED;
         output_ = Messages::RPL_WELCOME(nickname_, username_);
+    }
+    nickname_ = params_[0];
 }
 
-void Client::UserCmd()
+void Client::UserCmd() // How to change your username afterwards ? Bc USER is just at the begining
 {
     if (params_.size() != 3 || trailing_.empty())
-         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
-    if (ClientState_ != PASS)
-         output_ = Messages::ERR_NOTREGISTERED(cmd_);
-    username_ = trailing_;
-    if (ClientState_ == PASS)
-        ClientState_ == REGISTERED;
-    else if (ClientState_ == REGISTERED)
+        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+    else if ((params_[1] != "0" && params_[1] != "*")
+        || (params_[2] != "0" && params_[2] != "*"))
+        output_ = Messages::ERR_UMODEUNKNOWNFLAG(cmd_);
+    else if (ClientState_ < PASS) // Is PASS = 0 ?
+        output_ = Messages::ERR_NOTREGISTERED(cmd_);
+    else if (!nickname_.empty())
+    {
+        ClientState_ = REGISTERED;
         output_ = Messages::RPL_WELCOME(nickname_, username_);
+    }
+    else if ( ClientState_ >= REGISTERED)
+        output_ = Messages::ERR_ALREADYREGISTRED();
+    username_ = trailing_;
 }
 
 // DIFFERENCE BETWEEN TOPIC AND NAME???
