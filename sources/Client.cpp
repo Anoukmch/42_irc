@@ -6,7 +6,11 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2023/08/03 09:17:14 by amechain         ###   ########.fr       */
+=======
+/*   Updated: 2023/08/02 17:29:03 by jmatheis         ###   ########.fr       */
+>>>>>>> 8fcbbbcd4d0774940ebae412fafa1f0cee9caee9
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +118,7 @@ void Client::SendData()
 
 void Client::SetCmdParamsTrailing(std::string buf)
 {
+    std::cout << "BUF: " << buf << std::endl;
     std::string tmp;
     if (buf.find(' ') == std::string::npos)
     {
@@ -128,7 +133,7 @@ void Client::SetCmdParamsTrailing(std::string buf)
     else
     {
         tmp = buf.substr(buf.find(' ') + 1, buf.find(':') - (buf.find(' ')+1));
-        trailing_ = buf.substr(buf.find(':'), buf.size());
+        trailing_ = buf.substr(buf.find(':'), buf.size()-(buf.find(':')));
     }
 
     std::istringstream stream(tmp);
@@ -186,7 +191,7 @@ void Client::PassCmd()
 
 void Client::CapCmd()
 {
-
+    output_ = Messages::RPL_CAP();
 }
 
 void Client::NickCmd()
@@ -292,7 +297,8 @@ void Client::InviteCmd()
 
 void Client::TopicCmd()
 {
-    if(params_.size() < 1 || params_.size() > 2)
+    if(params_.size() < 1 || params_.size() > 1
+        || (params_.size() != 1 && trailing_ != ""))
     {
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
@@ -305,16 +311,24 @@ void Client::TopicCmd()
     }
     if(params_.size() == 1)
     {
-        if(c->get_topic() == "")
-            output_ = Messages::RPL_NOTOPIC(nickname_, params_[0]);
-        else
-            output_ = Messages::RPL_TOPIC(nickname_, params_[0],c->get_topic());
-        return ;
-    }
-    else if(params_.size() == 2 && trailing_ == "")
-    {
-        c->set_topic(params_[1]);
-        output_ = Messages::RPL_TOPICCHANGE(nickname_, username_, params_[0], params_[1]);
+        if(trailing_ == "")
+        {
+            if(c->get_topic() == "")
+                output_ = Messages::RPL_NOTOPIC(nickname_, params_[0]);
+            else
+                output_ = Messages::RPL_TOPIC(nickname_, params_[0], c->get_topic());
+        }
+        else if(trailing_ == ":")
+        {
+            std::string clear = "";
+            c->set_topic(clear);
+            output_ = Messages::RPL_TOPICCHANGE(nickname_, username_, params_[0], clear);
+        }
+        else if(trailing_.size() > 1)
+        {
+            c->set_topic(&trailing_[1]);
+            output_ = Messages::RPL_TOPICCHANGE(nickname_, username_, params_[0], &trailing_[1]);
+        }
     }
 }
 
