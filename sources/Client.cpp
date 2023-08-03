@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/03 16:12:36 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/03 16:31:20 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -257,6 +257,8 @@ void Client::UserCmd() // How to change your username afterwards ? Bc USER is ju
 }
 
 // CHANNEL = FULL?, TOO MANY CHANNELS?, INVITEONLY CHANNEL?
+// Channel already exists, channel has key that user doesn't know
+//  /JOIN 0 ->leave all channels
 void Client::JoinCmd()
 {
     if(params_.size() < 1 || params_.size() > 2)
@@ -280,6 +282,7 @@ void Client::JoinCmd()
     {
         if(token[0] != '&' && token[0] != '#')
         {
+            // OTHER ERROR: INVALID CHANNEL NAME?
             output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
             return ;
         }            
@@ -290,7 +293,9 @@ void Client::JoinCmd()
         std::cout << "HERE" << std::endl;
         server_->AddChannel(params_[0]);
         server_->GetLastChannel()->AddClientToChannel(this);
+        server_->GetLastChannel()->set_inviteonlyflag(false);
         channels_.push_back((server_->GetLastChannel()));
+        
         if (keys.empty()== false && it != keys.end())
         {
             server_->GetLastChannel()->set_key(*it);
@@ -317,9 +322,30 @@ void Client::NamesCmd()
 
 }
 
+// PART MESSAGE
+// ERR_NOSUCHCHANNEL
+// ERR_NOTONCHANNEL
+// leave other channels if one is wrong???
 void Client::PartCmd()
 {
-
+    if(params_.size() > 1)
+    {
+        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);        
+    }
+    else
+    {
+        // std::stringstream name(params_[0]);
+        // std::string token;
+        // while(getline(name, token, ','))
+        // {
+        //     if(token[0] != '&' && token[0] != '#')
+        //     {
+        //         // OTHER ERROR: INVALID CHANNEL NAME?
+        //         output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
+        //         return ;
+        //     }            
+        // }        
+    }
 }
 
 void Client::PrivmsgCmd()
