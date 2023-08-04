@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/03 13:27:32 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/04 13:31:53 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ void Server::CheckForDisconnections()
 {
     if(ConnectedClients_.empty() == true)
         return ;
-    
+
     for(unsigned int i = 1; i < ConnectedClients_.size(); i++)
     {
         if(ConnectedClients_[i]->get_state() == 2)

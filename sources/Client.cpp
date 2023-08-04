@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/04 09:16:35 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/04 15:38:15 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Client::Client()
 
 // Initialization of all attribute
 
-Client::Client(int fd, Server* server) : ClientFd_(fd), ClientState_(-1), server_(server), username_("Unknown")
+Client::Client(int fd, Server* server) : ClientFd_(fd), ClientState_(-1), username_("Unknown"), server_(server)
 {
     std::cout << "Constructor" << std::endl;
 }
@@ -89,7 +89,7 @@ void Client::ConnectionClosing()
 }
 
 // END OF MESSAGE ALWAYS \r\n ????
-// Check if command is wrong, example "PASSpwd" (no space between command and param)
+// Check if command is wrong, example "PASSpwd" (no space between command and param) or Nick (no capital letter)
 void Client::ReceiveCommand()
 {
     // std::cout << "Receive Command" << std::endl;
@@ -113,10 +113,10 @@ void Client::ReceiveCommand()
     CheckCommand(buffer_);
 }
 
+// CHECK SCREENSHOT TERMINAL : The server is receiving somethign after sending a message to client ?
+
 void Client::SendData()
 {
-    while(params_.empty() != true)
-        params_.pop_back();
     params_.clear();
     cmd_ = "";
     trailing_ = "";
@@ -132,6 +132,7 @@ void Client::SendData()
 void Client::SetCmdParamsTrailing(std::string buf)
 {
     std::string tmp;
+    std::cout << "buf : " << buf << std::endl;
     if (buf.find(' ') == std::string::npos)
     {
         cmd_ = buf;
@@ -230,7 +231,7 @@ void Client::NickCmd()
     {
         if (nickname_.empty() == false)
             output_ = Messages::RPL_NICKCHANGE(nickname_, params_[0], username_);
-        else if (ClientState_ == PASS && !username_.empty())
+        else if (ClientState_ == PASS && username_ != "Unknown")
         {
             ClientState_ = REGISTERED;
             output_ = Messages::RPL_WELCOME(nickname_, username_);
@@ -245,7 +246,6 @@ void Client::NickCmd()
 
 void Client::UserCmd()
 {
-    std::cout << "PASS : " << PASS << std::endl;
     if (params_.size() != 3 || trailing_.empty())
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
     else if ((params_[1] != "0" && params_[1] != "*")
@@ -326,9 +326,16 @@ void Client::PingCmd()
     //   Numeric Replies:
     //   ERR_NOORIGIN,
     //   ERR_NOSUCHSERVER,
-    //    RPL_PING (Where is it coming from?)
+    //   RPL_PING (Where is it coming from?)
 
-    output_ = Messages::RPL_PING(nickname_, "I dont know what is token yet");
+    if (params_.empty())
+        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+    else if
+        
+    else
+        output_ = Messages::RPL_PING(nickname_, params_[0]);
+    // The parameter doesnt match the server name : err_nosuchserver
+    //
 }
 
 void Client::ModeCmd()
