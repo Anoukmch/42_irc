@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/04 12:41:58 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/04 12:50:13 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -405,13 +405,12 @@ void Client::PrivmsgCmd()
             {
                 chan->SendMessageToChannel(Messages::RPL_PRIVMSG(nickname_, username_, chan->get_name(), trailing_), this);
                 return ;
-                // BROADCAST MESSAGE
-                // SEND MESSAGE TO CHANNEL
             }
             
         }
         else
         {
+            // MESSAGE TO CLIENT
             Client *cli = server_->GetClient(params_[0]);
             if(cli == nullptr)
             {
@@ -421,8 +420,6 @@ void Client::PrivmsgCmd()
             else
             {
                 cli->set_output(Messages::RPL_PRIVMSG(nickname_, username_, cli->get_nickname(), trailing_));
-                // SEND MESSAGE TO CLIENT cli
-                
             }
         }
     }
