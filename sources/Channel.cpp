@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/03 16:24:46 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/04 11:10:31 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,4 +112,22 @@ void Channel::RemoveClientFromChannel(Client* c)
         else
             it++;
     }
+}
+
+bool Channel::IsClientOnChannel(Client *c)
+{
+    std::vector<Client*>::iterator it = clients_.begin();
+    while(it != clients_.end())
+    {
+        if(c == *it) //2 is DISCONNECTED
+            return(true);
+    }
+    return(false); 
+}
+
+bool Channel::IsChannelNotEmpty()
+{
+    if(clients_.empty() == true)
+        return(false);
+    return(true);
 }

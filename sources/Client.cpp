@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/04 09:16:35 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/04 11:20:50 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Client::Client()
 
 // Initialization of all attribute
 
-Client::Client(int fd, Server* server) : ClientFd_(fd), ClientState_(-1), server_(server), username_("Unknown")
+Client::Client(int fd, Server* server) : ClientFd_(fd), ClientState_(-1), username_("Unknown"), server_(server)
 {
     std::cout << "Constructor" << std::endl;
 }
@@ -132,6 +132,8 @@ void Client::SendData()
 void Client::SetCmdParamsTrailing(std::string buf)
 {
     std::string tmp;
+
+    // GET COMMAND
     if (buf.find(' ') == std::string::npos)
     {
         cmd_ = buf;
@@ -140,6 +142,7 @@ void Client::SetCmdParamsTrailing(std::string buf)
     else
         cmd_ = buf.substr(0, buf.find(' '));
 
+    // GET PARAM STRING & TRAILING
     if(buf.find(':') == std::string::npos)
         tmp = buf.substr(buf.find(' ') + 1, buf.size());
     else
@@ -148,6 +151,7 @@ void Client::SetCmdParamsTrailing(std::string buf)
         trailing_ = buf.substr(buf.find(':'), buf.size()-(buf.find(':')));
     }
 
+    // GET SPLITTED PARAMS
     std::istringstream stream(tmp);
     std::string token;
     while(stream >> token)
@@ -233,7 +237,7 @@ void Client::NickCmd()
         else if (ClientState_ == PASS && !username_.empty())
         {
             ClientState_ = REGISTERED;
-            output_ = Messages::RPL_WELCOME(nickname_, username_);
+            // output_ = Messages::RPL_WELCOME(nickname_, username_);
         }
         nickname_ = params_[0];
     }
@@ -253,8 +257,8 @@ void Client::UserCmd()
         output_ = Messages::ERR_UMODEUNKNOWNFLAG(nickname_);
     else if (ClientState_ < PASS)
         output_ = Messages::ERR_NOTREGISTERED(cmd_);
-    else if ( ClientState_ >= REGISTERED)
-        output_ = Messages::ERR_ALREADYREGISTRED(); // Do I need the Append function here?
+    // else if ( ClientState_ >= REGISTERED)
+    //     output_ = Messages::ERR_ALREADYREGISTRED(); // Do I need the Append function here?
     else
     {
         if (!nickname_.empty())
@@ -300,8 +304,7 @@ void Client::JoinCmd()
     std::stringstream name2(params_[0]);
     while(getline(name2, token, ','))
     {
-        std::cout << "HERE" << std::endl;
-        server_->AddChannel(params_[0]);
+        server_->AddChannel(token);
         server_->GetLastChannel()->AddClientToChannel(this);
         server_->GetLastChannel()->set_inviteonlyflag(false);
         channels_.push_back((server_->GetLastChannel()));
@@ -345,25 +348,37 @@ void Client::NamesCmd()
 // ERR_NOSUCHCHANNEL
 // ERR_NOTONCHANNEL
 // leave other channels if one is wrong???
+// /PART channels(with ,) [part message]
+// IS PART MESSAGE NECESSARY???
 void Client::PartCmd()
 {
-    if(params_.size() > 1)
-    {
+    if(params_.size() != 1)
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
-    }
     else
     {
-        // std::stringstream name(params_[0]);
-        // std::string token;
-        // while(getline(name, token, ','))
-        // {
-        //     if(token[0] != '&' && token[0] != '#')
-        //     {
-        //         // OTHER ERROR: INVALID CHANNEL NAME?
-        //         output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
-        //         return ;
-        //     }
-        // }
+        std::stringstream name(params_[0]);
+        std::string token;
+        while(getline(name, token, ','))
+        {
+            if(server_->GetChannel(token) == nullptr)
+            {
+                output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
+                return ;
+            }
+            else if(server_->GetChannel(token)->IsClientOnChannel(this) == false)
+            {
+                output_ = Messages::ERR_NOTONCHANNEL(nickname_, token);
+                return ;
+            }
+        }
+        std::stringstream name2(params_[0]);
+        while(getline(name2, token, ','))
+        {
+            server_->GetChannel(token)->RemoveClientFromChannel(this);
+            if(server_->GetChannel(token)->IsChannelNotEmpty() == false)
+                server_->DeleteChannel(token);
+            output_ = output_.append(Messages::RPL_PART(nickname_, username_, token, trailing_));
+        }
     }
 }
 

@@ -52,6 +52,7 @@ class Server
 		bool CheckPassword(std::string pass);
 		Channel* GetChannel(std::string name);
 		Channel* GetLastChannel();
+		void DeleteChannel(std::string name);
 
 		// void handleClient();
 		// void broadcastMessage();
