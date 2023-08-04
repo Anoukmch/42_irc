@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/04 08:33:32 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/04 09:16:35 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -254,7 +254,7 @@ void Client::UserCmd()
     else if (ClientState_ < PASS)
         output_ = Messages::ERR_NOTREGISTERED(cmd_);
     else if ( ClientState_ >= REGISTERED)
-        output_ = Messages::ERR_ALREADYREGISTRED();
+        output_ = Messages::ERR_ALREADYREGISTRED(); // Do I need the Append function here?
     else
     {
         if (!nickname_.empty())
@@ -293,7 +293,7 @@ void Client::JoinCmd()
         if(token[0] != '&' && token[0] != '#')
         {
             // OTHER ERROR: INVALID CHANNEL NAME?
-            output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
+            output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]); // Do we need the Append function here?
             return ;
         }
     }
@@ -317,9 +317,18 @@ void Client::JoinCmd()
     }
 }
 
+// Where does the RPL and ERR from Messages.cpp come from? Which RFC protocol?
+
 void Client::PingCmd()
 {
+    //   Parameters: <server1> [ <server2> ]
 
+    //   Numeric Replies:
+    //   ERR_NOORIGIN,
+    //   ERR_NOSUCHSERVER,
+    //    RPL_PING (Where is it coming from?)
+
+    output_ = Messages::RPL_PING(nickname_, "I dont know what is token yet");
 }
 
 void Client::ModeCmd()

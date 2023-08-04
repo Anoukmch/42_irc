@@ -189,7 +189,7 @@ std::string Messages::RPL_TOPIC(const std::string& nick, const std::string& chan
 std::string Messages::ERR_NEEDMOREPARAMS(const std::string& command)
 {
 	std::cout << RED << command << ": Change the amount of parameters to execute command: " << command << "!" << RESET << "\n";
-	return std::string(":") + SERVERNAME + " 461 " + command + " :Not enough parameters\r\n";
+	return std::string(":") + SERVERNAME + " 461 " + command + " :Not enough / too much parameters\r\n";
 }
 
 std::string Messages::ERR_PASSWDMISMATCH()
