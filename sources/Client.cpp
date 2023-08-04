@@ -3,14 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2023/08/04 17:17:58 by amechain         ###   ########.fr       */
-=======
-/*   Updated: 2023/08/04 16:28:48 by jmatheis         ###   ########.fr       */
->>>>>>> 2d7a2b999ceee7dd4aaa3a190fcc35d418dd308d
+/*   Updated: 2023/08/04 17:24:39 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,13 +292,13 @@ void Client::JoinCmd()
     {
         Channel* exist = server_->GetChannel(token);
         if(token[0] != '&' && token[0] != '#')
-            output_ = output_.append(Messages::ERR_NOSUCHCHANNEL(nickname_, token)); // Do we need the Append function here? 
+            output_ = output_.append(Messages::ERR_NOSUCHCHANNEL(nickname_, token)); // Do we need the Append function here?
         else if(exist != nullptr)
         {
             // CHECK FOR KEY FI ITS THE SAME, ..
             // if(exist->get_key != "" )
             // {
-                
+
             // }
             exist->AddClientToChannel(this);
             exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
@@ -345,21 +341,14 @@ void Client::PingCmd()
     //   ERR_NOSUCHSERVER,
     //   RPL_PING (Where is it coming from?)
 
-    // Is it possible to PING without parameter?
+    // Is it possible to PING without parameter? Is it necessary to specify the servername?
 
     if (params_.empty())
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
-<<<<<<< HEAD
     else if (params_[0] != SERVERNAME)
          output_ = Messages::ERR_NOSUCHSERVER(nickname_, params_[0]);
     else
         output_ = Messages::RPL_PING(nickname_);
-=======
-    // else if
-
-    // else
-    //     output_ = Messages::RPL_PING(nickname_, params_[0]);
->>>>>>> 2d7a2b999ceee7dd4aaa3a190fcc35d418dd308d
     // The parameter doesnt match the server name : err_nosuchserver
     //
 }
@@ -463,7 +452,7 @@ void Client::InviteCmd()
             server_->GetClient(params_[0])->set_output(Messages::RPL_INVITED(nickname_, username_, params_[1], params_[0]));
             output_ = Messages::RPL_INVITING(nickname_, params_[1], params_[0]);
             // INVITE USER TO CHANNEL
-            
+
         }
         // <nickname> <channel>
         // channel must not exist or be valid
