@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/04 15:47:25 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/04 16:06:47 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,18 +219,8 @@ void Client::NickCmd()
     else if(params_.empty() == true)
         output_ = Messages::ERR_NONICKNAMEGIVEN();
     // ONLY 8 CHARACTERS ????
-    // CHECK FOR SOME SPECIAL SIGNS, ...
-    // if(params_.find(' ') != std::string::npos
-    //     || params_.find(',') != std::string::npos || params_.find('?') != std::string::npos
-    //     || params_.find('!') != std::string::npos || params_.find('@') != std::string::npos
-    //     || params_.find('.') != std::string::npos || params_[0] == '$' || params_[0] == ':'
-    //     || params_[0] == '&' || params_[0] == '#')
-    // {
-    //     output_ = Messages::ERR_ERRONEUSNICKNAME(nickname_, params_);
-    //     return ;
-    // }
+    // CHECK FOR SOME SPECIAL SIGNS,?? ...
 
-    // CHECK FOR UNIQUE NICKNAME
     else if(server_->IsUniqueNickname(params_[0]) == false)
         output_ = Messages::ERR_NICKNAMEINUSE(params_[0]);
     else
@@ -296,23 +286,19 @@ void Client::JoinCmd()
     std::string token;
     while(getline(name, token, ','))
     {
-        if(token[0] != '&' && token[0] != '#')
-        {
-            // OTHER ERROR: INVALID CHANNEL NAME?
-            output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]); // Do we need the Append function here?
-            return ;
-        }
-    }
-    std::stringstream name2(params_[0]);
-    while(getline(name2, token, ','))
-    {
         Channel* exist = server_->GetChannel(token);
-        if(exist != nullptr)
+        if(token[0] != '&' && token[0] != '#')
+            output_ = output_.append(Messages::ERR_NOSUCHCHANNEL(nickname_, token)); // Do we need the Append function here? 
+        else if(exist != nullptr)
         {
             // CHECK FOR KEY FI ITS THE SAME, ..
-           exist->AddClientToChannel(this);
-           exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
-           output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token));
+            // if(exist->get_key != "" )
+            // {
+                
+            // }
+            exist->AddClientToChannel(this);
+            exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
+            output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token));
         }
         else
         {
@@ -346,10 +332,10 @@ void Client::PingCmd()
 
     if (params_.empty())
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
-    else if
+    // else if
 
-    else
-        output_ = Messages::RPL_PING(nickname_, params_[0]);
+    // else
+    //     output_ = Messages::RPL_PING(nickname_, params_[0]);
     // The parameter doesnt match the server name : err_nosuchserver
     //
 }
@@ -380,25 +366,19 @@ void Client::PartCmd()
         std::string token;
         while(getline(name, token, ','))
         {
-            if(server_->GetChannel(token) == nullptr)
+            Channel* c = server_->GetChannel(token);
+            if(c == nullptr)
+                output_ = output_.append(Messages::ERR_NOSUCHCHANNEL(nickname_, token));
+            else if(c->IsClientOnChannel(this) == false)
+                output_ = output_.append(Messages::ERR_NOTONCHANNEL(nickname_, token));
+            else
             {
-                output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
-                return ;
+                c->SendMessageToChannel(Messages::RPL_PART_OR(nickname_, username_, token, trailing_), this);
+                output_ = output_.append(Messages::RPL_PART(nickname_, username_, token, trailing_));
+                c->RemoveClientFromChannel(this);
+                if(c->IsChannelNotEmpty() == false)
+                    server_->DeleteChannel(token);
             }
-            else if(server_->GetChannel(token)->IsClientOnChannel(this) == false)
-            {
-                output_ = Messages::ERR_NOTONCHANNEL(nickname_, token);
-                return ;
-            }
-        }
-        std::stringstream name2(params_[0]);
-        while(getline(name2, token, ','))
-        {
-            server_->GetChannel(token)->SendMessageToChannel(Messages::RPL_PART_OR(nickname_, username_, token, trailing_), this);
-            output_ = output_.append(Messages::RPL_PART(nickname_, username_, token, trailing_));
-            server_->GetChannel(token)->RemoveClientFromChannel(this);
-            if(server_->GetChannel(token)->IsChannelNotEmpty() == false)
-                server_->DeleteChannel(token);
         }
     }
 }
@@ -423,7 +403,6 @@ void Client::PrivmsgCmd()
                 chan->SendMessageToChannel(Messages::RPL_PRIVMSG(nickname_, username_, chan->get_name(), &trailing_[1]), this);
                 return ;
             }
-
         }
         else
         {
@@ -515,7 +494,6 @@ void Client::QuitCmd()
             it++;
         }
     }
-
     if(params_.size() == 0)
     {
         if (trailing_ == "")
