@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/04 16:06:47 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/04 16:28:48 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -422,7 +422,33 @@ void Client::PrivmsgCmd()
 
 void Client::InviteCmd()
 {
-
+    if(params_.size() != 2 || trailing_ != "")
+        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+    else
+    {
+        Client *c = server_->GetClient(params_[0]);
+        if(c == nullptr)
+            output_ = Messages::ERR_NOSUCHNICK(params_[0], params_[1]); //OTHER ERROR MESSAGE!
+        else if(server_->GetChannel(params_[1]) == nullptr
+            || server_->GetChannel(params_[1])->IsClientOnChannel(this) == false)
+            output_ = Messages::ERR_NOTONCHANNEL(nickname_, params_[1]);
+        else if (server_->GetChannel(params_[1])->IsClientOnChannel(server_->GetClient(params_[0])) == true)
+            output_ = Messages::ERR_USERONCHANNEL(nickname_, params_[0], params_[1]);
+        else
+        {
+            server_->GetClient(params_[0])->set_output(Messages::RPL_INVITED(nickname_, username_, params_[1], params_[0]));
+            output_ = Messages::RPL_INVITING(nickname_, params_[1], params_[0]);
+            // INVITE USER TO CHANNEL
+            
+        }
+        // <nickname> <channel>
+        // channel must not exist or be valid
+        // only member of the channel, if it exists, are allowed to invite others
+        // ERR_NOTONCHANNEL ERR_NOSUCHNICK, ERR_USERONCHANNEL
+        // RPL_INVITING
+        // if invite-only flag -> only channel operators may invite others
+        // only invited user and the inviting user will receive the message
+    }
 }
 
 void Client::TopicCmd()
