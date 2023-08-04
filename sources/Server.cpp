@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/04 13:31:53 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/04 15:47:48 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,19 +122,32 @@ void Server::acceptConnection()
 
 void Server::CheckForDisconnections()
 {
-    if(ConnectedClients_.empty() == true)
-        return ;
-
-    for(unsigned int i = 1; i < ConnectedClients_.size(); i++)
+    // CHECK DISCONNECTED CLIENTS
+    if(ConnectedClients_.empty() == false)
     {
-        if(ConnectedClients_[i]->get_state() == 2)
+        for(unsigned int i = 1; i < ConnectedClients_.size(); i++)
         {
-            PollStructs_.erase(PollStructs_.begin()+(i+1));
-            delete ConnectedClients_[i];
-            ConnectedClients_.erase(ConnectedClients_.begin());
+            if(ConnectedClients_[i]->get_state() == 2)
+            {
+                PollStructs_.erase(PollStructs_.begin()+(i+1));
+                delete ConnectedClients_[i];
+                ConnectedClients_.erase(ConnectedClients_.begin());
+            }
+            else
+                i++;
         }
-        else
-            i++;
+    }
+    // CHECK CHANNELS THAT ARE NULLPTR (-> no users in channel)
+    if(channels_.empty() == false)
+    {
+        for(unsigned int i = 0; i < channels_.size(); i++)
+        {
+            if(channels_[i] == nullptr)
+            {
+                // delete channels_[i]; already deleted
+                channels_.erase(channels_.begin()+i);
+            }
+        }
     }
 
     // CHECK AS WELL FOR CHANNELS
@@ -189,6 +202,28 @@ Channel* Server::GetChannel(std::string name)
     {
         if(channels_[i]->get_name() == name)
             return(channels_[i]);
+    }
+    return(nullptr);
+}
+
+void Server::DeleteChannel(std::string name)
+{
+    for(unsigned int i = 0; i < channels_.size(); i++)
+    {
+        if(channels_[i]->get_name() == name)
+        {
+            delete (channels_[i]);
+            channels_[i] = nullptr;
+        }
+    }
+}
+
+Client* Server::GetClient(std::string name)
+{
+    for(unsigned int i = 0; i < ConnectedClients_.size(); i++)
+    {
+        if(ConnectedClients_[i]->get_nickname() == name)
+            return(ConnectedClients_[i]);
     }
     return(nullptr);
 }

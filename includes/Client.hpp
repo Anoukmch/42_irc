@@ -49,6 +49,7 @@ class Client
 		// GETTER
 		std::string get_nickname();
 		std::string get_username();
+		void set_output(std::string mess);
 		int get_state();
 		int get_fd();
 

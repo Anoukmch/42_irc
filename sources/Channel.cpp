@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/03 16:24:46 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/04 15:40:11 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,7 @@ bool Channel::get_inviteonlyflag()
 void Channel::AddClientToChannel(Client* c)
 {
     clients_.push_back(c);
+    std::cout << "NEW CLINET: " << clients_.back()->get_nickname() << std::endl;
 }
 
 void Channel::RemoveClientFromChannel(Client* c)
@@ -111,5 +112,39 @@ void Channel::RemoveClientFromChannel(Client* c)
             it = clients_.erase(it);
         else
             it++;
+    }
+}
+
+bool Channel::IsClientOnChannel(Client *c)
+{
+    std::vector<Client*>::iterator it = clients_.begin();
+    while(it != clients_.end())
+    {
+        if(c == *it) //2 is DISCONNECTED
+            return(true);
+    }
+    return(false); 
+}
+
+bool Channel::IsChannelNotEmpty()
+{
+    if(clients_.empty() == true)
+        return(false);
+    return(true);
+}
+
+void Channel::SendMessageToChannel(std::string mess, Client* exclude)
+{
+    // if(clients_.size() <= 1)
+    //     return ;
+    (void)exclude;
+    std::cout << "cCLIEN:T " << clients_.size() << std::endl;
+    for(unsigned int i = 0; i < clients_.size(); i++)
+    {
+        if(clients_[i] != exclude)
+        {
+            std::cout << "new mess" << std::endl;
+            clients_[i]->set_output(mess);
+        }
     }
 }

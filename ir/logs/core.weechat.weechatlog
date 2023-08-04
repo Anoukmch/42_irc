@@ -1,0 +1,63 @@
+2023-08-04 11:44:30		New key binding (context "default"): meta-B => /buflist toggle
+2023-08-04 11:44:30		New key binding (context "default"): meta-OP => /bar scroll buflist * -100%
+2023-08-04 11:44:30		New key binding (context "default"): meta2-11~ => /bar scroll buflist * -100%
+2023-08-04 11:44:30		New key binding (context "default"): meta-OQ => /bar scroll buflist * +100%
+2023-08-04 11:44:30		New key binding (context "default"): meta2-12~ => /bar scroll buflist * +100%
+2023-08-04 11:44:30		New key binding (context "default"): meta2-11^ => /bar scroll buflist * -100%
+2023-08-04 11:44:30		New key binding (context "default"): meta2-1;5P => /bar scroll buflist * -100%
+2023-08-04 11:44:30		New key binding (context "default"): meta2-12^ => /bar scroll buflist * +100%
+2023-08-04 11:44:30		New key binding (context "default"): meta2-1;5Q => /bar scroll buflist * +100%
+2023-08-04 11:44:30		New key binding (context "default"): meta-meta-OP => /bar scroll buflist * b
+2023-08-04 11:44:30		New key binding (context "default"): meta-meta2-11~ => /bar scroll buflist * b
+2023-08-04 11:44:30		New key binding (context "default"): meta2-1;3P => /bar scroll buflist * b
+2023-08-04 11:44:30		New key binding (context "default"): meta-meta-OQ => /bar scroll buflist * e
+2023-08-04 11:44:30		New key binding (context "default"): meta-meta2-12~ => /bar scroll buflist * e
+2023-08-04 11:44:30		New key binding (context "default"): meta2-1;3Q => /bar scroll buflist * e
+2023-08-04 11:44:30		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 11:44:46		irc: server added: second
+2023-08-04 12:10:27		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 12:10:49	=!=	irc: command "join" must be executed on connected irc server
+2023-08-04 12:18:00		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 12:21:48		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 12:26:05		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 12:33:23		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 12:34:27	=!=	Unknown command "/PRIVMSG" (type /help for help)
+2023-08-04 12:35:57		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 12:38:42		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 12:41:23		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 13:49:16		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 13:49:26	=!=	irc: command "join" must be executed on connected irc server
+2023-08-04 13:49:33	=!=	irc: unable to add temporary server "secon" because the addition of temporary servers with command /connect is currently disabled
+2023-08-04 13:49:33	=!=	irc: if you want to add a standard server, use the command "/server add" (see /help server); if you really want to add a temporary server (NOT SAVED), turn on the option irc.look.temporary_servers
+2023-08-04 13:52:55		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 13:55:15		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 13:55:20		irc: server second has been deleted
+2023-08-04 13:55:31		irc: server added: sec
+2023-08-04 13:55:44	=!=	irc: command "join" must be executed on irc buffer (server, channel or private)
+2023-08-04 13:57:26		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 13:57:55		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 13:58:01	=!=	irc: unable to add temporary server "first" because the addition of temporary servers with command /connect is currently disabled
+2023-08-04 13:58:01	=!=	irc: if you want to add a standard server, use the command "/server add" (see /help server); if you really want to add a temporary server (NOT SAVED), turn on the option irc.look.temporary_servers
+2023-08-04 13:58:15		irc: server added: first
+2023-08-04 15:16:56		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 15:17:08	=!=	irc: unable to add temporary server "second" because the addition of temporary servers with command /connect is currently disabled
+2023-08-04 15:17:08	=!=	irc: if you want to add a standard server, use the command "/server add" (see /help server); if you really want to add a temporary server (NOT SAVED), turn on the option irc.look.temporary_servers
+2023-08-04 15:17:13	=!=	irc: unable to add temporary server "second" because the addition of temporary servers with command /connect is currently disabled
+2023-08-04 15:17:13	=!=	irc: if you want to add a standard server, use the command "/server add" (see /help server); if you really want to add a temporary server (NOT SAVED), turn on the option irc.look.temporary_servers
+2023-08-04 15:17:18		
+2023-08-04 15:17:18		All servers:
+2023-08-04 15:17:18		   sec
+2023-08-04 15:17:18		   first
+2023-08-04 15:18:24	=!=	Too few arguments for command "/msg" (help on command: /help msg)
+2023-08-04 15:18:38	=!=	Too few arguments for command "/msg" (help on command: /help msg)
+2023-08-04 15:18:42		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 15:19:01	=!=	irc: command "join" must be executed on connected irc server
+2023-08-04 15:19:20	=!=	irc: command "join" must be executed on connected irc server
+2023-08-04 15:20:58		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 15:21:32		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 15:22:38		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 15:24:29		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 15:30:19		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 15:38:36		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 15:42:19		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 15:43:41		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer

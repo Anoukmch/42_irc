@@ -46,6 +46,11 @@ std::string Messages::RPL_JOIN(const std::string& nick, const std::string& user,
 	return std::string(":") + nick + "!" + user + "@" + HOST + " JOIN " + channel_name + " * :" + user + "\r\n";
 }
 
+std::string Messages::RPL_JOIN_OR(const std::string& nick, const std::string& user, const std::string& channel_name)
+{
+	return std::string(":") + nick + "!" + user + "@" + HOST + " JOIN " + channel_name + " * :" + user + "\r\n";
+}
+
 std::string Messages::RPL_JOIN_WITHKEY(const std::string& nick, const std::string& user, const std::string& channel_name, std::string key)
 {
 	std::cout << GREEN << nick << " joined channel " << channel_name << " with key " << key << "!" << RESET << "\n";
@@ -70,9 +75,19 @@ std::string Messages::RPL_PART(const std::string& nick, const std::string& user,
 	return std::string(":") + nick + "!" + user + "@" + HOST + " PART " + channel_name + " " + reason + "!" +  "\r\n";
 }
 
+std::string Messages::RPL_PART_OR(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string reason)
+{
+	return std::string(":") + nick + "!" + user + "@" + HOST + " PART " + channel_name + " " + reason + "!" +  "\r\n";
+}
+
 std::string	Messages::RPL_PRIVMSG(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg)
 {
 	std::cout << GREEN << nick << " send message " << msg + " to " + target +  "!" << RESET << "\n";
+	return std::string(":") + nick + "!" + user + "@" + HOST + " PRIVMSG " + target + " :" + msg + "\r\n";
+}
+
+std::string	Messages::RPL_PRIVMSG_OR(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg)
+{
 	return std::string(":") + nick + "!" + user + "@" + HOST + " PRIVMSG " + target + " :" + msg + "\r\n";
 }
 

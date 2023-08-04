@@ -46,8 +46,11 @@ class Channel
 		std::string get_key();
 		bool get_inviteonlyflag();
 
+		void SendMessageToChannel(std::string mess, Client* exclude);
 		void AddClientToChannel(Client* c);
 		void RemoveClientFromChannel(Client* c);
+		bool IsClientOnChannel(Client *c);
+		bool IsChannelNotEmpty();
 	private:
 		Channel(); //Default Constructor
 		Channel(const Channel &copyclass); //Copy Constructor
