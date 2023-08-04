@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/03 11:45:39 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/03 13:59:00 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,9 @@ Client::Client()
     std::cout << "Default Constructor" << std::endl;
 }
 
-Client::Client(int fd) : ClientFd_(fd), ClientState_(-1)
+// Initialization of all attribute
+
+Client::Client(int fd) : ClientFd_(fd), ClientState_(-1), username_("Unknown")
 {
     std::cout << "Constructor" << std::endl;
 }
@@ -170,16 +172,16 @@ void Client::CheckCommand(std::string buf)
 
 void Client::PassCmd()
 {
-    if ( ClientState_ >= REGISTERED) // What if password already validated but not yet registered?
+    if ( ClientState_ >= REGISTERED)
         output_ = Messages::ERR_ALREADYREGISTRED();
+    else if (ClientState_ == PASS)
+        output_ = "Client already authenticated"; // Can we create an error message?
     else if (params_.empty())
-    {
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
-        return ;
-    }
     else if (Server::CheckPassword(params_[0]) == false)
         output_ = Messages::ERR_PASSWDMISMATCH();
-    // Check for multiple params, ...
+    else if (params_.size() != 1)
+        output_ = Messages::ERR_PASSWDMISMATCH();
     else
         ClientState_ = PASS;
 }
@@ -224,23 +226,31 @@ void Client::NickCmd()
     }
 }
 
-void Client::UserCmd() // How to change your username afterwards ? Bc USER is just at the begining
+// Does the trailing need to start with ":" ?
+// How to change your username afterwards ? Can we use USER after registration ?
+// Error message "used invalid mode flags" pb when nickname is not set
+
+void Client::UserCmd()
 {
-    if (params_.size() != 3 || trailing_.empty()) // Does the trailing need to start with ":" ?
+    std::cout << "PASS : " << PASS << std::endl;
+    if (params_.size() != 3 || trailing_.empty())
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
     else if ((params_[1] != "0" && params_[1] != "*")
         || (params_[2] != "0" && params_[2] != "*"))
-        output_ = Messages::ERR_UMODEUNKNOWNFLAG(nickname_); // Space
-    else if (ClientState_ < PASS) // Is PASS = 0 ?
+        output_ = Messages::ERR_UMODEUNKNOWNFLAG(nickname_);
+    else if (ClientState_ < PASS)
         output_ = Messages::ERR_NOTREGISTERED(cmd_);
-    else if (!nickname_.empty())
-    {
-        ClientState_ = REGISTERED;
-        output_ = Messages::RPL_WELCOME(nickname_, username_);
-    }
     else if ( ClientState_ >= REGISTERED)
         output_ = Messages::ERR_ALREADYREGISTRED();
-    username_ = trailing_;
+    else
+    {
+        if (!nickname_.empty())
+        {
+            ClientState_ = REGISTERED;
+            output_ = Messages::RPL_WELCOME(nickname_, username_);
+        }
+        username_ = params_[0];
+    }
 }
 
 // DIFFERENCE BETWEEN TOPIC AND NAME???

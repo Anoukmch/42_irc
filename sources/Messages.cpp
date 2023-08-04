@@ -206,7 +206,7 @@ std::string Messages::ERR_NONICKNAMEGIVEN()
 
 std::string Messages::ERR_NOTREGISTERED(const std::string& command)
 {
-	std::cout << RED << "User tried executing command " << command << " but was not registred!" << RESET << "\n";
+	std::cout << RED << "User tried executing command " << command << " but was not registred or authenticated!" << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 451 " + ":You have not registered\r\n";
 }
 
