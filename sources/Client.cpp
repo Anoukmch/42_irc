@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/03 13:59:00 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/04 08:33:32 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,13 @@ Client::Client()
 
 // Initialization of all attribute
 
-Client::Client(int fd) : ClientFd_(fd), ClientState_(-1), username_("Unknown")
+Client::Client(int fd, Server* server) : ClientFd_(fd), ClientState_(-1), server_(server), username_("Unknown")
 {
     std::cout << "Constructor" << std::endl;
 }
 
-Client::Client(const Client &copyclass)
+Client::Client(const Client &copyclass) : ClientFd_(copyclass.ClientFd_)
+        , ClientState_(copyclass.ClientState_), server_(copyclass.server_)
 {
     std::cout << "Copy Constructor" << std::endl;
     *this = copyclass;
@@ -70,6 +71,16 @@ std::string Client::get_username()
     return(username_);
 }
 
+int Client::get_state()
+{
+    return(ClientState_);
+}
+
+int Client::get_fd()
+{
+    return(ClientFd_);
+}
+
 // OTHER
 
 void Client::ConnectionClosing()
@@ -89,14 +100,17 @@ void Client::ReceiveCommand()
     buffer[received] = '\0';
     buffer_ = std::string(buffer);
 
+    // FOR WEECHAT
     size_t rc = buffer_.find("\r\n");
     if(rc != std::string::npos)
         buffer_ = buffer_.substr(0, rc);
 
-    // std::cout << "buffer_: " << buffer_ << std::endl;
+    // FOR NC
+    size_t nl = buffer_.find("\n");
+    if(nl != std::string::npos)
+        buffer_ = buffer_.substr(0, nl);
 
     CheckCommand(buffer_);
-
 }
 
 void Client::SendData()
@@ -117,7 +131,6 @@ void Client::SendData()
 
 void Client::SetCmdParamsTrailing(std::string buf)
 {
-    std::cout << "BUF: " << buf << std::endl;
     std::string tmp;
     if (buf.find(' ') == std::string::npos)
     {
@@ -178,7 +191,7 @@ void Client::PassCmd()
         output_ = "Client already authenticated"; // Can we create an error message?
     else if (params_.empty())
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
-    else if (Server::CheckPassword(params_[0]) == false)
+    else if (server_->CheckPassword(params_[0]) == false)
         output_ = Messages::ERR_PASSWDMISMATCH();
     else if (params_.size() != 1)
         output_ = Messages::ERR_PASSWDMISMATCH();
@@ -188,7 +201,7 @@ void Client::PassCmd()
 
 void Client::CapCmd()
 {
-    output_ = Messages::RPL_CAP();
+    // output_ = Messages::RPL_CAP();
 }
 
 void Client::NickCmd()
@@ -211,7 +224,7 @@ void Client::NickCmd()
 
     // PROBLEM WHEN CONNECTING WITH SAME NICK, SERVER CLOSES!!!!
     // CHECK FOR UNIQUE NICKNAME
-    else if(Server::IsUniqueNickname(params_[0]) == false)
+    else if(server_->IsUniqueNickname(params_[0]) == false)
         output_ = Messages::ERR_NICKNAMEINUSE(params_[0]);
     else
     {
@@ -253,24 +266,55 @@ void Client::UserCmd()
     }
 }
 
-// DIFFERENCE BETWEEN TOPIC AND NAME???
+// CHANNEL = FULL?, TOO MANY CHANNELS?, INVITEONLY CHANNEL?
+// Channel already exists, channel has key that user doesn't know
+//  /JOIN 0 ->leave all channels
 void Client::JoinCmd()
 {
-    if(params_.size() < 1)
+    if(params_.size() < 1 || params_.size() > 2)
     {
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
     }
-    if(params_[0][0] != '&' && params_[0][0] != '#')
+    std::vector<std::string>::iterator it;
+    std::vector<std::string>keys;
+    if(params_.size() == 2)
     {
-        // ADD ANOTHER ERROR MESSAGE HERE?
-        // INVALID CHANNEL NAME ???
-        output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
-        return ;
+        std::stringstream key(params_[1]);
+        std::string ke;
+        while(getline(key, ke, ','))
+            keys.push_back(ke);
+        it = keys.begin();
     }
-    Server::AddChannel(params_[0]);
-    // CREATES CHANNEL
-    output_ = Messages::RPL_JOIN(nickname_, username_, params_[0]);
+    std::stringstream name(params_[0]);
+    std::string token;
+    while(getline(name, token, ','))
+    {
+        if(token[0] != '&' && token[0] != '#')
+        {
+            // OTHER ERROR: INVALID CHANNEL NAME?
+            output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
+            return ;
+        }
+    }
+    std::stringstream name2(params_[0]);
+    while(getline(name2, token, ','))
+    {
+        std::cout << "HERE" << std::endl;
+        server_->AddChannel(params_[0]);
+        server_->GetLastChannel()->AddClientToChannel(this);
+        server_->GetLastChannel()->set_inviteonlyflag(false);
+        channels_.push_back((server_->GetLastChannel()));
+
+        if (keys.empty()== false && it != keys.end())
+        {
+            server_->GetLastChannel()->set_key(*it);
+            output_ = output_.append(Messages::RPL_JOIN_WITHKEY(nickname_, username_, token, *it)); //MULTIPLE MESSAGES!!!!
+            it++;
+        }
+        else
+            output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token)); //MULTIPLE MESSAGES!!!!
+    }
 }
 
 void Client::PingCmd()
@@ -288,9 +332,30 @@ void Client::NamesCmd()
 
 }
 
+// PART MESSAGE
+// ERR_NOSUCHCHANNEL
+// ERR_NOTONCHANNEL
+// leave other channels if one is wrong???
 void Client::PartCmd()
 {
-
+    if(params_.size() > 1)
+    {
+        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+    }
+    else
+    {
+        // std::stringstream name(params_[0]);
+        // std::string token;
+        // while(getline(name, token, ','))
+        // {
+        //     if(token[0] != '&' && token[0] != '#')
+        //     {
+        //         // OTHER ERROR: INVALID CHANNEL NAME?
+        //         output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
+        //         return ;
+        //     }
+        // }
+    }
 }
 
 void Client::PrivmsgCmd()
@@ -311,7 +376,7 @@ void Client::TopicCmd()
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
     }
-    Channel* c = Server::GetChannel(params_[0]);
+    Channel* c = server_->GetChannel(params_[0]);
     if (c == nullptr)
     {
         output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
@@ -357,5 +422,28 @@ void Client::NoticeCmd()
 
 void Client::QuitCmd()
 {
+    if(params_.size() > 0)
+    {
+        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        return ;
+    }
 
+    if(channels_.empty() == false)
+    {
+        std::vector<Channel*>::iterator it = channels_.begin();
+        while(it != channels_.end())
+        {
+            (*it)->RemoveClientFromChannel(this);
+            it++;
+        }
+    }
+
+    if(params_.size() == 0)
+    {
+        if (trailing_ == "")
+            output_ = Messages::RPL_QUIT(nickname_, username_);
+        else
+            output_ = Messages::RPL_QUIT_MESSAGE(nickname_, username_, trailing_);
+        ClientState_ = DISCONNECTED;
+    }
 }

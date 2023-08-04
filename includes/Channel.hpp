@@ -22,7 +22,10 @@
 #define YELLOW      "\033[33m"              /* Yellow */
 #define PURPLE      "\033[35m"              /* Purple */
 
+# include "Client.hpp"
 # include "Server.hpp"
+
+class Client;
 
 class Channel
 {
@@ -33,20 +36,32 @@ class Channel
 		// SETTER
 		void set_topic(std::string topic);
 		void set_mode(std::string& mode);
+		void set_key(std::string key);
+		void set_inviteonlyflag(bool status);
 
 		// GETTER
 		std::string get_topic();
 		std::string get_mode();
 		std::string get_name();
+		std::string get_key();
+		bool get_inviteonlyflag();
 
+		void AddClientToChannel(Client* c);
+		void RemoveClientFromChannel(Client* c);
 	private:
 		Channel(); //Default Constructor
 		Channel(const Channel &copyclass); //Copy Constructor
 		Channel& operator= (const Channel& copyop); //copy assignment operator
 
+		std::vector<Client*> clients_;
+
 		std::string name_;
 		std::string topic_;
 		std::string mode_;
+		
+		std::string key_; //key, if empty none
+		bool is_inviteonly_;
+		std::string channeloperator_; //name, if empty none
 };
 
 #endif

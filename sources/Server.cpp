@@ -3,22 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/03 09:53:35 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/03 13:27:32 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
 
-std::vector<pollfd> Server::PollStructs_;
-std::vector<Client*> Server::ConnectedClients_;
-std::vector<Channel*> Server::channels_;
-
-struct sockaddr_in Server::address_;
-int Server::serverSocket_;
-std::string Server::connection_pd_;
 Server::Server()
 {
     serverSocket_ = 0;
@@ -123,13 +116,28 @@ void Server::acceptConnection()
     }
     pollfd tmp = {.revents = 0, .events = EVENTS, .fd = new_client_fd};
     PollStructs_.push_back(tmp);
-    ConnectedClients_.push_back(new Client(new_client_fd));
+    ConnectedClients_.push_back(new Client(new_client_fd, this));
     std::cout << "Accept Connection" << std::endl;
 }
 
 void Server::CheckForDisconnections()
 {
+    if(ConnectedClients_.empty() == true)
+        return ;
+    
+    for(unsigned int i = 1; i < ConnectedClients_.size(); i++)
+    {
+        if(ConnectedClients_[i]->get_state() == 2)
+        {
+            PollStructs_.erase(PollStructs_.begin()+(i+1));
+            delete ConnectedClients_[i];
+            ConnectedClients_.erase(ConnectedClients_.begin());
+        }
+        else
+            i++;
+    }
 
+    // CHECK AS WELL FOR CHANNELS
 }
 
 bool Server::IsUniqueNickname(std::string poss_nick)
@@ -147,6 +155,11 @@ bool Server::IsUniqueNickname(std::string poss_nick)
 void Server::AddChannel(std::string name)
 {
     channels_.push_back(new Channel(name));
+}
+
+Channel* Server::GetLastChannel()
+{
+    return(channels_.back());
 }
 
 bool Server::CheckPassword(std::string pass)
