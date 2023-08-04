@@ -57,10 +57,10 @@ std::string Messages::RPL_JOIN_WITHKEY(const std::string& nick, const std::strin
 	return std::string(":") + nick + "!" + user + "@" + HOST + " JOIN " + channel_name + " * :" + user + "\r\n";
 }
 
-std::string Messages::RPL_PING(const std::string& nick, const std::string& token)
+std::string Messages::RPL_PING(const std::string& nick)
 {
 	std::cout << GREEN << nick << " pinged this server! " << RESET << "\n";
-	return std::string(":") + SERVERNAME + " PONG " + SERVERNAME + " :" + token + "\r\n";
+	return std::string(":") + "PONG :" + SERVERNAME + " " + nick + "\r\n";
 }
 
 std::string Messages::RPL_SETMODECLIENT(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& mode, const std::string& target)
@@ -204,7 +204,7 @@ std::string Messages::RPL_TOPIC(const std::string& nick, const std::string& chan
 std::string Messages::ERR_NEEDMOREPARAMS(const std::string& command)
 {
 	std::cout << RED << command << ": Change the amount of parameters to execute command: " << command << "!" << RESET << "\n";
-	return std::string(":") + SERVERNAME + " 461 " + command + " :Not enough / too much parameters\r\n";
+	return std::string(":") + SERVERNAME + " 461 " + command + " :Not enough parameters\r\n";
 }
 
 std::string Messages::ERR_PASSWDMISMATCH()
@@ -306,11 +306,17 @@ std::string Messages::ERR_USERNOTINCHANNEL(const std::string& nick, const std::s
 std::string Messages::ERR_NOTONCHANNEL(const std::string nick, const std::string channel_name)
 {
 	std::cout << RED << nick << "tried using command on channel he isn't registered to!" << RESET << "\n";
-	return std::string(":") + SERVERNAME + + " 401 " + nick + " " + channel_name + " :You're not on that channel \r\n";
+	return std::string(":") + SERVERNAME + + " 401 " + nick + " " + channel_name + " : You're not on that channel \r\n";
 }
 
 std::string Messages::ERR_INVITEONLYCHAN(const std::string& nick, const std::string& channel_name)
 {
 	std::cout << RED << nick << " tried joining " << channel_name << " but he was not invited!" << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 473 " + nick + " " + channel_name + " : Cannot join channel (+i) - you must be invited\r\n";
+}
+
+std::string Messages::ERR_NOSUCHSERVER(const std::string& nick, const std::string& token)
+{
+	std::cout << RED << nick << " executes the PING command with the name of a non-existent server!" << RESET << "\n";
+	return std::string(":") + SERVERNAME + " 402 " + token + " :No such server\r\n";
 }

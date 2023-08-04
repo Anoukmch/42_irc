@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/04 15:47:25 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/04 17:17:58 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,10 @@ void Client::SetCmdParamsTrailing(std::string buf)
     if (buf.find(' ') == std::string::npos)
     {
         cmd_ = buf;
+        std::cout << "Command: " << cmd_ << std::endl;
+        for(unsigned int i = 0; i < params_.size(); i++)
+            std::cout << "Param[" << i << "]: " << params_[i] << std::endl;
+        std::cout << "Trailing: " << trailing_ << std::endl;
         return ;
     }
     else
@@ -340,16 +344,25 @@ void Client::PingCmd()
     //   Parameters: <server1> [ <server2> ]
 
     //   Numeric Replies:
-    //   ERR_NOORIGIN,
+    //   ERR_NOORIGIN : Is it necessary to specify a prefix?
+    /*
+        The prefix is used by servers to indicate the true
+        origin of the message.
+        If the prefix is missing from the message, it
+        is assumed to have originated from the connection from which it was
+        received from. ---> So the flag ERR_NOORIGIN is useless bc the origin specification is optional?
+    */
     //   ERR_NOSUCHSERVER,
     //   RPL_PING (Where is it coming from?)
 
+    // Is it possible to PING without parameter?
+
     if (params_.empty())
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
-    else if
-
+    else if (params_[0] != SERVERNAME)
+         output_ = Messages::ERR_NOSUCHSERVER(nickname_, params_[0]);
     else
-        output_ = Messages::RPL_PING(nickname_, params_[0]);
+        output_ = Messages::RPL_PING(nickname_);
     // The parameter doesnt match the server name : err_nosuchserver
     //
 }

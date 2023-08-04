@@ -23,7 +23,7 @@ class Messages
 		static std::string RPL_JOIN_OR(const std::string& nick, const std::string& user, const std::string& channel_name);
 		static std::string RPL_JOIN_WITHKEY(const std::string& nick, const std::string& user, const std::string& channel_name, std::string key);
 
-		static std::string RPL_PING(const std::string& nick, const std::string& token);
+		static std::string RPL_PING(const std::string& nick);
 		static std::string RPL_SETMODECLIENT(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& mode, const std::string& target);
 		static std::string RPL_PART(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string reason);
 		static std::string RPL_PART_OR(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string reason);
@@ -69,6 +69,7 @@ class Messages
 		static std::string ERR_USERNOTINCHANNEL(const std::string& nick, const std::string& channel_name);
 		static std::string ERR_NOTONCHANNEL(const std::string nick, const std::string channel_name);
 		static std::string ERR_INVITEONLYCHAN(const std::string& nick, const std::string& channel_name);
+		static std::string ERR_NOSUCHSERVER(const std::string& nick, const std::string& token);
 
 
 	private:
