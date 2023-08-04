@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/04 11:20:50 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/04 12:41:58 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,10 @@ void Client::set_username(std::string& username)
     username_ = username;
 }
 
+void Client::set_output(std::string mess)
+{
+    output_ = output_.append(mess);
+}
 // GETTER
 
 std::string Client::get_nickname()
@@ -384,6 +388,44 @@ void Client::PartCmd()
 
 void Client::PrivmsgCmd()
 {
+    if(params_.size() != 1 || trailing_ == "")
+        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+    else
+    {
+        // MESSAGE TO CHANNEL
+        if(params_[0][0] == '#' || params_[0][0] == '&')
+        {
+            Channel *chan = server_->GetChannel(params_[0]);
+            if(chan == nullptr)
+            {
+                output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
+                return ;
+            }
+            else
+            {
+                chan->SendMessageToChannel(Messages::RPL_PRIVMSG(nickname_, username_, chan->get_name(), trailing_), this);
+                return ;
+                // BROADCAST MESSAGE
+                // SEND MESSAGE TO CHANNEL
+            }
+            
+        }
+        else
+        {
+            Client *cli = server_->GetClient(params_[0]);
+            if(cli == nullptr)
+            {
+                output_ = Messages::ERR_NOSUCHNICK(nickname_, params_[0]);
+                return ;
+            }
+            else
+            {
+                cli->set_output(Messages::RPL_PRIVMSG(nickname_, username_, cli->get_nickname(), trailing_));
+                // SEND MESSAGE TO CLIENT cli
+                
+            }
+        }
+    }
 
 }
 

@@ -54,6 +54,9 @@ class Server
 		Channel* GetLastChannel();
 		void DeleteChannel(std::string name);
 
+		Client* GetClient(std::string name);
+
+
 		// void handleClient();
 		// void broadcastMessage();
 		// // SETTER

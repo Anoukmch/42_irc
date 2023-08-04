@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/04 11:17:50 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/04 12:20:18 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,7 +200,6 @@ Channel* Server::GetChannel(std::string name)
 {
     for(unsigned int i = 0; i < channels_.size(); i++)
     {
-        std::cout << "channel names: " << channels_[i]->get_name() << std::endl;
         if(channels_[i]->get_name() == name)
             return(channels_[i]);
     }
@@ -217,6 +216,16 @@ void Server::DeleteChannel(std::string name)
             channels_[i] = nullptr;
         }
     }
+}
+
+Client* Server::GetClient(std::string name)
+{
+    for(unsigned int i = 0; i < ConnectedClients_.size(); i++)
+    {
+        if(ConnectedClients_[i]->get_nickname() == name)
+            return(ConnectedClients_[i]);
+    }
+    return(nullptr);    
 }
 
 // std::string Server::getPassword()

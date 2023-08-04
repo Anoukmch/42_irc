@@ -1,0 +1,27 @@
+2023-08-04 11:44:30		New key binding (context "default"): meta-B => /buflist toggle
+2023-08-04 11:44:30		New key binding (context "default"): meta-OP => /bar scroll buflist * -100%
+2023-08-04 11:44:30		New key binding (context "default"): meta2-11~ => /bar scroll buflist * -100%
+2023-08-04 11:44:30		New key binding (context "default"): meta-OQ => /bar scroll buflist * +100%
+2023-08-04 11:44:30		New key binding (context "default"): meta2-12~ => /bar scroll buflist * +100%
+2023-08-04 11:44:30		New key binding (context "default"): meta2-11^ => /bar scroll buflist * -100%
+2023-08-04 11:44:30		New key binding (context "default"): meta2-1;5P => /bar scroll buflist * -100%
+2023-08-04 11:44:30		New key binding (context "default"): meta2-12^ => /bar scroll buflist * +100%
+2023-08-04 11:44:30		New key binding (context "default"): meta2-1;5Q => /bar scroll buflist * +100%
+2023-08-04 11:44:30		New key binding (context "default"): meta-meta-OP => /bar scroll buflist * b
+2023-08-04 11:44:30		New key binding (context "default"): meta-meta2-11~ => /bar scroll buflist * b
+2023-08-04 11:44:30		New key binding (context "default"): meta2-1;3P => /bar scroll buflist * b
+2023-08-04 11:44:30		New key binding (context "default"): meta-meta-OQ => /bar scroll buflist * e
+2023-08-04 11:44:30		New key binding (context "default"): meta-meta2-12~ => /bar scroll buflist * e
+2023-08-04 11:44:30		New key binding (context "default"): meta2-1;3Q => /bar scroll buflist * e
+2023-08-04 11:44:30		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 11:44:46		irc: server added: second
+2023-08-04 12:10:27		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 12:10:49	=!=	irc: command "join" must be executed on connected irc server
+2023-08-04 12:18:00		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 12:21:48		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 12:26:05		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 12:33:23		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 12:34:27	=!=	Unknown command "/PRIVMSG" (type /help for help)
+2023-08-04 12:35:57		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 12:38:42		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-04 12:41:23		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
