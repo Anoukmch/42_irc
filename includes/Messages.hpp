@@ -20,12 +20,15 @@ class Messages
 		static std::string RPL_NICKCHANGE(const std::string& old_nick, const std::string& new_nick, const std::string& user);
 		static std::string RPL_CAP();
 		static std::string RPL_JOIN(const std::string& nick, const std::string& user, const std::string& channel_name);
+		static std::string RPL_JOIN_OR(const std::string& nick, const std::string& user, const std::string& channel_name);
 		static std::string RPL_JOIN_WITHKEY(const std::string& nick, const std::string& user, const std::string& channel_name, std::string key);
 
 		static std::string RPL_PING(const std::string& nick, const std::string& token);
 		static std::string RPL_SETMODECLIENT(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& mode, const std::string& target);
 		static std::string RPL_PART(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string reason);
+		static std::string RPL_PART_OR(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string reason);
 		static std::string RPL_PRIVMSG(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg);
+		static std::string RPL_PRIVMSG_OR(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg);
 		static std::string RPL_NOTICE(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg);
 		static std::string RPL_TOPICCHANGE(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& topic);
 		static std::string RPL_KICK(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target, const std::string reason);

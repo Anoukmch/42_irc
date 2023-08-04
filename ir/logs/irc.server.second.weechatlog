@@ -82,3 +82,20 @@
 2023-08-04 12:42:28	--	irc: connecting to server localhost/8081...
 2023-08-04 12:42:28	--	irc: connected to localhost/8081 (127.0.0.1)
 2023-08-04 12:42:28	--	Welcome to the ft_irc network jmatheis!Unknown@localhost
+2023-08-04 13:49:23	--	irc: connecting to server localhost/8081...
+2023-08-04 13:49:23	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-04 13:49:23	--	irc: nickname "jmatheis" is already in use, trying nickname "jmatheis1"
+2023-08-04 13:50:23	=!=	irc: connection timeout (message 001 not received)
+2023-08-04 13:50:23	--	irc: disconnected from server
+2023-08-04 13:50:23	--	irc: reconnecting to server in 10 seconds
+2023-08-04 13:50:33	--	irc: reconnecting to server...
+2023-08-04 13:50:33	--	irc: connecting to server localhost/8081...
+2023-08-04 13:50:33	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-04 13:50:33	--	Welcome to the ft_irc network other!Unknown@localhost
+2023-08-04 13:53:02	--	irc: connecting to server localhost/8081...
+2023-08-04 13:53:02	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-04 13:53:02	--	Welcome to the ft_irc network jmatheis!Unknown@localhost
+2023-08-04 13:54:31	=!=	irc: reading data on socket: error 54 Connection reset by peer
+2023-08-04 13:54:31	--	irc: disconnecting from server...
+2023-08-04 13:54:31	--	irc: disconnected from server
+2023-08-04 13:54:32	--	irc: reconnecting to server in 10 seconds

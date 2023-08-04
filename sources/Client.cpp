@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/04 12:50:13 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/04 15:44:49 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,8 +119,6 @@ void Client::ReceiveCommand()
 
 void Client::SendData()
 {
-    while(params_.empty() != true)
-        params_.pop_back();
     params_.clear();
     cmd_ = "";
     trailing_ = "";
@@ -230,7 +228,6 @@ void Client::NickCmd()
     //     return ;
     // }
 
-    // PROBLEM WHEN CONNECTING WITH SAME NICK, SERVER CLOSES!!!!
     // CHECK FOR UNIQUE NICKNAME
     else if(server_->IsUniqueNickname(params_[0]) == false)
         output_ = Messages::ERR_NICKNAMEINUSE(params_[0]);
@@ -308,19 +305,30 @@ void Client::JoinCmd()
     std::stringstream name2(params_[0]);
     while(getline(name2, token, ','))
     {
-        server_->AddChannel(token);
-        server_->GetLastChannel()->AddClientToChannel(this);
-        server_->GetLastChannel()->set_inviteonlyflag(false);
-        channels_.push_back((server_->GetLastChannel()));
-
-        if (keys.empty()== false && it != keys.end())
+        Channel* exist = server_->GetChannel(token);
+        if(exist != nullptr)
         {
-            server_->GetLastChannel()->set_key(*it);
-            output_ = output_.append(Messages::RPL_JOIN_WITHKEY(nickname_, username_, token, *it)); //MULTIPLE MESSAGES!!!!
-            it++;
+            // CHECK FOR KEY FI ITS THE SAME, ..
+           exist->AddClientToChannel(this);
+           exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
+           output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token));
         }
         else
-            output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token)); //MULTIPLE MESSAGES!!!!
+        {
+            server_->AddChannel(token);
+            server_->GetLastChannel()->AddClientToChannel(this);
+            server_->GetLastChannel()->set_inviteonlyflag(false);
+            channels_.push_back((server_->GetLastChannel()));
+            
+            if (keys.empty()== false && it != keys.end())
+            {
+                server_->GetLastChannel()->set_key(*it);
+                output_ = output_.append(Messages::RPL_JOIN_WITHKEY(nickname_, username_, token, *it)); //MULTIPLE MESSAGES!!!!
+                it++;
+            }
+            else
+                output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token)); //MULTIPLE MESSAGES!!!!
+        }
     }
 }
 
@@ -378,10 +386,11 @@ void Client::PartCmd()
         std::stringstream name2(params_[0]);
         while(getline(name2, token, ','))
         {
+            server_->GetChannel(token)->SendMessageToChannel(Messages::RPL_PART_OR(nickname_, username_, token, trailing_), this);
+            output_ = output_.append(Messages::RPL_PART(nickname_, username_, token, trailing_));
             server_->GetChannel(token)->RemoveClientFromChannel(this);
             if(server_->GetChannel(token)->IsChannelNotEmpty() == false)
                 server_->DeleteChannel(token);
-            output_ = output_.append(Messages::RPL_PART(nickname_, username_, token, trailing_));
         }
     }
 }
@@ -403,7 +412,7 @@ void Client::PrivmsgCmd()
             }
             else
             {
-                chan->SendMessageToChannel(Messages::RPL_PRIVMSG(nickname_, username_, chan->get_name(), trailing_), this);
+                chan->SendMessageToChannel(Messages::RPL_PRIVMSG(nickname_, username_, chan->get_name(), &trailing_[1]), this);
                 return ;
             }
             
@@ -418,9 +427,7 @@ void Client::PrivmsgCmd()
                 return ;
             }
             else
-            {
-                cli->set_output(Messages::RPL_PRIVMSG(nickname_, username_, cli->get_nickname(), trailing_));
-            }
+                cli->set_output(Messages::RPL_PRIVMSG(nickname_, username_, cli->get_nickname(), &trailing_[1]));
         }
     }
 
