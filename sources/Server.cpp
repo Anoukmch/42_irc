@@ -60,7 +60,7 @@ void Server::server_setup()
         throw SetupError();
     }
     int opted = 1;
-    if (setsockopt(serverSocket_, SOL_SOCKET, SO_REUSEADDR, &opted, sizeof(opted)))
+    if (setsockopt(serverSocket_, SOL_SOCKET, SO_REUSEADDR, &opted, sizeof(opted)) == - 1)
     {
         std::cout << "Socket ";
         throw SetupError();
