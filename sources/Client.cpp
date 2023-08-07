@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/07 16:34:32 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/07 17:09:35 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -295,17 +295,28 @@ void Client::JoinCmd()
     {
         Channel* exist = server_->GetChannel(token);
         if(token[0] != '&' && token[0] != '#')
-            output_ = output_.append(Messages::ERR_NOSUCHCHANNEL(nickname_, token)); // Do we need the Append function here?
+            output_ = output_.append(Messages::ERR_NOSUCHCHANNEL(nickname_, token));
         else if(exist != nullptr)
         {
-            // CHECK FOR KEY FI ITS THE SAME, ..
-            // if(exist->get_key != "" )
-            // {
-
-            // }
-            exist->AddClientToChannel(this);
-            exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
-            output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token));
+            // NOT WORKING WITH KEYS ATM
+            if (keys.empty()== false && it != keys.end() && exist->get_key() != *it)
+            {
+                output_ = output_.append(Messages::ERR_BADCHANNELKEY(nickname_, exist->get_name(), *it));
+                it++;
+            }
+            else if (keys.empty()== false && it != keys.end() && exist->get_key() == *it)
+            {
+                exist->AddClientToChannel(this);
+                exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
+                output_ = output_.append(Messages::RPL_JOIN_WITHKEY(nickname_, username_, token, *it));
+                it++;
+            }
+            else
+            {
+                exist->AddClientToChannel(this);
+                exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
+                output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token));
+            }
         }
         else
         {

@@ -51,6 +51,7 @@ class Messages
 		static std::string RPL_TOPIC(const std::string& nick, const std::string& channel_name, const std::string& topic);
 
 		// ERROR MESSAGES
+		static std::string ERR_BADCHANNELKEY(const std::string& nick, const std::string& channel_name, const std::string& key);
 		static std::string ERR_NEEDMOREPARAMS(const std::string& command);
 		static std::string ERR_PASSWDMISMATCH();
 		static std::string ERR_ALREADYREGISTRED() ;

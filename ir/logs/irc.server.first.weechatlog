@@ -145,3 +145,14 @@
 2023-08-07 16:09:12	--	irc: connected to localhost/8081 (127.0.0.1)
 2023-08-07 16:09:12	--	Welcome to the ft_irc network jmatheis!Unknown@localhost
 2023-08-07 16:10:12	--	localhost: No such server
+2023-08-07 16:57:35	--	irc: connecting to server localhost/8081...
+2023-08-07 16:57:35	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-07 16:57:35	--	Welcome to the ft_irc network jmatheis!Unknown@localhost
+2023-08-07 16:58:30	=!=	irc: reading data on socket: error 22 (connection closed by peer)
+2023-08-07 16:58:30	--	irc: disconnecting from server...
+2023-08-07 16:58:30	--	irc: disconnected from server
+2023-08-07 16:58:30	--	irc: reconnecting to server in 10 seconds
+2023-08-07 16:58:56	--	irc: connecting to server localhost/8081...
+2023-08-07 16:58:56	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-07 16:58:56	--	Welcome to the ft_irc network jmatheis!Unknown@localhost
+2023-08-07 16:59:56	--	localhost: No such server

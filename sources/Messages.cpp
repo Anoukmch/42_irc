@@ -207,6 +207,12 @@ std::string Messages::RPL_TOPIC(const std::string& nick, const std::string& chan
 
 // ERROR REPLIES
 
+std::string Messages::ERR_BADCHANNELKEY(const std::string& nick, const std::string& channel_name, const std::string& key)
+{
+	std::cout << RED << nick << " tried joining channel " << channel_name << " but used the wrong key " << key << "!" << RESET << "\n";
+	return std::string(":") + SERVERNAME + " 475 " + channel_name + " :Cannot join channel (+k)\r\n";
+}
+
 std::string Messages::ERR_NEEDMOREPARAMS(const std::string& command)
 {
 	std::cout << RED << command << ": Change the amount of parameters to execute command: " << command << "!" << RESET << "\n";
@@ -275,7 +281,7 @@ std::string Messages::ERR_NOSUCHNICK(const std::string& nick, const std::string 
 
 std::string Messages::ERR_NOSUCHNICK_NICKONLY(const std::string& nick)
 {
-	std::cout << RED << "NO user with nickname " << nick << " exists!" << RESET << "\n";
+	std::cout << RED << "No user with nickname " << nick << " exists!" << RESET << "\n";
 	return std::string(":") + SERVERNAME " 401 " + nick + " :No such nick/channel\r\n";
 }
 
