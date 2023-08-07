@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/07 13:37:13 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/07 14:05:11 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,12 +68,6 @@ void Channel::set_inviteonlyflag(bool status)
     is_inviteonly_ = status;
 }
 
-
-void Channel::set_operator(std::string nickname)
-{
-    channeloperator_ = nickname;
-}
-
 // GETTER
 
 std::string Channel::get_name()
@@ -101,11 +95,6 @@ bool Channel::get_inviteonlyflag()
     return(is_inviteonly_);
 }
 
-std::string Channel::get_operator()
-{
-    return(channeloperator_);
-}
-
 // OTHER
 
 void Channel::AddClientToChannel(Client* c)
@@ -118,11 +107,28 @@ void Channel::RemoveClientFromChannel(Client* c)
     std::vector<Client*>::iterator it = clients_.begin();
     while(it != clients_.end())
     {
-        if(c == *it) //2 is DISCONNECTED
+        if(c == *it)
             it = clients_.erase(it);
         else
             it++;
     }
+}
+
+void Channel::AddClientAsOperator(std::string nickname)
+{
+    operator_.push_back(nickname);
+}
+
+void Channel::RemoveClientAsOperator(std::string nickname)
+{
+    std::vector<std::string>::iterator it = operator_.begin();
+    while(it != operator_.end())
+    {
+        if(nickname == *it)
+            it = operator_.erase(it);
+        else
+            it++;
+    } 
 }
 
 bool Channel::IsClientOnChannel(Client *c)

@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/07 13:36:59 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/07 13:56:43 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,14 +187,14 @@ void Client::CheckCommand(std::string buf)
 {
     SetCmdParamsTrailing(buf);
 
-    std::string cmds[16] = { "PASS", "CAP", "NICK", "USER", "JOIN", "PING", "MODE",
-        "NAMES", "PART", "PRIVMSG", "INVITE", "TOPIC", "KICK", "OPER", "NOTICE", "QUIT"};
-	void (Client::*fp[16])(void) = {&Client::PassCmd, &Client::CapCmd, &Client::NickCmd,
+    std::string cmds[15] = { "PASS", "CAP", "NICK", "USER", "JOIN", "PING", "MODE",
+        "NAMES", "PART", "PRIVMSG", "INVITE", "TOPIC", "KICK", "NOTICE", "QUIT"};
+	void (Client::*fp[15])(void) = {&Client::PassCmd, &Client::CapCmd, &Client::NickCmd,
         &Client::UserCmd, &Client::JoinCmd, &Client::PingCmd, &Client::ModeCmd, &Client::NamesCmd,
         &Client::PartCmd, &Client::PrivmsgCmd, &Client::InviteCmd, &Client::TopicCmd,
-        &Client::KickCmd, &Client::OperCmd, &Client::NoticeCmd, &Client::QuitCmd};
+        &Client::KickCmd, &Client::NoticeCmd, &Client::QuitCmd};
 
-    for(int i = 0; i < 16; i++)
+    for(int i = 0; i < 15; i++)
     {
         if(cmd_ == cmds[i])
         {
@@ -322,7 +322,7 @@ void Client::JoinCmd()
             server_->AddChannel(token);
             server_->GetLastChannel()->AddClientToChannel(this);
             server_->GetLastChannel()->set_inviteonlyflag(false);
-            server_->GetLastChannel()->set_operator(this->get_nickname());
+            server_->GetLastChannel()->AddClientAsOperator(this->get_nickname());
             // SET CHANNELOPERATOR
             channels_.push_back((server_->GetLastChannel()));
 
@@ -507,29 +507,11 @@ void Client::KickCmd()
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
     else
     {
+        
         // ONLY CHANNEL OPERATOR IS ALLOWED TO KICK ANOTHER USER OUT OF A CHANNEL
         // ERR_USERNOTINCHANNEL
         // ERR_NOSUCHCHANNEL
         // ERR_NOTONCHANNEL (USER THAT WANTS TO KICK SOMEONEELSE)
-    }
-}
-
-void Client::OperCmd()
-{
-    if(params_.size() != 2 || trailing_ != "")
-        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
-    else
-    {
-        Client* c = server_->GetClient(params_[0]);
-        if(c == nullptr)
-            output_ = Messages::ERR_NOSUCHNICK_NICKONLY(nickname_);
-        else if (params_[1] != OPERPWD)
-            output_ = Messages::ERR_PASSWDMISMATCH();
-        else
-        {
-            output_ = Messages::RPL_YOUREOPER(nickname_, params_[0]);
-            c->set_opflag(true);
-        }
     }
 }
 

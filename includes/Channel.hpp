@@ -38,7 +38,6 @@ class Channel
 		void set_mode(std::string& mode);
 		void set_key(std::string key);
 		void set_inviteonlyflag(bool status);
-		void set_operator(std::string nickname);
 
 
 		// GETTER
@@ -46,14 +45,19 @@ class Channel
 		std::string get_mode();
 		std::string get_name();
 		std::string get_key();
-		std::string get_operator();
 		bool get_inviteonlyflag();
 
 		void SendMessageToChannel(std::string mess, Client* exclude);
 		void AddClientToChannel(Client* c);
 		void RemoveClientFromChannel(Client* c);
+		void AddClientAsOperator(std::string nickname);
+		void RemoveClientAsOperator(std::string nickname);
+
+
 		bool IsClientOnChannel(Client *c);
 		bool IsChannelNotEmpty();
+		bool IsClientAnOperator(std::string nickname);
+
 	private:
 		Channel(); //Default Constructor
 		Channel(const Channel &copyclass); //Copy Constructor
@@ -67,7 +71,7 @@ class Channel
 		
 		std::string key_; //key, if empty none
 		bool is_inviteonly_;
-		std::string channeloperator_; //name, if empty none
+		std::vector<std::string>operator_;
 };
 
 #endif
