@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/07 17:13:21 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/07 21:12:05 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -289,6 +289,8 @@ void Client::JoinCmd()
             keys.push_back(ke);
         it = keys.begin();
     }
+    if(keys.size() == 0)
+        it = keys.end();    
     std::stringstream name(params_[0]);
     std::string token;
     while(getline(name, token, ','))
@@ -298,24 +300,28 @@ void Client::JoinCmd()
             output_ = output_.append(Messages::ERR_NOSUCHCHANNEL(nickname_, token));
         else if(exist != nullptr)
         {
-            // NOT WORKING WITH KEYS ATM
-            if (keys.empty()== false && it != keys.end() && exist->get_key() != *it)
+            if(it == keys.end())
             {
-                output_ = output_.append(Messages::ERR_BADCHANNELKEY(nickname_, exist->get_name(), *it));
-                it++;
+                if(exist->get_key() != "")
+                    output_ = output_.append(Messages::ERR_BADCHANNELKEY(nickname_, exist->get_name()));
+                else
+                {
+                    exist->AddClientToChannel(this);
+                    exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
+                    output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token));
+                }
             }
-            else if (keys.empty()== false && it != keys.end() && exist->get_key() == *it)
+            else if (it != keys.end())
             {
-                exist->AddClientToChannel(this);
-                exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
-                output_ = output_.append(Messages::RPL_JOIN_WITHKEY(nickname_, username_, token, *it));
+                if(exist->get_key() != *it)
+                    output_ = output_.append(Messages::ERR_BADCHANNELKEY(nickname_, exist->get_name()));
+                else
+                {
+                    exist->AddClientToChannel(this);
+                    exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
+                    output_ = output_.append(Messages::RPL_JOIN_WITHKEY(nickname_, username_, token, *it));                    
+                }
                 it++;
-            }
-            else
-            {
-                exist->AddClientToChannel(this);
-                exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
-                output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token));
             }
         }
         else
@@ -376,40 +382,40 @@ void    ExecuteMode(std::string modes)
     }
 }
 
-std::string Client::ModeCmd()
+void Client::ModeCmd()
 {
-    if (params_.empty() || params_.size() < 2 )
-        return (output_ = Messages::ERR_NEEDMOREPARAMS(cmd_));
-    else if (params_[0].front() != '#' || server_->GetChannel(params_[0]) == nullptr) // Try to print the condition with the #
-        return (output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]));
-    else
-    {
-        if != "itkol+-";
-        return (output_ = Messages::ERR_UMODEUNKNOWNFLAG(nickname_));
-    }
-    std::string modes; // example "+i -okl"
-    bool set = false;
+    // if (params_.empty() || params_.size() < 2 )
+    //     return (output_ = Messages::ERR_NEEDMOREPARAMS(cmd_));
+    // else if (params_[0].front() != '#' || server_->GetChannel(params_[0]) == nullptr) // Try to print the condition with the #
+    //     return (output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]));
+    // else
+    // {
+    //     if != "itkol+-";
+    //     return (output_ = Messages::ERR_UMODEUNKNOWNFLAG(nickname_));
+    // }
+    // std::string modes; // example "+i -okl"
+    // bool set = false;
 
-    for (size_t i = 0 ; i < params_.size() ; i++)
-    {
-        if (params_[i].front() == '+')
-            set = true;
-        else if // params_[i].front() == '-'
-            // do nothing
-        else if // it is a modeparams so it has to be preceeded by either a l or t
-        ExecuteMode(params_[i]);
-        return (output_ = Messages::ERR_UMODEUNKNOWNFLAG(nickname_));
-    }
+    // for (size_t i = 0 ; i < params_.size() ; i++)
+    // {
+    //     if (params_[i].front() == '+')
+    //         set = true;
+    //     else if // params_[i].front() == '-'
+    //         // do nothing
+    //     else if // it is a modeparams so it has to be preceeded by either a l or t
+    //     ExecuteMode(params_[i]);
+    //     return (output_ = Messages::ERR_UMODEUNKNOWNFLAG(nickname_));
+    // }
 
-    if ( /* is not op */ )
-        return (output_ = Messages::ERR_CHANOPRIVSNEEDED(nickname_, params_[0]));
+    // if ( /* is not op */ )
+    //     return (output_ = Messages::ERR_CHANOPRIVSNEEDED(nickname_, params_[0]));
 
 
-    while (param_s)
-        if != "itkol+-";
+    // while (param_s)
+    //     if != "itkol+-";
 
-    // append the different modes parameters;
-    output_ = Messages::RPL_SETMODECHANNEL(nickname_, params_[0], mode); // Everything went fine
+    // // append the different modes parameters;
+    // output_ = Messages::RPL_SETMODECHANNEL(nickname_, params_[0], mode); // Everything went fine
 
     // bool is_inviteonly_;
     // void set_inviteonlyflag(bool status);

@@ -207,9 +207,9 @@ std::string Messages::RPL_TOPIC(const std::string& nick, const std::string& chan
 
 // ERROR REPLIES
 
-std::string Messages::ERR_BADCHANNELKEY(const std::string& nick, const std::string& channel_name, const std::string& key)
+std::string Messages::ERR_BADCHANNELKEY(const std::string& nick, const std::string& channel_name)
 {
-	std::cout << RED << nick << " tried joining channel " << channel_name << " but used the wrong key " << key << "!" << RESET << "\n";
+	std::cout << RED << nick << " tried joining channel " << channel_name << " but used the wrong key!" << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 475 " + channel_name + " :Cannot join channel (+k)\r\n";
 }
 
