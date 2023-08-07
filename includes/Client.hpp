@@ -45,7 +45,6 @@ class Client
 		// SETTER
 		void set_nickname(std::string& nickname);
 		void set_username(std::string& username);
-		void set_opflag(bool flag);
 
 		// GETTER
 		std::string get_nickname();
@@ -53,12 +52,12 @@ class Client
 		void set_output(std::string mess);
 		int get_state();
 		int get_fd();
-		bool get_opflag();
 
 		// OTHER
 		void ConnectionClosing();
 		void ReceiveCommand();
 		void SendData();
+		void RemoveChannel(Channel* chan);
 
 		void CheckCommand(std::string buf);
 		// void PassCommand(std::string buf);
@@ -80,10 +79,6 @@ class Client
 		std::string pwd_;
 		std::string nickname_;
 		std::string username_;
-
-		// OPER STUFF
-		bool isop_;
-
 
 		std::string buffer_;
 		std::string output_;
@@ -112,6 +107,9 @@ class Client
 		void OperCmd();
 		void NoticeCmd();
 		void QuitCmd();
+
+		bool IsPossibleToKick(Channel* channel, Client* client);
+		bool SameNumbChannelsClientsToKick();
 };
 
 #endif

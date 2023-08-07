@@ -129,3 +129,19 @@
 2023-08-07 10:59:17	--	irc: disconnecting from server...
 2023-08-07 10:59:17	--	irc: disconnected from server
 2023-08-07 10:59:17	--	irc: reconnecting to server in 10 seconds
+2023-08-07 14:30:33	--	irc: connecting to server localhost/8081...
+2023-08-07 14:30:33	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-07 14:30:33	--	Welcome to the ft_irc network jmatheis!Unknown@localhost
+2023-08-07 16:00:59	--	irc: connecting to server localhost/8081...
+2023-08-07 16:00:59	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-07 16:00:59	--	Welcome to the ft_irc network jmatheis!Unknown@localhost
+2023-08-07 16:01:59	--	localhost: No such server
+2023-08-07 16:03:18	--	irc: connecting to server localhost/8081...
+2023-08-07 16:03:18	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-07 16:03:18	--	Welcome to the ft_irc network jmatheis!Unknown@localhost
+2023-08-07 16:03:27	--	You are now known as second
+2023-08-07 16:04:18	--	localhost: No such server
+2023-08-07 16:09:12	--	irc: connecting to server localhost/8081...
+2023-08-07 16:09:12	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-07 16:09:12	--	Welcome to the ft_irc network jmatheis!Unknown@localhost
+2023-08-07 16:10:12	--	localhost: No such server

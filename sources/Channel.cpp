@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/07 14:05:11 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/07 14:28:51 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,18 @@ bool Channel::IsClientOnChannel(Client *c)
     while(it != clients_.end())
     {
         if(c == *it)
+            return(true);
+        it++;
+    }
+    return(false);
+}
+
+bool Channel::IsClientAnOperator(std::string nickname)
+{
+    std::vector<std::string>::iterator it = operator_.begin();
+    while(it != operator_.end())
+    {
+        if(nickname == *it)
             return(true);
         it++;
     }

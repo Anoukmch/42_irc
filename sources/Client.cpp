@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/07 13:56:43 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/07 16:00:17 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Client::Client()
 
 // Initialization of all attribute
 
-Client::Client(int fd, Server* server) : ClientFd_(fd), ClientState_(-1), username_("Unknown"), isop_(false), server_(server)
+Client::Client(int fd, Server* server) : ClientFd_(fd), ClientState_(-1), username_("Unknown"), server_(server)
 {
     std::cout << "Constructor" << std::endl;
 }
@@ -64,11 +64,6 @@ void Client::set_output(std::string mess)
     output_ = output_.append(mess);
 }
 
-void Client::set_opflag(bool flag)
-{
-    isop_ = flag;
-}
-
 // GETTER
 
 std::string Client::get_nickname()
@@ -89,11 +84,6 @@ int Client::get_state()
 int Client::get_fd()
 {
     return(ClientFd_);
-}
-
-bool Client::get_opflag()
-{
-    return(isop_);
 }
 
 // OTHER
@@ -323,7 +313,6 @@ void Client::JoinCmd()
             server_->GetLastChannel()->AddClientToChannel(this);
             server_->GetLastChannel()->set_inviteonlyflag(false);
             server_->GetLastChannel()->AddClientAsOperator(this->get_nickname());
-            // SET CHANNELOPERATOR
             channels_.push_back((server_->GetLastChannel()));
 
             if (keys.empty()== false && it != keys.end())
@@ -501,18 +490,96 @@ void Client::TopicCmd()
 }
 
 // <channel> *( "," <channel> ) <user> *( "," <user> ) [<comment>]
+// For the message to be syntactically correct, there MUST be
+// either one channel parameter and multiple user parameter, or as many
+// channel parameters as there are user parameters.
+// ONLY CHANNEL OPERATOR IS ALLOWED TO KICK ANOTHER USER OUT OF A CHANNEL
 void Client::KickCmd()
 {
     if(params_.size() != 2)
         output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
     else
     {
-        
-        // ONLY CHANNEL OPERATOR IS ALLOWED TO KICK ANOTHER USER OUT OF A CHANNEL
-        // ERR_USERNOTINCHANNEL
-        // ERR_NOSUCHCHANNEL
-        // ERR_NOTONCHANNEL (USER THAT WANTS TO KICK SOMEONEELSE)
+        if (params_[0].find(',') != std::string::npos && SameNumbChannelsClientsToKick() == false)
+            output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        else
+        {
+            std::stringstream channels(params_[0]);
+            std::stringstream users(params_[1]);
+            std::string channel;
+            std::string user;
+            while((getline(channels, channel, ',') && getline(users, user, ',')) || getline(users, user, ','))
+            {
+                Channel* channelptr = server_->GetChannel(channel);
+                Client* client = server_->GetClient(user);
+                if(IsPossibleToKick(channelptr, client) == true)
+                {
+                    channelptr->RemoveClientFromChannel(client);
+                    channelptr->RemoveClientAsOperator(client->get_nickname()); //posisble?
+                    client->RemoveChannel(channelptr);
+                    if(trailing_ == "")
+                        output_ = output_.append(Messages::RPL_KICK(nickname_, username_, channel, user));
+                    else
+                        output_ = output_.append(Messages::RPL_KICK_MESSAGE(nickname_, username_, channel, user, trailing_));
+                }
+            }
+        }
     }
+}
+
+bool Client::IsPossibleToKick(Channel* channelptr, Client* client)
+{
+    if (channelptr == nullptr)
+    {
+        output_ = output_.append(Messages::ERR_NOSUCHCHANNEL(nickname_, channelptr->get_name()));
+        return(false);
+    }
+    else if (client == nullptr)
+    {
+        output_ = output_.append(Messages::ERR_NOSUCHNICK_NICKONLY(client->get_nickname()));
+        return(false);
+    }
+    else if (channelptr->IsClientOnChannel(this) == false)
+    {
+        output_ = output_.append(Messages::ERR_NOTONCHANNEL(nickname_, channelptr->get_name()));
+        return(false);
+    }
+    else if (channelptr->IsClientAnOperator(nickname_) == false)
+    {
+        output_ = output_.append(Messages::ERR_CHANOPRIVSNEEDED(nickname_, channelptr->get_name()));
+        return(false);
+    }
+    else if (channelptr->IsClientOnChannel(client) == false)
+    {
+        output_ = output_.append(Messages::ERR_USERNOTINCHANNEL(client->get_nickname(), channelptr->get_name()));
+        return(false);
+    }
+    return(true);
+}
+
+bool Client::SameNumbChannelsClientsToKick()
+{
+    int chan_count = 0;
+    std::stringstream channels((params_[0]));
+    std::string token;
+    while(getline(channels, token, ','))
+        chan_count++;
+    int user_count = 0;
+    std::stringstream user((params_[1]));
+    while(getline(user, token, ','))
+        user_count++;
+    if(user_count == chan_count)
+        return(true);
+    return(false);
+}
+
+void Client::RemoveChannel(Channel* chan)
+{
+    for(unsigned int i = 0; i < channels_.size(); i++)
+    {
+        if(channels_[i] == chan)
+            channels_.erase(channels_.begin()+i);
+    }   
 }
 
 void Client::NoticeCmd()
