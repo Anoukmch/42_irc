@@ -38,12 +38,15 @@ class Channel
 		void set_mode(std::string& mode);
 		void set_key(std::string key);
 		void set_inviteonlyflag(bool status);
+		void set_operator(std::string nickname);
+
 
 		// GETTER
 		std::string get_topic();
 		std::string get_mode();
 		std::string get_name();
 		std::string get_key();
+		std::string get_operator();
 		bool get_inviteonlyflag();
 
 		void SendMessageToChannel(std::string mess, Client* exclude);

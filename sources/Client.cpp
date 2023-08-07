@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/07 12:46:42 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/07 13:36:59 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -281,6 +281,7 @@ void Client::UserCmd()
 // CHANNEL = FULL?, TOO MANY CHANNELS?, INVITEONLY CHANNEL?
 // Channel already exists, channel has key that user doesn't know
 //  /JOIN 0 ->leave all channels
+// IF CHANNEL DOESN'T EXIST ->CLIENT BECOMES OPERATOR
 void Client::JoinCmd()
 {
     if(params_.size() < 1 || params_.size() > 2)
@@ -321,6 +322,8 @@ void Client::JoinCmd()
             server_->AddChannel(token);
             server_->GetLastChannel()->AddClientToChannel(this);
             server_->GetLastChannel()->set_inviteonlyflag(false);
+            server_->GetLastChannel()->set_operator(this->get_nickname());
+            // SET CHANNELOPERATOR
             channels_.push_back((server_->GetLastChannel()));
 
             if (keys.empty()== false && it != keys.end())
@@ -419,25 +422,16 @@ void Client::PrivmsgCmd()
         {
             Channel *chan = server_->GetChannel(params_[0]);
             if(chan == nullptr)
-            {
                 output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
-                return ;
-            }
             else
-            {
                 chan->SendMessageToChannel(Messages::RPL_PRIVMSG(nickname_, username_, chan->get_name(), &trailing_[1]), this);
-                return ;
-            }
         }
         else
         {
             // MESSAGE TO CLIENT
             Client *cli = server_->GetClient(params_[0]);
             if(cli == nullptr)
-            {
                 output_ = Messages::ERR_NOSUCHNICK_NICKONLY(nickname_);
-                return ;
-            }
             else
                 cli->set_output(Messages::RPL_PRIVMSG(nickname_, username_, cli->get_nickname(), &trailing_[1]));
         }
@@ -506,9 +500,18 @@ void Client::TopicCmd()
     }
 }
 
+// <channel> *( "," <channel> ) <user> *( "," <user> ) [<comment>]
 void Client::KickCmd()
 {
-
+    if(params_.size() != 2)
+        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+    else
+    {
+        // ONLY CHANNEL OPERATOR IS ALLOWED TO KICK ANOTHER USER OUT OF A CHANNEL
+        // ERR_USERNOTINCHANNEL
+        // ERR_NOSUCHCHANNEL
+        // ERR_NOTONCHANNEL (USER THAT WANTS TO KICK SOMEONEELSE)
+    }
 }
 
 void Client::OperCmd()

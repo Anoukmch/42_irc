@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/07 11:32:29 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/07 13:37:13 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,12 @@ void Channel::set_inviteonlyflag(bool status)
     is_inviteonly_ = status;
 }
 
+
+void Channel::set_operator(std::string nickname)
+{
+    channeloperator_ = nickname;
+}
+
 // GETTER
 
 std::string Channel::get_name()
@@ -93,6 +99,11 @@ std::string Channel::get_key()
 bool Channel::get_inviteonlyflag()
 {
     return(is_inviteonly_);
+}
+
+std::string Channel::get_operator()
+{
+    return(channeloperator_);
 }
 
 // OTHER

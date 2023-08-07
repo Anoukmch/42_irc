@@ -103,10 +103,16 @@ std::string Messages::RPL_TOPICCHANGE(const std::string& nick, const std::string
 	return std::string(":") + nick + "!" + user + "@" + HOST + " TOPIC " + channel_name + " :" + topic + "\r\n";
 }
 
-std::string Messages::RPL_KICK(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target, const std::string reason)
+std::string Messages::RPL_KICK_MESSAGE(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target, const std::string reason)
 {
 	std::cout << GREEN << nick << " kicked " << target << " of " << channel_name << " because: " << reason << "!" << RESET << "\n";
 	return std::string(":") +  nick + "!" + user + "@" + HOST + " KICK " + channel_name + " " + target + " :" + reason + "\r\n";
+}
+
+std::string Messages::RPL_KICK(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target)
+{
+	std::cout << GREEN << nick << " kicked " << target << " of " << channel_name << "!" << RESET << "\n";
+	return std::string(":") +  nick + "!" + user + "@" + HOST + " KICK " + channel_name + " " + target + "\r\n";
 }
 
 std::string Messages::RPL_QUIT(const std::string& nick, const std::string& user)
