@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/07 16:00:17 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/07 16:16:27 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -444,6 +444,8 @@ void Client::InviteCmd()
             output_ = Messages::ERR_NOTONCHANNEL(nickname_, params_[1]);
         else if (chan->IsClientOnChannel(c) == true)
             output_ = Messages::ERR_USERONCHANNEL(nickname_, params_[0], params_[1]);
+        else if(chan->get_inviteonlyflag() == true && chan->IsClientAnOperator(nickname_) == false)
+            output_ = Messages::ERR_CHANOPRIVSNEEDED(nickname_, chan->get_name());
         else
         {
             c->set_output(Messages::RPL_INVITED(nickname_, username_, params_[1], params_[0]));

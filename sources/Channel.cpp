@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/07 14:28:51 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/07 16:13:59 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ Channel::Channel()
     std::cout << "Default Constructor" << std::endl;
 }
 
-Channel::Channel(std::string name) : name_(name)
+Channel::Channel(std::string name) : name_(name), is_inviteonly_(false)
 {
     std::cout << "Constructor" << std::endl;
 }
