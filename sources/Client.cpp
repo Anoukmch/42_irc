@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/07 16:16:27 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/07 16:34:32 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,11 +178,11 @@ void Client::CheckCommand(std::string buf)
     SetCmdParamsTrailing(buf);
 
     std::string cmds[15] = { "PASS", "CAP", "NICK", "USER", "JOIN", "PING", "MODE",
-        "NAMES", "PART", "PRIVMSG", "INVITE", "TOPIC", "KICK", "NOTICE", "QUIT"};
+        "NAMES", "PART", "PRIVMSG", "INVITE", "TOPIC", "KICK", "QUIT"};
 	void (Client::*fp[15])(void) = {&Client::PassCmd, &Client::CapCmd, &Client::NickCmd,
         &Client::UserCmd, &Client::JoinCmd, &Client::PingCmd, &Client::ModeCmd, &Client::NamesCmd,
         &Client::PartCmd, &Client::PrivmsgCmd, &Client::InviteCmd, &Client::TopicCmd,
-        &Client::KickCmd, &Client::NoticeCmd, &Client::QuitCmd};
+        &Client::KickCmd, &Client::QuitCmd};
 
     for(int i = 0; i < 15; i++)
     {
@@ -582,11 +582,6 @@ void Client::RemoveChannel(Channel* chan)
         if(channels_[i] == chan)
             channels_.erase(channels_.begin()+i);
     }   
-}
-
-void Client::NoticeCmd()
-{
-
 }
 
 void Client::QuitCmd()

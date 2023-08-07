@@ -104,8 +104,6 @@ class Client
 		void InviteCmd();
 		void TopicCmd();
 		void KickCmd();
-		void OperCmd();
-		void NoticeCmd();
 		void QuitCmd();
 
 		bool IsPossibleToKick(Channel* channel, Client* client);
