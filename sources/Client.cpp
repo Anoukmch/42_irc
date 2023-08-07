@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/04 17:24:39 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/07 11:34:26 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -433,6 +433,8 @@ void Client::PrivmsgCmd()
 
 }
 
+// if invite-only flag -> only channel operators may invite others
+// only invited user and the inviting user will receive the message
 void Client::InviteCmd()
 {
     if(params_.size() != 2 || trailing_ != "")
@@ -440,27 +442,18 @@ void Client::InviteCmd()
     else
     {
         Client *c = server_->GetClient(params_[0]);
+        Channel *chan = server_->GetChannel(params_[1]);
         if(c == nullptr)
             output_ = Messages::ERR_NOSUCHNICK(params_[0], params_[1]); //OTHER ERROR MESSAGE!
-        else if(server_->GetChannel(params_[1]) == nullptr
-            || server_->GetChannel(params_[1])->IsClientOnChannel(this) == false)
+        else if(chan == nullptr || chan->IsClientOnChannel(this) == false)
             output_ = Messages::ERR_NOTONCHANNEL(nickname_, params_[1]);
-        else if (server_->GetChannel(params_[1])->IsClientOnChannel(server_->GetClient(params_[0])) == true)
+        else if (chan->IsClientOnChannel(c) == true)
             output_ = Messages::ERR_USERONCHANNEL(nickname_, params_[0], params_[1]);
         else
         {
-            server_->GetClient(params_[0])->set_output(Messages::RPL_INVITED(nickname_, username_, params_[1], params_[0]));
+            c->set_output(Messages::RPL_INVITED(nickname_, username_, params_[1], params_[0]));
             output_ = Messages::RPL_INVITING(nickname_, params_[1], params_[0]);
-            // INVITE USER TO CHANNEL
-
         }
-        // <nickname> <channel>
-        // channel must not exist or be valid
-        // only member of the channel, if it exists, are allowed to invite others
-        // ERR_NOTONCHANNEL ERR_NOSUCHNICK, ERR_USERONCHANNEL
-        // RPL_INVITING
-        // if invite-only flag -> only channel operators may invite others
-        // only invited user and the inviting user will receive the message
     }
 }
 

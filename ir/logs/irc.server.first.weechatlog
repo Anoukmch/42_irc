@@ -105,3 +105,27 @@
 2023-08-04 15:43:50	--	irc: connecting to server localhost/8081...
 2023-08-04 15:43:50	--	irc: connected to localhost/8081 (127.0.0.1)
 2023-08-04 15:43:50	--	Welcome to the ft_irc network jmatheis!Unknown@localhost
+2023-08-07 10:48:06	--	irc: connecting to server localhost/8081...
+2023-08-07 10:48:06	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-07 10:48:06	--	Welcome to the ft_irc network jmatheis!Unknown@localhost
+2023-08-07 10:50:08	=!=	irc: reading data on socket: error 54 Connection reset by peer
+2023-08-07 10:50:08	--	irc: disconnecting from server...
+2023-08-07 10:50:08	--	irc: disconnected from server
+2023-08-07 10:50:08	--	irc: reconnecting to server in 10 seconds
+2023-08-07 10:50:23	--	irc: connecting to server localhost/8081...
+2023-08-07 10:50:23	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-07 10:50:23	--	Welcome to the ft_irc network jmatheis!Unknown@localhost
+2023-08-07 10:51:23	--	localhost: No such server
+2023-08-07 10:51:46	--	#idk:  You're not on that channel
+2023-08-07 10:55:59	--	irc: connecting to server localhost/8081...
+2023-08-07 10:55:59	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-07 10:55:59	--	Welcome to the ft_irc network jmatheis!Unknown@localhost
+2023-08-07 10:56:22	=!=	irc: this buffer is not a channel!
+2023-08-07 10:56:32	=!=	irc: this buffer is not a channel!
+2023-08-07 10:57:10	--	irc: connecting to server localhost/8081...
+2023-08-07 10:57:10	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-07 10:57:10	--	Welcome to the ft_irc network jmatheis!Unknown@localhost
+2023-08-07 10:59:17	=!=	irc: reading data on socket: error 54 Connection reset by peer
+2023-08-07 10:59:17	--	irc: disconnecting from server...
+2023-08-07 10:59:17	--	irc: disconnected from server
+2023-08-07 10:59:17	--	irc: reconnecting to server in 10 seconds
