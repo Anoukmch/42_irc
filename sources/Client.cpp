@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/04 17:24:39 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/07 16:45:25 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -353,8 +353,103 @@ void Client::PingCmd()
     //
 }
 
-void Client::ModeCmd()
+void    ExecuteMode(std::string modes)
 {
+    for (size_t i = 0; i < modes.size() ; i++)
+    {
+
+    }
+}
+
+std::string Client::ModeCmd()
+{
+    if (params_.empty() || params_.size() < 2 )
+        return (output_ = Messages::ERR_NEEDMOREPARAMS(cmd_));
+    else if (params_[0].front() != '#' || server_->GetChannel(params_[0]) == nullptr) // Try to print the condition with the #
+        return (output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]));
+    else
+    {
+        if != "itkol+-";
+        return (output_ = Messages::ERR_UMODEUNKNOWNFLAG(nickname_));
+    }
+    std::string modes; // example "+i -okl"
+    bool set = false;
+
+    for (size_t i = 0 ; i < params_.size() ; i++)
+    {
+        if (params_[i].front() == '+')
+            set = true;
+        else if // params_[i].front() == '-'
+            // do nothing
+        else if // it is a modeparams so it has to be preceeded by either a l or t
+        ExecuteMode(params_[i]);
+        return (output_ = Messages::ERR_UMODEUNKNOWNFLAG(nickname_));
+    }
+
+    if ( /* is not op */ )
+        return (output_ = Messages::ERR_CHANOPRIVSNEEDED(nickname_, params_[0]));
+
+
+    while (param_s)
+        if != "itkol+-";
+
+    // append the different modes parameters;
+    output_ = Messages::RPL_SETMODECHANNEL(nickname_, params_[0], mode); // Everything went fine
+
+    // bool is_inviteonly_;
+    // void set_inviteonlyflag(bool status);
+    // std::string mode_;
+
+    // MODE <channel> *( ( "-" / "+" ) *<modes> *<modeparams> )
+
+    // CHECKING ORDER
+    // step 1_ input line is well-written
+    // step 2_ channel, mode exists
+    // step 3_ user is not op
+
+    // INPUT PARSING
+   // +modemodemode
+   // +mode +mode +mode
+
+    // Checking parser :
+    /*
+        +t + parameter
+        -t without parameter
+        +l + parameter
+        -l without parameter
+
+
+    */
+
+   // MODE #channel +t +t
+    /* FLAG :
+        · i: Set/remove Invite-only channel
+        · t: Set/remove the restrictions of the TOPIC command to channel
+            operators
+        · k: Set/remove the channel key (password) + parameter
+        When a channel key is set (by using the mode ’k’), servers MUST
+        reject their local users request to join the channel unless this key
+        is given. The channel key MUST only be made visible to the channel members in
+        the reply sent by the server to a MODE query.
+        · o: Give/take channel operator privilege
+        · l: Set/remove the user limit to channel + parameter
+
+    */
+
+   /* ERROR/RPL FLAG
+
+        ERR_CHANOPRIVSNEEDED(nick, channel_name) : is not operator      - OK
+        ERR_UMODEUNKNOWNFLAG(nick) : invalid mode flag
+        RPL_SETMODECHANNEL : to announce a mode change                  - OK
+        ERR_NOSUCHCHANNEL : channel doesnt exists                       - OK
+
+        ~investigate- RPL_SETMODECLIENT : i don't know
+        ~investigate- RPL_CHANNELMODEIS : to announce a mode request
+
+        RPL_MODEUSER : user personal mode changing
+        ERR_USERSDONTMATCH : tried changing user mode of someoneelse
+        RPL_SETMODECLIENT : change the mode of another user
+        */
 
 }
 
