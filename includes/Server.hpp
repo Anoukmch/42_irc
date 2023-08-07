@@ -31,6 +31,7 @@
 #include "Channel.hpp"
 
 #define EVENTS (POLLIN | POLLOUT | POLLERR)
+#define OPERPWD "LALALA"
 
 class Client;
 class Channel;

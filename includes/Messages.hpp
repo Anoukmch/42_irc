@@ -60,6 +60,7 @@ class Messages
 		static std::string ERR_ERRONEUSNICKNAME(const std::string& nick, const std::string& wrong_nick);
 		static std::string ERR_USERSDONTMATCH(const std::string& nick, const std::string& target);
 		static std::string ERR_UNKNOWNCOMMAND(const std::string& nick, const std::string& command);
+		static std::string ERR_NOSUCHNICK_NICKONLY(const std::string& nick);
 		static std::string ERR_NOSUCHNICK(const std::string& nick, const std::string channel_name);
 		static std::string ERR_CANNOTSENDTOCHAN(const std::string& nick, const std::string& channel_name);
 		static std::string ERR_CHANOPRIVSNEEDED(const std::string& nick, const std::string& channel_name);

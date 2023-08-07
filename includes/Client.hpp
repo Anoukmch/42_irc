@@ -45,6 +45,7 @@ class Client
 		// SETTER
 		void set_nickname(std::string& nickname);
 		void set_username(std::string& username);
+		void set_opflag(bool flag);
 
 		// GETTER
 		std::string get_nickname();
@@ -52,6 +53,7 @@ class Client
 		void set_output(std::string mess);
 		int get_state();
 		int get_fd();
+		bool get_opflag();
 
 		// OTHER
 		void ConnectionClosing();
@@ -78,6 +80,10 @@ class Client
 		std::string pwd_;
 		std::string nickname_;
 		std::string username_;
+
+		// OPER STUFF
+		bool isop_;
+
 
 		std::string buffer_;
 		std::string output_;

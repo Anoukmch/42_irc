@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/07 11:34:26 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/07 12:46:42 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Client::Client()
 
 // Initialization of all attribute
 
-Client::Client(int fd, Server* server) : ClientFd_(fd), ClientState_(-1), username_("Unknown"), server_(server)
+Client::Client(int fd, Server* server) : ClientFd_(fd), ClientState_(-1), username_("Unknown"), isop_(false), server_(server)
 {
     std::cout << "Constructor" << std::endl;
 }
@@ -63,6 +63,12 @@ void Client::set_output(std::string mess)
 {
     output_ = output_.append(mess);
 }
+
+void Client::set_opflag(bool flag)
+{
+    isop_ = flag;
+}
+
 // GETTER
 
 std::string Client::get_nickname()
@@ -83,6 +89,11 @@ int Client::get_state()
 int Client::get_fd()
 {
     return(ClientFd_);
+}
+
+bool Client::get_opflag()
+{
+    return(isop_);
 }
 
 // OTHER
@@ -191,6 +202,7 @@ void Client::CheckCommand(std::string buf)
             return ;
         }
     }
+    output_ = Messages::ERR_UNKNOWNCOMMAND(nickname_, cmd_);
 }
 
 // COMMANDS
@@ -423,7 +435,7 @@ void Client::PrivmsgCmd()
             Client *cli = server_->GetClient(params_[0]);
             if(cli == nullptr)
             {
-                output_ = Messages::ERR_NOSUCHNICK(nickname_, params_[0]);
+                output_ = Messages::ERR_NOSUCHNICK_NICKONLY(nickname_);
                 return ;
             }
             else
@@ -444,7 +456,7 @@ void Client::InviteCmd()
         Client *c = server_->GetClient(params_[0]);
         Channel *chan = server_->GetChannel(params_[1]);
         if(c == nullptr)
-            output_ = Messages::ERR_NOSUCHNICK(params_[0], params_[1]); //OTHER ERROR MESSAGE!
+            output_ = Messages::ERR_NOSUCHNICK_NICKONLY(params_[0]);
         else if(chan == nullptr || chan->IsClientOnChannel(this) == false)
             output_ = Messages::ERR_NOTONCHANNEL(nickname_, params_[1]);
         else if (chan->IsClientOnChannel(c) == true)
@@ -501,7 +513,21 @@ void Client::KickCmd()
 
 void Client::OperCmd()
 {
-
+    if(params_.size() != 2 || trailing_ != "")
+        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+    else
+    {
+        Client* c = server_->GetClient(params_[0]);
+        if(c == nullptr)
+            output_ = Messages::ERR_NOSUCHNICK_NICKONLY(nickname_);
+        else if (params_[1] != OPERPWD)
+            output_ = Messages::ERR_PASSWDMISMATCH();
+        else
+        {
+            output_ = Messages::RPL_YOUREOPER(nickname_, params_[0]);
+            c->set_opflag(true);
+        }
+    }
 }
 
 void Client::NoticeCmd()
