@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/04 15:49:08 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/07 16:13:59 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ Channel::Channel()
     std::cout << "Default Constructor" << std::endl;
 }
 
-Channel::Channel(std::string name) : name_(name)
+Channel::Channel(std::string name) : name_(name), is_inviteonly_(false)
 {
     std::cout << "Constructor" << std::endl;
 }
@@ -107,11 +107,28 @@ void Channel::RemoveClientFromChannel(Client* c)
     std::vector<Client*>::iterator it = clients_.begin();
     while(it != clients_.end())
     {
-        if(c == *it) //2 is DISCONNECTED
+        if(c == *it)
             it = clients_.erase(it);
         else
             it++;
     }
+}
+
+void Channel::AddClientAsOperator(std::string nickname)
+{
+    operator_.push_back(nickname);
+}
+
+void Channel::RemoveClientAsOperator(std::string nickname)
+{
+    std::vector<std::string>::iterator it = operator_.begin();
+    while(it != operator_.end())
+    {
+        if(nickname == *it)
+            it = operator_.erase(it);
+        else
+            it++;
+    } 
 }
 
 bool Channel::IsClientOnChannel(Client *c)
@@ -119,8 +136,21 @@ bool Channel::IsClientOnChannel(Client *c)
     std::vector<Client*>::iterator it = clients_.begin();
     while(it != clients_.end())
     {
-        if(c == *it) //2 is DISCONNECTED
+        if(c == *it)
             return(true);
+        it++;
+    }
+    return(false);
+}
+
+bool Channel::IsClientAnOperator(std::string nickname)
+{
+    std::vector<std::string>::iterator it = operator_.begin();
+    while(it != operator_.end())
+    {
+        if(nickname == *it)
+            return(true);
+        it++;
     }
     return(false); 
 }

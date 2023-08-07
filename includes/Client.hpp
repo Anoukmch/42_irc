@@ -57,6 +57,7 @@ class Client
 		void ConnectionClosing();
 		void ReceiveCommand();
 		void SendData();
+		void RemoveChannel(Channel* chan);
 
 		void CheckCommand(std::string buf);
 		// void PassCommand(std::string buf);
@@ -103,9 +104,10 @@ class Client
 		void InviteCmd();
 		void TopicCmd();
 		void KickCmd();
-		void OperCmd();
-		void NoticeCmd();
 		void QuitCmd();
+
+		bool IsPossibleToKick(Channel* channel, Client* client);
+		bool SameNumbChannelsClientsToKick();
 };
 
 #endif

@@ -31,7 +31,8 @@ class Messages
 		static std::string RPL_PRIVMSG_OR(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg);
 		static std::string RPL_NOTICE(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg);
 		static std::string RPL_TOPICCHANGE(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& topic);
-		static std::string RPL_KICK(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target, const std::string reason);
+		static std::string RPL_KICK(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target);
+		static std::string RPL_KICK_MESSAGE(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target, const std::string reason);
 		static std::string RPL_QUIT(const std::string& nick, const std::string& user);
 		static std::string RPL_QUIT_MESSAGE(const std::string& nick, const std::string& user, std::string mess);
 		static std::string RPL_BOT(const std::string& nick, const std::string& channel_name, const std::string& msg);
@@ -50,6 +51,7 @@ class Messages
 		static std::string RPL_TOPIC(const std::string& nick, const std::string& channel_name, const std::string& topic);
 
 		// ERROR MESSAGES
+		static std::string ERR_BADCHANNELKEY(const std::string& nick, const std::string& channel_name, const std::string& key);
 		static std::string ERR_NEEDMOREPARAMS(const std::string& command);
 		static std::string ERR_PASSWDMISMATCH();
 		static std::string ERR_ALREADYREGISTRED() ;
@@ -60,6 +62,7 @@ class Messages
 		static std::string ERR_ERRONEUSNICKNAME(const std::string& nick, const std::string& wrong_nick);
 		static std::string ERR_USERSDONTMATCH(const std::string& nick, const std::string& target);
 		static std::string ERR_UNKNOWNCOMMAND(const std::string& nick, const std::string& command);
+		static std::string ERR_NOSUCHNICK_NICKONLY(const std::string& nick);
 		static std::string ERR_NOSUCHNICK(const std::string& nick, const std::string channel_name);
 		static std::string ERR_CANNOTSENDTOCHAN(const std::string& nick, const std::string& channel_name);
 		static std::string ERR_CHANOPRIVSNEEDED(const std::string& nick, const std::string& channel_name);

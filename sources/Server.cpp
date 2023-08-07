@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/04 15:47:48 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/07 15:59:10 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ void Server::CheckForDisconnections()
             {
                 PollStructs_.erase(PollStructs_.begin()+(i+1));
                 delete ConnectedClients_[i];
-                ConnectedClients_.erase(ConnectedClients_.begin());
+                ConnectedClients_.erase(ConnectedClients_.begin()+i);
             }
             else
                 i++;

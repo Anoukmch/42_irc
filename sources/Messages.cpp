@@ -103,10 +103,16 @@ std::string Messages::RPL_TOPICCHANGE(const std::string& nick, const std::string
 	return std::string(":") + nick + "!" + user + "@" + HOST + " TOPIC " + channel_name + " :" + topic + "\r\n";
 }
 
-std::string Messages::RPL_KICK(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target, const std::string reason)
+std::string Messages::RPL_KICK_MESSAGE(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target, const std::string reason)
 {
 	std::cout << GREEN << nick << " kicked " << target << " of " << channel_name << " because: " << reason << "!" << RESET << "\n";
 	return std::string(":") +  nick + "!" + user + "@" + HOST + " KICK " + channel_name + " " + target + " :" + reason + "\r\n";
+}
+
+std::string Messages::RPL_KICK(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& target)
+{
+	std::cout << GREEN << nick << " kicked " << target << " of " << channel_name << "!" << RESET << "\n";
+	return std::string(":") +  nick + "!" + user + "@" + HOST + " KICK " + channel_name + " " + target + "\r\n";
 }
 
 std::string Messages::RPL_QUIT(const std::string& nick, const std::string& user)
@@ -201,6 +207,12 @@ std::string Messages::RPL_TOPIC(const std::string& nick, const std::string& chan
 
 // ERROR REPLIES
 
+std::string Messages::ERR_BADCHANNELKEY(const std::string& nick, const std::string& channel_name, const std::string& key)
+{
+	std::cout << RED << nick << " tried joining channel " << channel_name << " but used the wrong key " << key << "!" << RESET << "\n";
+	return std::string(":") + SERVERNAME + " 475 " + channel_name + " :Cannot join channel (+k)\r\n";
+}
+
 std::string Messages::ERR_NEEDMOREPARAMS(const std::string& command)
 {
 	std::cout << RED << command << ": Change the amount of parameters to execute command: " << command << "!" << RESET << "\n";
@@ -245,13 +257,13 @@ std::string Messages::ERR_NOSUCHCHANNEL(const std::string& nick, const std::stri
 
 std::string Messages::ERR_ERRONEUSNICKNAME(const std::string& nick, const std::string& wrong_nick)
 {
-	std::cout << RED << nick << "tried using invalid nick: " << wrong_nick  << "!" << RESET << "\n";
+	std::cout << RED << nick << " tried using invalid nick: " << wrong_nick  << "!" << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 432 " + nick + " " + wrong_nick + " :Erroneous nickname\r\n";
 }
 
 std::string Messages::ERR_USERSDONTMATCH(const std::string& nick, const std::string& target)
 {
-	std::cout << RED << nick << "tried changing mode for " << target << "!" << RESET << "\n";
+	std::cout << RED << nick << " tried changing mode for " << target << "!" << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 502 " + nick + " : Cannot change mode for other users\r\n";
 }
 
@@ -265,6 +277,12 @@ std::string Messages::ERR_NOSUCHNICK(const std::string& nick, const std::string 
 {
 	std::cout << RED << "User "  << nick << " tried accessing " << channel_name << " but it did not exist!" << RESET << "\n";
 	return std::string(":") + SERVERNAME " 401 " + nick + " " + channel_name + " :No such nick/channel\r\n";
+}
+
+std::string Messages::ERR_NOSUCHNICK_NICKONLY(const std::string& nick)
+{
+	std::cout << RED << "No user with nickname " << nick << " exists!" << RESET << "\n";
+	return std::string(":") + SERVERNAME " 401 " + nick + " :No such nick/channel\r\n";
 }
 
 std::string Messages::ERR_CANNOTSENDTOCHAN(const std::string& nick, const std::string& channel_name)

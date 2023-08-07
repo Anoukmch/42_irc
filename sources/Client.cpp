@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/07 16:45:25 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/07 17:13:21 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ void Client::set_output(std::string mess)
 {
     output_ = output_.append(mess);
 }
+
 // GETTER
 
 std::string Client::get_nickname()
@@ -176,14 +177,14 @@ void Client::CheckCommand(std::string buf)
 {
     SetCmdParamsTrailing(buf);
 
-    std::string cmds[16] = { "PASS", "CAP", "NICK", "USER", "JOIN", "PING", "MODE",
-        "NAMES", "PART", "PRIVMSG", "INVITE", "TOPIC", "KICK", "OPER", "NOTICE", "QUIT"};
-	void (Client::*fp[16])(void) = {&Client::PassCmd, &Client::CapCmd, &Client::NickCmd,
+    std::string cmds[15] = { "PASS", "CAP", "NICK", "USER", "JOIN", "PING", "MODE",
+        "NAMES", "PART", "PRIVMSG", "INVITE", "TOPIC", "KICK", "QUIT"};
+	void (Client::*fp[15])(void) = {&Client::PassCmd, &Client::CapCmd, &Client::NickCmd,
         &Client::UserCmd, &Client::JoinCmd, &Client::PingCmd, &Client::ModeCmd, &Client::NamesCmd,
         &Client::PartCmd, &Client::PrivmsgCmd, &Client::InviteCmd, &Client::TopicCmd,
-        &Client::KickCmd, &Client::OperCmd, &Client::NoticeCmd, &Client::QuitCmd};
+        &Client::KickCmd, &Client::QuitCmd};
 
-    for(int i = 0; i < 16; i++)
+    for(int i = 0; i < 15; i++)
     {
         if(cmd_ == cmds[i])
         {
@@ -191,6 +192,7 @@ void Client::CheckCommand(std::string buf)
             return ;
         }
     }
+    output_ = Messages::ERR_UNKNOWNCOMMAND(nickname_, cmd_);
 }
 
 // COMMANDS
@@ -269,6 +271,7 @@ void Client::UserCmd()
 // CHANNEL = FULL?, TOO MANY CHANNELS?, INVITEONLY CHANNEL?
 // Channel already exists, channel has key that user doesn't know
 //  /JOIN 0 ->leave all channels
+// IF CHANNEL DOESN'T EXIST ->CLIENT BECOMES OPERATOR
 void Client::JoinCmd()
 {
     if(params_.size() < 1 || params_.size() > 2)
@@ -292,23 +295,35 @@ void Client::JoinCmd()
     {
         Channel* exist = server_->GetChannel(token);
         if(token[0] != '&' && token[0] != '#')
-            output_ = output_.append(Messages::ERR_NOSUCHCHANNEL(nickname_, token)); // Do we need the Append function here?
+            output_ = output_.append(Messages::ERR_NOSUCHCHANNEL(nickname_, token));
         else if(exist != nullptr)
         {
-            // CHECK FOR KEY FI ITS THE SAME, ..
-            // if(exist->get_key != "" )
-            // {
-
-            // }
-            exist->AddClientToChannel(this);
-            exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
-            output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token));
+            // NOT WORKING WITH KEYS ATM
+            if (keys.empty()== false && it != keys.end() && exist->get_key() != *it)
+            {
+                output_ = output_.append(Messages::ERR_BADCHANNELKEY(nickname_, exist->get_name(), *it));
+                it++;
+            }
+            else if (keys.empty()== false && it != keys.end() && exist->get_key() == *it)
+            {
+                exist->AddClientToChannel(this);
+                exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
+                output_ = output_.append(Messages::RPL_JOIN_WITHKEY(nickname_, username_, token, *it));
+                it++;
+            }
+            else
+            {
+                exist->AddClientToChannel(this);
+                exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
+                output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token));
+            }
         }
         else
         {
             server_->AddChannel(token);
             server_->GetLastChannel()->AddClientToChannel(this);
             server_->GetLastChannel()->set_inviteonlyflag(false);
+            server_->GetLastChannel()->AddClientAsOperator(this->get_nickname());
             channels_.push_back((server_->GetLastChannel()));
 
             if (keys.empty()== false && it != keys.end())
@@ -502,25 +517,16 @@ void Client::PrivmsgCmd()
         {
             Channel *chan = server_->GetChannel(params_[0]);
             if(chan == nullptr)
-            {
                 output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
-                return ;
-            }
             else
-            {
                 chan->SendMessageToChannel(Messages::RPL_PRIVMSG(nickname_, username_, chan->get_name(), &trailing_[1]), this);
-                return ;
-            }
         }
         else
         {
             // MESSAGE TO CLIENT
             Client *cli = server_->GetClient(params_[0]);
             if(cli == nullptr)
-            {
-                output_ = Messages::ERR_NOSUCHNICK(nickname_, params_[0]);
-                return ;
-            }
+                output_ = Messages::ERR_NOSUCHNICK_NICKONLY(nickname_);
             else
                 cli->set_output(Messages::RPL_PRIVMSG(nickname_, username_, cli->get_nickname(), &trailing_[1]));
         }
@@ -528,6 +534,8 @@ void Client::PrivmsgCmd()
 
 }
 
+// if invite-only flag -> only channel operators may invite others
+// only invited user and the inviting user will receive the message
 void Client::InviteCmd()
 {
     if(params_.size() != 2 || trailing_ != "")
@@ -535,27 +543,20 @@ void Client::InviteCmd()
     else
     {
         Client *c = server_->GetClient(params_[0]);
+        Channel *chan = server_->GetChannel(params_[1]);
         if(c == nullptr)
-            output_ = Messages::ERR_NOSUCHNICK(params_[0], params_[1]); //OTHER ERROR MESSAGE!
-        else if(server_->GetChannel(params_[1]) == nullptr
-            || server_->GetChannel(params_[1])->IsClientOnChannel(this) == false)
+            output_ = Messages::ERR_NOSUCHNICK_NICKONLY(params_[0]);
+        else if(chan == nullptr || chan->IsClientOnChannel(this) == false)
             output_ = Messages::ERR_NOTONCHANNEL(nickname_, params_[1]);
-        else if (server_->GetChannel(params_[1])->IsClientOnChannel(server_->GetClient(params_[0])) == true)
+        else if (chan->IsClientOnChannel(c) == true)
             output_ = Messages::ERR_USERONCHANNEL(nickname_, params_[0], params_[1]);
+        else if(chan->get_inviteonlyflag() == true && chan->IsClientAnOperator(nickname_) == false)
+            output_ = Messages::ERR_CHANOPRIVSNEEDED(nickname_, chan->get_name());
         else
         {
-            server_->GetClient(params_[0])->set_output(Messages::RPL_INVITED(nickname_, username_, params_[1], params_[0]));
+            c->set_output(Messages::RPL_INVITED(nickname_, username_, params_[1], params_[0]));
             output_ = Messages::RPL_INVITING(nickname_, params_[1], params_[0]);
-            // INVITE USER TO CHANNEL
-
         }
-        // <nickname> <channel>
-        // channel must not exist or be valid
-        // only member of the channel, if it exists, are allowed to invite others
-        // ERR_NOTONCHANNEL ERR_NOSUCHNICK, ERR_USERONCHANNEL
-        // RPL_INVITING
-        // if invite-only flag -> only channel operators may invite others
-        // only invited user and the inviting user will receive the message
     }
 }
 
@@ -596,19 +597,97 @@ void Client::TopicCmd()
     }
 }
 
+// <channel> *( "," <channel> ) <user> *( "," <user> ) [<comment>]
+// For the message to be syntactically correct, there MUST be
+// either one channel parameter and multiple user parameter, or as many
+// channel parameters as there are user parameters.
+// ONLY CHANNEL OPERATOR IS ALLOWED TO KICK ANOTHER USER OUT OF A CHANNEL
 void Client::KickCmd()
 {
-
+    if(params_.size() != 2)
+        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+    else
+    {
+        if (params_[0].find(',') != std::string::npos && SameNumbChannelsClientsToKick() == false)
+            output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        else
+        {
+            std::stringstream channels(params_[0]);
+            std::stringstream users(params_[1]);
+            std::string channel;
+            std::string user;
+            while((getline(channels, channel, ',') && getline(users, user, ',')) || getline(users, user, ','))
+            {
+                Channel* channelptr = server_->GetChannel(channel);
+                Client* client = server_->GetClient(user);
+                if(IsPossibleToKick(channelptr, client) == true)
+                {
+                    channelptr->RemoveClientFromChannel(client);
+                    channelptr->RemoveClientAsOperator(client->get_nickname()); //posisble?
+                    client->RemoveChannel(channelptr);
+                    if(trailing_ == "")
+                        output_ = output_.append(Messages::RPL_KICK(nickname_, username_, channel, user));
+                    else
+                        output_ = output_.append(Messages::RPL_KICK_MESSAGE(nickname_, username_, channel, user, trailing_));
+                }
+            }
+        }
+    }
 }
 
-void Client::OperCmd()
+bool Client::IsPossibleToKick(Channel* channelptr, Client* client)
 {
-
+    if (channelptr == nullptr)
+    {
+        output_ = output_.append(Messages::ERR_NOSUCHCHANNEL(nickname_, channelptr->get_name()));
+        return(false);
+    }
+    else if (client == nullptr)
+    {
+        output_ = output_.append(Messages::ERR_NOSUCHNICK_NICKONLY(client->get_nickname()));
+        return(false);
+    }
+    else if (channelptr->IsClientOnChannel(this) == false)
+    {
+        output_ = output_.append(Messages::ERR_NOTONCHANNEL(nickname_, channelptr->get_name()));
+        return(false);
+    }
+    else if (channelptr->IsClientAnOperator(nickname_) == false)
+    {
+        output_ = output_.append(Messages::ERR_CHANOPRIVSNEEDED(nickname_, channelptr->get_name()));
+        return(false);
+    }
+    else if (channelptr->IsClientOnChannel(client) == false)
+    {
+        output_ = output_.append(Messages::ERR_USERNOTINCHANNEL(client->get_nickname(), channelptr->get_name()));
+        return(false);
+    }
+    return(true);
 }
 
-void Client::NoticeCmd()
+bool Client::SameNumbChannelsClientsToKick()
 {
+    int chan_count = 0;
+    std::stringstream channels((params_[0]));
+    std::string token;
+    while(getline(channels, token, ','))
+        chan_count++;
+    int user_count = 0;
+    std::stringstream user((params_[1]));
+    while(getline(user, token, ','))
+        user_count++;
+    if(user_count == chan_count)
+        return(true);
+    return(false);
+}
 
+void Client::RemoveChannel(Channel* chan)
+{
+    for(unsigned int i = 0; i < channels_.size(); i++)
+    {
+        if(channels_[i] == chan)
+            channels_.erase(channels_.begin()+i);
+    }
 }
 
 void Client::QuitCmd()
