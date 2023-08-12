@@ -27,6 +27,15 @@
 
 class Client;
 
+typedef struct s_mode
+{
+	bool	i;
+	bool	t;
+	bool	k;
+	bool	o;
+	bool	l;
+}			t_mode;
+
 class Channel
 {
     public:
@@ -35,9 +44,11 @@ class Channel
 
 		// SETTER
 		void set_topic(std::string topic);
-		void set_mode(std::string& mode);
+		void set_mode(std::string& mode, std::vector<std::string> params);
 		void set_key(std::string key);
+		void set_userlimit(int limit);
 		void set_inviteonlyflag(bool status);
+		void set_topicflag(bool status);
 
 
 		// GETTER
@@ -45,18 +56,26 @@ class Channel
 		std::string get_mode();
 		std::string get_name();
 		std::string get_key();
-		bool get_inviteonlyflag();
+		int			get_userlimit();
+		bool		get_inviteonlyflag();
+		bool		get_topicflag();
+		std::string	GetChannelList();
+		int			GetClientNumbers();
+		int			GetOperatorNumbers();
 
 		void SendMessageToChannel(std::string mess, Client* exclude);
 		void AddClientToChannel(Client* c);
 		void RemoveClientFromChannel(Client* c);
 		void AddClientAsOperator(std::string nickname);
+		void AddClientAsInvited(std::string nickname);
 		void RemoveClientAsOperator(std::string nickname);
+		void RemoveClientAsInvited(std::string nickname);
 
 
 		bool IsClientOnChannel(Client *c);
 		bool IsChannelNotEmpty();
 		bool IsClientAnOperator(std::string nickname);
+		bool IsClientInvited(std::string nickname);
 
 	private:
 		Channel(); //Default Constructor
@@ -68,10 +87,12 @@ class Channel
 		std::string name_;
 		std::string topic_;
 		std::string mode_;
+		t_mode		chmode_;
 		
 		std::string key_; //key, if empty none
-		bool is_inviteonly_;
+		int	limit_;
 		std::vector<std::string>operator_;
+		std::vector<std::string>invited_;
 };
 
 #endif

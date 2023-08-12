@@ -5,6 +5,14 @@
 #include "../includes/Client.hpp"
 #include "../includes/Channel.hpp"
 
+bool server_shutdown = false;
+
+static void	signal_handler(int signal)
+{
+	(void)signal;
+	server_shutdown = true;
+}
+
 bool ValidPort(std::string port)
 {
     for(unsigned int i = 0; i < port.size(); i++)
@@ -29,6 +37,7 @@ int main(int argc, char *argv[])
             std::cout << "Port Error: Invalid Port" << std::endl;
             return(1);
         }
+		signal(SIGINT, signal_handler);
         Server serv(htons(std::atoi(argv[1])), argv[2]);
         try
         {

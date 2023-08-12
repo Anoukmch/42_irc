@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: arasal <arasal@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/07 15:59:10 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/11 18:09:03 by arasal           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ void Server::server_setup()
         std::cout << "Binding Socket ";
         throw SetupError();
     }
+	fcntl(serverSocket_, F_SETFL, O_NONBLOCK);
     if (listen(serverSocket_, SOMAXCONN) == -1)
     {
         std::cout << "Listen from Server ";
@@ -83,9 +84,9 @@ void Server::server_setup()
 
 void Server::MainLoop()
 {
-    while(true)
+    while(server_shutdown == false)
     {
-        if(poll(PollStructs_.data(), PollStructs_.size(), 100) == -1)
+        if(poll(PollStructs_.data(), PollStructs_.size(), 10) == -1)
             return ;
         if(PollStructs_[0].revents & POLLIN)
             acceptConnection();
@@ -158,8 +159,11 @@ bool Server::IsUniqueNickname(std::string poss_nick)
     std::vector<Client*>::iterator it = ConnectedClients_.begin();
     while(it != ConnectedClients_.end())
     {
+		
         if(poss_nick == (*it)->get_nickname())
             return(false);
+		std::cout << (*it)->get_nickname() << std::endl;
+		std::cout << poss_nick << std::endl;
         it++;
     }
     return(true);
@@ -198,6 +202,8 @@ bool Server::CheckPassword(std::string pass)
 
 Channel* Server::GetChannel(std::string name)
 {
+	if (channels_.size() == 0)
+		return(nullptr);
     for(unsigned int i = 0; i < channels_.size(); i++)
     {
         if(channels_[i]->get_name() == name)
@@ -228,10 +234,10 @@ Client* Server::GetClient(std::string name)
     return(nullptr);
 }
 
-// std::string Server::getPassword()
-// {
-//     return(connection_pd_);
-// }
+const std::string Server::getPassword()
+{
+    return(connection_pd_);
+}
 
 // std::string Server::get_topic()
 // {

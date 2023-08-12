@@ -57,10 +57,12 @@ std::string Messages::RPL_JOIN_WITHKEY(const std::string& nick, const std::strin
 	return std::string(":") + nick + "!" + user + "@" + HOST + " JOIN " + channel_name + " * :" + user + "\r\n";
 }
 
-std::string Messages::RPL_PING(const std::string& nick)
+std::string Messages::RPL_PING(const std::string& nick, const std::string& params_)
 {
 	std::cout << GREEN << nick << " pinged this server! " << RESET << "\n";
-	return std::string(":") + "PONG :" + SERVERNAME + " " + nick + "\r\n";
+	if (params_ == "0")
+		return std::string(":") + HOST + " PONG " + HOST + ": "+ "\r\n";
+	return std::string(":") + HOST + " PONG " + HOST + ": " + params_ + "\r\n";
 }
 
 std::string Messages::RPL_SETMODECLIENT(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& mode, const std::string& target)
@@ -82,7 +84,7 @@ std::string Messages::RPL_PART_OR(const std::string& nick, const std::string& us
 
 std::string	Messages::RPL_PRIVMSG(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg)
 {
-	std::cout << GREEN << nick << " send message " << msg + " to " + target +  "!" << RESET << "\n";
+	std::cout << GREEN << nick << " sent message " << msg + " to " + target +  "!" << RESET << "\n";
 	return std::string(":") + nick + "!" + user + "@" + HOST + " PRIVMSG " + target + " :" + msg + "\r\n";
 }
 
@@ -93,7 +95,7 @@ std::string	Messages::RPL_PRIVMSG_OR(const std::string& nick, const std::string&
 
 std::string	Messages::RPL_NOTICE(const std::string& nick, const std::string& user, const std::string& target, const std::string& msg)
 {
-	std::cout << GREEN << nick << " send message " << msg + " to " + target +  "!" << RESET << "\n";
+	std::cout << GREEN << nick << " sent notice " << msg + " to " + target +  "!" << RESET << "\n";
 	return std::string(":") + nick + "!" + user + "@" + HOST + " NOTICE " + target + " :" + msg + "\r\n";
 }
 
@@ -171,13 +173,13 @@ std::string Messages::RPL_MODEUSER(const std::string& nick, const std::string& m
 
 std::string Messages::RPL_CHANNELMODEIS(const std::string& nick, const std::string& channel_name, const std::string& mode)
 {
-	std::cout << GREEN << nick << "requested " << channel_name << "'s mode: " << mode << RESET << "\n";
+	std::cout << GREEN << nick << " requested " << channel_name << "'s mode: " << mode << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 324 " + nick + " " + channel_name + " " + mode + "\r\n";
 }
 
 std::string Messages::RPL_SETMODECHANNEL(const std::string& nick, const std::string& channel_name, const std::string& mode)
 {
-	std::cout << GREEN << nick << "set " << channel_name << "'s mode to " << mode << "!" << RESET << "\n";
+	std::cout << GREEN << nick << " set " << channel_name << "'s mode to " << mode << "!" << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 324 " + nick + " " + channel_name + " " + mode + "\r\n";
 }
 
@@ -305,7 +307,7 @@ std::string Messages::ERR_NOPRIVS(const std::string& nick, const std::string& co
 
 std::string Messages::ERR_UMODEUNKNOWNFLAG(const std::string& nick)
 {
-	std::cout << RED << nick << "used invalid mode flags" << RESET << "\n";
+	std::cout << RED << nick << " used invalid mode flags " << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 501 " + nick + " :Unknown MODE flags\r\n";
 }
 
@@ -333,8 +335,20 @@ std::string Messages::ERR_INVITEONLYCHAN(const std::string& nick, const std::str
 	return std::string(":") + SERVERNAME + " 473 " + nick + " " + channel_name + " : Cannot join channel (+i) - you must be invited\r\n";
 }
 
+std::string Messages::ERR_CHANNELISFULL(const std::string& nick, const std::string& channel_name)
+{
+	std::cout << RED << nick << " tried joining " << channel_name << " but channel is full!" << RESET << "\n";
+	return std::string(":") + SERVERNAME + " 471 " + nick + " " + channel_name + " : Cannot join channel (+l) - channel is full55\r\n";
+}
+
 std::string Messages::ERR_NOSUCHSERVER(const std::string& nick, const std::string& token)
 {
 	std::cout << RED << nick << " executes the PING command with the name of a non-existent server!" << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 402 " + token + " :No such server\r\n";
+}
+
+std::string Messages::ERR_NOOPERHOST(const std::string& nick)
+{
+	std::cout << RED << nick << " Wrong host for oper command!" << RESET << "\n";
+	return std::string(":") + nick + ": " + nick + " : No O-lines for your host\r\n";
 }

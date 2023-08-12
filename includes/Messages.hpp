@@ -11,7 +11,8 @@
 #include <sstream>
 
 #define HOST "localhost"
-#define SERVERNAME "ircserv"
+#define SERVERNAME "irc2"
+
 
 class Messages
 {
@@ -23,7 +24,7 @@ class Messages
 		static std::string RPL_JOIN_OR(const std::string& nick, const std::string& user, const std::string& channel_name);
 		static std::string RPL_JOIN_WITHKEY(const std::string& nick, const std::string& user, const std::string& channel_name, std::string key);
 
-		static std::string RPL_PING(const std::string& nick);
+		static std::string RPL_PING(const std::string& nick, const std::string& params_);
 		static std::string RPL_SETMODECLIENT(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string& mode, const std::string& target);
 		static std::string RPL_PART(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string reason);
 		static std::string RPL_PART_OR(const std::string& nick, const std::string& user, const std::string& channel_name, const std::string reason);
@@ -72,7 +73,9 @@ class Messages
 		static std::string ERR_USERNOTINCHANNEL(const std::string& nick, const std::string& channel_name);
 		static std::string ERR_NOTONCHANNEL(const std::string nick, const std::string channel_name);
 		static std::string ERR_INVITEONLYCHAN(const std::string& nick, const std::string& channel_name);
+		static std::string ERR_CHANNELISFULL(const std::string& nick, const std::string& channel_name);
 		static std::string ERR_NOSUCHSERVER(const std::string& nick, const std::string& token);
+		static std::string ERR_NOOPERHOST(const std::string& nick);
 
 
 	private:
@@ -83,3 +86,32 @@ class Messages
 };
 
 #endif
+
+
+
+// /server : list all servers
+
+// /server add [name] [where is the server (localhost)]'/'[port] -password=[pass]: to add ur server to weechat
+
+// /connect [servername]: to connect to a server
+
+
+
+
+
+// ------hoe to connect ot an irc server ----
+// 1* does it have a password ? 
+// 	if yes:   PASS password
+// 	if no: go next
+
+// under the hood shit:
+// 	-3 way handshake
+// 	-client (weechat) send CAP LS to the server. He is excpecting the server to give him a list of all his capabilites, this list will end when the server sends "CAP END.
+
+
+// 2* registration
+
+// 	- NICK nickname
+// 	- USER * * *:user_name
+
+// 3* if not registered fuck off else excute command

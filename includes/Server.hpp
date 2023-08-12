@@ -26,6 +26,7 @@
 #include <fstream>
 #include <unistd.h>
 #include <poll.h>
+#include <fcntl.h>
 
 #include "Client.hpp"
 #include "Channel.hpp"
@@ -35,6 +36,7 @@
 
 class Client;
 class Channel;
+extern bool	server_shutdown;
 
 class Server
 {
@@ -65,7 +67,7 @@ class Server
 		// void set_mode(std::string& mode);
 
 		// // GETTER
-		// static std::string getPassword();
+		const std::string getPassword();
 		// std::string get_mode();
 
 		~Server(); //Destructor

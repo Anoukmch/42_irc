@@ -45,6 +45,7 @@ class Client
 		// SETTER
 		void set_nickname(std::string& nickname);
 		void set_username(std::string& username);
+		void set_mode(unsigned char c);
 
 		// GETTER
 		std::string get_nickname();
@@ -52,6 +53,7 @@ class Client
 		void set_output(std::string mess);
 		int get_state();
 		int get_fd();
+		unsigned char get_mode();
 
 		// OTHER
 		void ConnectionClosing();
@@ -89,10 +91,12 @@ class Client
 
 		std::vector<Channel*> channels_;
 		Server* server_;
+		unsigned char mode_;
 
 		// COMMANDS
 		void PassCmd();
 		void CapCmd();
+		void OperCmd();
 		void NickCmd();
 		void UserCmd();
 		void JoinCmd();
@@ -105,6 +109,7 @@ class Client
 		void TopicCmd();
 		void KickCmd();
 		void QuitCmd();
+		void NoticeCmd();
 
 		bool IsPossibleToKick(Channel* channel, Client* client);
 		bool SameNumbChannelsClientsToKick();
