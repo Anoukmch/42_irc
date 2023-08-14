@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arasal <arasal@student.42heilbronn.de>     +#+  +:+       +#+        */
+/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/12 17:44:32 by arasal           ###   ########.fr       */
+/*   Updated: 2023/08/14 18:20:35 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ Channel::Channel()
     std::cout << "Default Constructor" << std::endl;
 }
 
-Channel::Channel(std::string name) : 
+Channel::Channel(std::string name) :
 name_(name), limit_(100)
 {
 	chmode_.i = false;
@@ -40,7 +40,7 @@ Channel& Channel::operator= (const Channel& copyop)
     std::cout << "Copy Assignment Operator" << std::endl;
     if(this != &copyop)
     {
-        name_ =copyop.name_;
+        name_ = copyop.name_;
         topic_ = copyop.topic_;
         mode_ = copyop.mode_;
     }
@@ -81,7 +81,7 @@ void Channel::set_mode(std::string& mode, std::vector<std::string> params)
 		if (mode[0] == '+')
 		{
 			chmode_.k = true;
-			set_key(params[2]);	
+			set_key(params[2]);
 		}
 		else if (mode[0] == '-')
 		{
@@ -211,7 +211,7 @@ std::string	Channel::GetChannelList()
 			op++;
 		}
 		channel_list += (*it)->get_nickname() + " ";
-		it++; 
+		it++;
 	}
 	channel_list += "\r\n";
 	return(channel_list);
@@ -255,7 +255,7 @@ void Channel::RemoveClientAsOperator(std::string nickname)
             it = operator_.erase(it);
         else
             it++;
-    } 
+    }
 }
 
 void Channel::RemoveClientAsInvited(std::string nickname)
@@ -267,7 +267,7 @@ void Channel::RemoveClientAsInvited(std::string nickname)
             it = operator_.erase(it);
         else
             it++;
-    } 
+    }
 }
 
 bool Channel::IsClientOnChannel(Client *c)
@@ -291,7 +291,7 @@ bool Channel::IsClientAnOperator(std::string nickname)
             return(true);
         it++;
     }
-    return(false); 
+    return(false);
 }
 
 bool Channel::IsClientInvited(std::string nickname)
@@ -303,7 +303,7 @@ bool Channel::IsClientInvited(std::string nickname)
             return(true);
         it++;
     }
-    return(false); 
+    return(false);
 }
 
 bool Channel::IsChannelNotEmpty()
