@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/14 17:51:41 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/14 17:56:46 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,11 @@ void Server::server_setup()
         throw SetupError();
     }
 
-    pollfd tmp = {.revents = 0, .events = EVENTS, .fd = serverSocket_};
+    // pollfd tmp = {.revents = 0, .events = EVENTS, .fd = serverSocket_};
+    pollfd tmp;
+    memset(&tmp, 0, sizeof(tmp)); // Initialize the struct to zero
+    tmp.events = EVENTS;
+    tmp.fd = serverSocket_;
     PollStructs_.push_back(tmp);
 
 }
@@ -117,7 +121,12 @@ void Server::acceptConnection()
         std::cout << "Accept ";
         throw SetupError();
     }
-    pollfd tmp = {.revents = 0, .events = EVENTS, .fd = new_client_fd};
+    // pollfd tmp = {.revents = 0, .events = EVENTS, .fd = new_client_fd};
+    pollfd tmp;
+    memset(&tmp, 0, sizeof(tmp)); // Initialize the struct to zero
+    tmp.events = EVENTS;
+    tmp.fd = new_client_fd;
+
     PollStructs_.push_back(tmp);
     ConnectedClients_.push_back(new Client(new_client_fd, this));
     std::cout << "Accept Connection" << std::endl;
@@ -140,12 +149,12 @@ void Server::CheckForDisconnections()
                 i++;
         }
     }
-    // CHECK CHANNELS THAT ARE NULLPTR (-> no users in channel)
+    // CHECK CHANNELS THAT ARE 0 (-> no users in channel)
     if(channels_.empty() == false)
     {
         for(unsigned int i = 0; i < channels_.size(); i++)
         {
-            if(channels_[i] == nullptr)
+            if(channels_[i] == 0)
             {
                 // delete channels_[i]; already deleted
                 channels_.erase(channels_.begin()+i);
@@ -205,13 +214,13 @@ bool Server::CheckPassword(std::string pass)
 Channel* Server::GetChannel(std::string name)
 {
 	if (channels_.size() == 0)
-		return(nullptr);
+		return(0);
     for(unsigned int i = 0; i < channels_.size(); i++)
     {
         if(channels_[i]->get_name() == name)
             return(channels_[i]);
     }
-    return(nullptr);
+    return(0);
 }
 
 void Server::DeleteChannel(std::string name)
@@ -221,7 +230,7 @@ void Server::DeleteChannel(std::string name)
         if(channels_[i]->get_name() == name)
         {
             delete (channels_[i]);
-            channels_[i] = nullptr;
+            channels_[i] = 0;
         }
     }
 }
@@ -233,7 +242,7 @@ Client* Server::GetClient(std::string name)
         if(ConnectedClients_[i]->get_nickname() == name)
             return(ConnectedClients_[i]);
     }
-    return(nullptr);
+    return(0);
 }
 
 const std::string Server::getPassword()

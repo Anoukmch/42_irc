@@ -27,6 +27,8 @@
 #include <unistd.h>
 #include <poll.h>
 #include <fcntl.h>
+#include <cstdlib>
+#include <cstring>
 
 #include "Client.hpp"
 #include "Channel.hpp"
