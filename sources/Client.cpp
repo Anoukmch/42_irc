@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: arasal <arasal@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/14 15:35:37 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/14 18:11:20 by arasal           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,8 +113,13 @@ void Client::ReceiveCommand()
 	{
 		ssize_t received = recv(ClientFd_, buffer, sizeof(buffer), 0);
 		if (received <= 0)
+		{
+			std::cout << "buffer :" << buffer << std::endl;
+			std::cout << "buffer_ :" << buffer_ << std::endl;
+			buffer_ += std::string(buffer);
 			return ;
-		buffer_ = std::string(buffer);
+		}
+		buffer_ += std::string(buffer, received);
 		size_t rc = buffer_.find("\n");
 		if(rc != std::string::npos)
 		{
@@ -125,6 +130,8 @@ void Client::ReceiveCommand()
 			break ;
 		}
 	}
+	std::cout << "buffer2 :" << buffer << std::endl;
+	std::cout << "buffer_2 :" << buffer_ << std::endl;
     CheckCommand(buffer_);
 }
 
@@ -135,7 +142,7 @@ void Client::SendData()
     params_.clear();
     cmd_ = "";
     trailing_ = "";
-    buffer_ = "";
+    // buffer_ = "";
 
     if(output_.empty())
         return ;
