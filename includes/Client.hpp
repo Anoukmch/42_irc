@@ -56,13 +56,14 @@ class Client
 		unsigned char get_mode();
 
 		// OTHER
+		bool HaveAlreadyChatted(Client* cl);
 		void ConnectionClosing();
 		void ReceiveCommand();
 		void SendData();
 		void RemoveChannel(Channel* chan);
 
 		void CheckCommand(std::string buf);
-		// void PassCommand(std::string buf);
+		void AddChatClient(Client* cl);
 
 		void SetCmdParamsTrailing(std::string buf);
 
@@ -90,6 +91,7 @@ class Client
 		std::string trailing_;
 
 		std::vector<Channel*> channels_;
+		std::vector<Client*> chatclients_;
 		Server* server_;
 		unsigned char mode_;
 

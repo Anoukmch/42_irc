@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/14 15:35:37 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/14 16:26:59 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,24 @@ void Client::set_mode(unsigned char c)
 
 // GETTER
 
+bool Client::HaveAlreadyChatted(Client* cl)
+{
+    if(chatclients_.size() == 0)
+        return (false);
+    for(unsigned int i = 0; i < chatclients_.size(); i++)
+    {
+        if(chatclients_[i] == cl)
+            return(true);
+    }
+    return(false);
+}
+
+void Client::AddChatClient(Client* cl)
+{
+    chatclients_.push_back(cl);
+}
+
+        
 std::string Client::get_nickname()
 {
     return(nickname_);
@@ -613,8 +631,13 @@ void Client::PrivmsgCmd()
                 output_ = Messages::ERR_NOSUCHNICK_NICKONLY(nickname_);
             else
 			{
-                // cli->set_output(Messages::RPL_PRIVMSG(nickname_, username_, cli->get_nickname(), &trailing_[1]));
-				output_ = Messages::RPL_PRIVMSG(nickname_, username_, cli->get_nickname(), &trailing_[1]);
+                cli->set_output(Messages::RPL_PRIVMSG(nickname_, username_, cli->get_nickname(), &trailing_[1]));
+                if(HaveAlreadyChatted(cli) == false)
+                {
+				    output_ = Messages::RPL_PRIVMSG(nickname_, username_, cli->get_nickname(), &trailing_[1]);
+                    AddChatClient(cli);
+                    cli->AddChatClient(this);
+                }
 			}
         }
     }
