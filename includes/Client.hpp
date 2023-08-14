@@ -96,7 +96,6 @@ class Client
 		// COMMANDS
 		void PassCmd();
 		void CapCmd();
-		void OperCmd();
 		void NickCmd();
 		void UserCmd();
 		void JoinCmd();

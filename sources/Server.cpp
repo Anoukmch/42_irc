@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arasal <arasal@student.42heilbronn.de>     +#+  +:+       +#+        */
+/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/11 18:09:03 by arasal           ###   ########.fr       */
+/*   Updated: 2023/08/14 17:51:41 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,7 @@ Server& Server::operator= (const Server& copyop)
 {
     std::cout << "Copy Assignment Operator" << std::endl;
     if(this != &copyop)
-    {
-        // topic_ = copyop.topic_;
-        // mode_ = copyop.mode_;
+    { ;
     }
     return(*this);
 }
@@ -38,7 +36,11 @@ Server& Server::operator= (const Server& copyop)
 Server::~Server()
 {
     std::cout << "Destructor" << std::endl;
-    close(serverSocket_); //this is a c function, use another one from c++!!!
+    close(serverSocket_);
+    for (std::vector<Client*>::iterator it = ConnectedClients_.begin(); it != ConnectedClients_.end(); ++it)
+        delete *it;
+    for (std::vector<Channel*>::iterator it = channels_.begin(); it != channels_.end(); ++it)
+        delete *it;
 }
 
 Server::Server(uint16_t port, std::string password) : port_(port)
@@ -159,7 +161,7 @@ bool Server::IsUniqueNickname(std::string poss_nick)
     std::vector<Client*>::iterator it = ConnectedClients_.begin();
     while(it != ConnectedClients_.end())
     {
-		
+
         if(poss_nick == (*it)->get_nickname())
             return(false);
 		std::cout << (*it)->get_nickname() << std::endl;
