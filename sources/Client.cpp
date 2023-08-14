@@ -6,7 +6,7 @@
 /*   By: arasal <arasal@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/14 21:53:21 by arasal           ###   ########.fr       */
+/*   Updated: 2023/08/14 22:03:49 by arasal           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,7 @@ Client& Client::operator= (const Client& copyop)
 {
     std::cout << "Copy Assignment Operator" << std::endl;
     if(this != &copyop)
-    {
-        // nickname_ = copyop.nickname_;
-        // username_ = copyop.username_;
+    { ;
     }
     return(*this);
 }
@@ -88,7 +86,7 @@ void Client::AddChatClient(Client* cl)
     chatclients_.push_back(cl);
 }
 
-        
+
 std::string Client::get_nickname()
 {
     return(nickname_);
@@ -212,14 +210,14 @@ void Client::CheckCommand(std::string buf)
 {
     SetCmdParamsTrailing(buf);
 
-    std::string cmds[16] = { "PASS", "CAP", "NICK", "USER", "JOIN", "PING", "MODE",
-        "NAMES", "PART", "PRIVMSG", "INVITE", "TOPIC", "KICK", "QUIT", "OPER", "NOTICE"};
-	void (Client::*fp[16])(void) = {&Client::PassCmd, &Client::CapCmd, &Client::NickCmd,
+    std::string cmds[15] = { "PASS", "CAP", "NICK", "USER", "JOIN", "PING", "MODE",
+        "NAMES", "PART", "PRIVMSG", "INVITE", "TOPIC", "KICK", "QUIT", "NOTICE"};
+	void (Client::*fp[15])(void) = {&Client::PassCmd, &Client::CapCmd, &Client::NickCmd,
         &Client::UserCmd, &Client::JoinCmd, &Client::PingCmd, &Client::ModeCmd, &Client::NamesCmd,
         &Client::PartCmd, &Client::PrivmsgCmd, &Client::InviteCmd, &Client::TopicCmd,
-        &Client::KickCmd, &Client::QuitCmd, &Client::OperCmd, &Client::NoticeCmd};
+        &Client::KickCmd, &Client::QuitCmd, &Client::NoticeCmd};
 
-    for(int i = 0; i < 16; i++)
+    for(int i = 0; i < 15; i++)
     {
         if(cmd_ == cmds[i])
         {
@@ -253,19 +251,6 @@ void Client::CapCmd()
 {
 	if (params_[0] != "END")
     	output_ += Messages::RPL_CAP();
-}
-
-void Client::OperCmd()
-{
-	if (params_.empty())
-		output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
-	else if (params_[1] != this->server_->getPassword())
-        output_ += Messages::ERR_PASSWDMISMATCH();
-	else
-	{
-		mode_ = 'o';
-		output_ += Messages::RPL_YOUREOPER(nickname_, params_[0]);
-	}
 }
 
 void Client::NickCmd()
