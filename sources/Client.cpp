@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arasal <arasal@student.42heilbronn.de>     +#+  +:+       +#+        */
+/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/12 17:48:41 by arasal           ###   ########.fr       */
+/*   Updated: 2023/08/14 15:35:37 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,11 +115,13 @@ void Client::ReceiveCommand()
 		if (received <= 0)
 			return ;
 		buffer_ = std::string(buffer);
-		size_t rc = buffer_.find("\r\n");
+		size_t rc = buffer_.find("\n");
 		if(rc != std::string::npos)
 		{
-			buffer_ = buffer_.substr(0, rc);
-			buffer[received] = '\0';
+            if (buffer_.find("\r") != std::string::npos)
+			    buffer_ = buffer_.substr(0, rc - 1);
+            else
+                buffer_ = buffer_.substr(0, rc);
 			break ;
 		}
 	}
@@ -207,6 +209,7 @@ void Client::CheckCommand(std::string buf)
 
 void Client::PassCmd()
 {
+    std::cout << "PASS " << std::endl;
     if (ClientState_ >= REGISTERED)
         output_ = Messages::ERR_ALREADYREGISTRED();
     else if (ClientState_ == PASS)
@@ -236,12 +239,13 @@ void Client::OperCmd()
 	else
 	{
 		mode_ = 'o';
-		output_ = Messages::RPL_YOUREOPER(nickname_, params_[0]);	
+		output_ = Messages::RPL_YOUREOPER(nickname_, params_[0]);
 	}
 }
 
 void Client::NickCmd()
 {
+    std::cout << "NICK " << std::endl;
     if (ClientState_ < PASS)
         output_ = Messages::ERR_NOTREGISTERED(cmd_);
     else if(params_.empty() == true)
@@ -313,7 +317,7 @@ void Client::JoinCmd()
         it = keys.begin();
     }
     if(keys.size() == 0)
-        it = keys.end();    
+        it = keys.end();
     std::stringstream name(params_[0]);
     std::string token;
     while(getline(name, token, ','))
@@ -350,7 +354,7 @@ void Client::JoinCmd()
                 {
                     exist->AddClientToChannel(this);
                     exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
-                    output_ = output_.append(Messages::RPL_JOIN_WITHKEY(nickname_, username_, token, *it));                    
+                    output_ = output_.append(Messages::RPL_JOIN_WITHKEY(nickname_, username_, token, *it));
                     exist->SendMessageToChannel(Messages::RPL_NAMREPLY(nickname_, token, exist->GetChannelList()), nullptr);
 					exist->SendMessageToChannel(Messages::RPL_ENDOFNAMES(nickname_, token), nullptr);
                 }
@@ -596,6 +600,8 @@ void Client::PrivmsgCmd()
             Channel *chan = server_->GetChannel(params_[0]);
             if(chan == nullptr)
                 output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
+            else if (!chan->IsClientOnChannel(this))
+                output_ = Messages::ERR_NOTONCHANNEL(nickname_, chan->get_name());
             else
                 chan->SendMessageToChannel(Messages::RPL_PRIVMSG(nickname_, username_, chan->get_name(), &trailing_[1]), this);
         }
