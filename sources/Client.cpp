@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arasal <arasal@student.42heilbronn.de>     +#+  +:+       +#+        */
+/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/14 22:03:49 by arasal           ###   ########.fr       */
+/*   Updated: 2023/08/14 22:43:16 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ void Client::ReceiveCommand()
 	memset(buffer, 0, 512);
 	while (true)
 	{
-		ssize_t received = recv(ClientFd_, buffer, sizeof(buffer), MSG_DONTWAIT);;
+		ssize_t received = recv(ClientFd_, buffer, sizeof(buffer), MSG_DONTWAIT);
 		if (received <= 0)
 		{
 			temp = std::string(buffer);
@@ -149,6 +149,7 @@ void Client::ReceiveCommand()
 	}
 	buffer_ += temp;
     CheckCommand(buffer_);
+    buffer_ = "";
 }
 
 // CHECK SCREENSHOT TERMINAL : The server is receiving somethign after sending a message to client ?

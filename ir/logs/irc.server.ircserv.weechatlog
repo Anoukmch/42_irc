@@ -38,3 +38,8 @@
 2023-08-14 16:29:02	--	Welcome to the ft_irc network Unknown!jmatheis@localhost
 2023-08-14 16:29:02	--	You are now known as jmatheis1
 2023-08-14 16:29:08	--	MSG(jmatheis): hi
+2023-08-14 22:36:47	--	irc: verbinde zum Server localhost/8081...
+2023-08-14 22:36:47	--	irc: Verbindung zu localhost/8081 (127.0.0.1) hergestellt
+2023-08-14 22:36:47	=!=	irc: Befehl "Client" nicht gefunden: "Client already authenticated"
+2023-08-14 22:36:47	--	Welcome to the ft_irc network jmatheis!jmatheis@localhost
+2023-08-14 22:36:52	--	MSG(juliama): hello
