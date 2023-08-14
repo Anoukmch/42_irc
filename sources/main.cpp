@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <csignal>
 
 #include "../includes/Server.hpp"
 #include "../includes/Client.hpp"
@@ -20,7 +21,7 @@ bool ValidPort(std::string port)
         if(std::isdigit(port[i]) == false)
             return(false);
     }
-    if(std::atoi(port.c_str()) <= 0)
+    if(atoi(port.c_str()) <= 0) //check integer overflows????
         return(false);
     return (true);
 }
@@ -38,7 +39,7 @@ int main(int argc, char *argv[])
             return(1);
         }
 		signal(SIGINT, signal_handler);
-        Server serv(htons(std::atoi(argv[1])), argv[2]);
+        Server serv(htons(atoi(argv[1])), argv[2]);
         try
         {
             serv.server_setup();

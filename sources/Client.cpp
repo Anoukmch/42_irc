@@ -6,7 +6,7 @@
 /*   By: arasal <arasal@student.42heilbronn.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/14 18:11:20 by arasal           ###   ########.fr       */
+/*   Updated: 2023/08/14 21:53:21 by arasal           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void Client::set_username(std::string& username)
 
 void Client::set_output(std::string mess)
 {
-    output_ = output_.append(mess);
+    output_ += mess;
 }
 
 void Client::set_mode(unsigned char c)
@@ -71,6 +71,24 @@ void Client::set_mode(unsigned char c)
 
 // GETTER
 
+bool Client::HaveAlreadyChatted(Client* cl)
+{
+    if(chatclients_.size() == 0)
+        return (false);
+    for(unsigned int i = 0; i < chatclients_.size(); i++)
+    {
+        if(chatclients_[i] == cl)
+            return(true);
+    }
+    return(false);
+}
+
+void Client::AddChatClient(Client* cl)
+{
+    chatclients_.push_back(cl);
+}
+
+        
 std::string Client::get_nickname()
 {
     return(nickname_);
@@ -108,30 +126,30 @@ void Client::ConnectionClosing()
 void Client::ReceiveCommand()
 {
     // std::cout << "Receive Command" << std::endl;
+	std::string temp;
     char buffer[512];
+	memset(buffer, 0, 512);
 	while (true)
 	{
-		ssize_t received = recv(ClientFd_, buffer, sizeof(buffer), 0);
+		ssize_t received = recv(ClientFd_, buffer, sizeof(buffer), MSG_DONTWAIT);;
 		if (received <= 0)
 		{
-			std::cout << "buffer :" << buffer << std::endl;
-			std::cout << "buffer_ :" << buffer_ << std::endl;
-			buffer_ += std::string(buffer);
+			temp = std::string(buffer);
+			buffer_ += temp;
 			return ;
 		}
-		buffer_ += std::string(buffer, received);
-		size_t rc = buffer_.find("\n");
+		temp += std::string(buffer);
+		size_t rc = temp.find("\n");
 		if(rc != std::string::npos)
 		{
-            if (buffer_.find("\r") != std::string::npos)
-			    buffer_ = buffer_.substr(0, rc - 1);
+            if (temp.find("\r") != std::string::npos)
+			    temp = temp.substr(0, rc - 1);
             else
-                buffer_ = buffer_.substr(0, rc);
+                temp = temp.substr(0, rc);
 			break ;
 		}
 	}
-	std::cout << "buffer2 :" << buffer << std::endl;
-	std::cout << "buffer_2 :" << buffer_ << std::endl;
+	buffer_ += temp;
     CheckCommand(buffer_);
 }
 
@@ -142,12 +160,12 @@ void Client::SendData()
     params_.clear();
     cmd_ = "";
     trailing_ = "";
-    // buffer_ = "";
 
     if(output_.empty())
         return ;
 
     send(ClientFd_, output_.data(), output_.size(), 0);
+    buffer_.clear();
     output_ = "";
 }
 
@@ -209,7 +227,7 @@ void Client::CheckCommand(std::string buf)
             return ;
         }
     }
-    output_ = Messages::ERR_UNKNOWNCOMMAND(nickname_, cmd_);
+    output_ += Messages::ERR_UNKNOWNCOMMAND(nickname_, cmd_);
 }
 
 // COMMANDS
@@ -218,15 +236,15 @@ void Client::PassCmd()
 {
     std::cout << "PASS " << std::endl;
     if (ClientState_ >= REGISTERED)
-        output_ = Messages::ERR_ALREADYREGISTRED();
+        output_ += Messages::ERR_ALREADYREGISTRED();
     else if (ClientState_ == PASS)
-        output_ = "Client already authenticated"; // Can we create an error message?
+        output_ += "Client already authenticated\n"; // Can we create an error message?
     else if (params_.empty())
-        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
     else if (server_->CheckPassword(params_[0]) == false)
-        output_ = Messages::ERR_PASSWDMISMATCH();
+        output_ += Messages::ERR_PASSWDMISMATCH();
     else if (params_.size() != 1)
-        output_ = Messages::ERR_PASSWDMISMATCH();
+        output_ += Messages::ERR_PASSWDMISMATCH();
     else
         ClientState_ = PASS;
 }
@@ -234,19 +252,19 @@ void Client::PassCmd()
 void Client::CapCmd()
 {
 	if (params_[0] != "END")
-    	output_ = Messages::RPL_CAP();
+    	output_ += Messages::RPL_CAP();
 }
 
 void Client::OperCmd()
 {
 	if (params_.empty())
-		output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+		output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
 	else if (params_[1] != this->server_->getPassword())
-        output_ = Messages::ERR_PASSWDMISMATCH();
+        output_ += Messages::ERR_PASSWDMISMATCH();
 	else
 	{
 		mode_ = 'o';
-		output_ = Messages::RPL_YOUREOPER(nickname_, params_[0]);
+		output_ += Messages::RPL_YOUREOPER(nickname_, params_[0]);
 	}
 }
 
@@ -254,22 +272,22 @@ void Client::NickCmd()
 {
     std::cout << "NICK " << std::endl;
     if (ClientState_ < PASS)
-        output_ = Messages::ERR_NOTREGISTERED(cmd_);
+        output_ += Messages::ERR_NOTREGISTERED(cmd_);
     else if(params_.empty() == true)
-        output_ = Messages::ERR_NONICKNAMEGIVEN();
+        output_ += Messages::ERR_NONICKNAMEGIVEN();
     // ONLY 8 CHARACTERS ????
     // CHECK FOR SOME SPECIAL SIGNS,?? ...
 
     else if(server_->IsUniqueNickname(params_[0]) == false)
-        output_ = Messages::ERR_NICKNAMEINUSE(params_[0]);
+        output_ += Messages::ERR_NICKNAMEINUSE(params_[0]);
     else
     {
         if (nickname_.empty() == false)
-            output_ = Messages::RPL_NICKCHANGE(nickname_, params_[0], username_);
+            output_ += Messages::RPL_NICKCHANGE(nickname_, params_[0], username_);
         else if (ClientState_ == PASS && username_ != "Unknown")
         {
             ClientState_ = REGISTERED;
-            // output_ = Messages::RPL_WELCOME(nickname_, username_);
+            // output_ += Messages::RPL_WELCOME(nickname_, username_);
         }
         nickname_ = params_[0];
     }
@@ -282,21 +300,21 @@ void Client::NickCmd()
 void Client::UserCmd()
 {
     if (params_.size() != 3 || trailing_.empty())
-        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
     else if ((params_[1] != "0" && params_[1] != "*")
         || (params_[2] != "0" && params_[2] != "*"))
-        output_ = Messages::ERR_UMODEUNKNOWNFLAG(nickname_);
+        output_ += Messages::ERR_UMODEUNKNOWNFLAG(nickname_);
     else if (ClientState_ < PASS)
-        output_ = Messages::ERR_NOTREGISTERED(cmd_);
+        output_ += Messages::ERR_NOTREGISTERED(cmd_);
     // else if ( ClientState_ >= REGISTERED)
-    //     output_ = Messages::ERR_ALREADYREGISTRED(); // Do I need the Append function here?
+    //     output_ += Messages::ERR_ALREADYREGISTRED(); // Do I need the Append function here?
     else
     {
         if (!nickname_.empty())
         {
             ClientState_ = REGISTERED;
 			username_ = params_[0];
-            output_ = Messages::RPL_WELCOME(nickname_, username_);
+            output_ += Messages::RPL_WELCOME(nickname_, username_);
         }
         username_ = params_[0];
     }
@@ -310,7 +328,7 @@ void Client::JoinCmd()
 {
     if(params_.size() < 1 || params_.size() > 2)
     {
-        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
     }
     std::vector<std::string>::iterator it;
@@ -331,39 +349,39 @@ void Client::JoinCmd()
     {
         Channel* exist = server_->GetChannel(token);
         if(token[0] != '&' && token[0] != '#')
-            output_ = output_.append(Messages::ERR_NOSUCHCHANNEL(nickname_, token));
-        else if(exist != nullptr)
+            output_ += Messages::ERR_NOSUCHCHANNEL(nickname_, token);
+        else if(exist != 0)
         {
 			if (exist->IsClientOnChannel(this) == true)
-				exist->SendMessageToChannel(Messages::ERR_USERONCHANNEL(nickname_, params_[0], params_[1]), nullptr);
+				exist->SendMessageToChannel(Messages::ERR_USERONCHANNEL(nickname_, params_[0], params_[1]), 0);
 			else if (exist->get_inviteonlyflag() == true && exist->IsClientInvited(nickname_) == false)
-				output_ = output_.append(Messages::ERR_INVITEONLYCHAN(nickname_, exist->get_name()));
+				output_ += Messages::ERR_INVITEONLYCHAN(nickname_, exist->get_name());
 			else if (exist->get_userlimit() == exist->GetClientNumbers())
-				output_ = output_.append(Messages::ERR_CHANNELISFULL(nickname_, exist->get_name()));
+				output_ += Messages::ERR_CHANNELISFULL(nickname_, exist->get_name());
             else if(it == keys.end())
             {
                 if(exist->get_key() != "")
-                    output_ = output_.append(Messages::ERR_BADCHANNELKEY(nickname_, exist->get_name()));
+                    output_ += Messages::ERR_BADCHANNELKEY(nickname_, exist->get_name());
                 else
                 {
                     exist->AddClientToChannel(this);
                     exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
-                    output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token));
-                    exist->SendMessageToChannel(Messages::RPL_NAMREPLY(nickname_, token, exist->GetChannelList()), nullptr);
-					exist->SendMessageToChannel(Messages::RPL_ENDOFNAMES(nickname_, token), nullptr);
+                    output_ += Messages::RPL_JOIN(nickname_, username_, token);
+                    exist->SendMessageToChannel(Messages::RPL_NAMREPLY(nickname_, token, exist->GetChannelList()), 0);
+					exist->SendMessageToChannel(Messages::RPL_ENDOFNAMES(nickname_, token), 0);
                 }
             }
             else if (it != keys.end())
             {
                 if(exist->get_key() != *it)
-                    output_ = output_.append(Messages::ERR_BADCHANNELKEY(nickname_, exist->get_name()));
+                    output_ += Messages::ERR_BADCHANNELKEY(nickname_, exist->get_name());
                 else
                 {
                     exist->AddClientToChannel(this);
                     exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
-                    output_ = output_.append(Messages::RPL_JOIN_WITHKEY(nickname_, username_, token, *it));
-                    exist->SendMessageToChannel(Messages::RPL_NAMREPLY(nickname_, token, exist->GetChannelList()), nullptr);
-					exist->SendMessageToChannel(Messages::RPL_ENDOFNAMES(nickname_, token), nullptr);
+                    output_ += Messages::RPL_JOIN_WITHKEY(nickname_, username_, token, *it);
+                    exist->SendMessageToChannel(Messages::RPL_NAMREPLY(nickname_, token, exist->GetChannelList()), 0);
+					exist->SendMessageToChannel(Messages::RPL_ENDOFNAMES(nickname_, token), 0);
                 }
                 it++;
             }
@@ -378,14 +396,14 @@ void Client::JoinCmd()
             if (keys.empty()== false && it != keys.end())
             {
                 server_->GetLastChannel()->set_key(*it);
-                output_ = output_.append(Messages::RPL_JOIN_WITHKEY(nickname_, username_, token, *it)); //MULTIPLE MESSAGES!!!!
+                output_ += Messages::RPL_JOIN_WITHKEY(nickname_, username_, token, *it);
                 it++;
             }
             else
-                output_ = output_.append(Messages::RPL_JOIN(nickname_, username_, token)); //MULTIPLE MESSAGES!!!!
+                output_ += Messages::RPL_JOIN(nickname_, username_, token);
 			exist = server_->GetChannel(token);
-			exist->SendMessageToChannel(Messages::RPL_NAMREPLY(nickname_, token, exist->GetChannelList()), nullptr);
-			exist->SendMessageToChannel(Messages::RPL_ENDOFNAMES(nickname_, token), nullptr);
+			exist->SendMessageToChannel(Messages::RPL_NAMREPLY(nickname_, token, exist->GetChannelList()), 0);
+			exist->SendMessageToChannel(Messages::RPL_ENDOFNAMES(nickname_, token), 0);
         }
     }
 }
@@ -393,28 +411,28 @@ void Client::JoinCmd()
 void Client::PingCmd()
 {
     if (params_.empty())
-        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
     else if (params_[0] != "localhost" && params_[0] != "127.0.0.1" && params_[0] != SERVERNAME)
-         output_ = Messages::ERR_NOSUCHSERVER(nickname_, params_[0]);
+         output_ += Messages::ERR_NOSUCHSERVER(nickname_, params_[0]);
     else
-        output_ = Messages::RPL_PING(nickname_, params_[1]);
+        output_ += Messages::RPL_PING(nickname_, params_[1]);
 }
 
 void Client::ModeCmd()
 {
 	Channel *c = server_->GetChannel(params_[0]);
     if (params_.empty())
-        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
-    else if (params_[0].front() != '#' || c == nullptr)
-       output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
+        output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
+    else if ((params_[0][0] != '#' && params_[0][0] != '&') || c == 0)
+       output_ += Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
 	else if (params_.size() == 1)
-		output_ = Messages::RPL_CHANNELMODEIS(nickname_, params_[0], c->get_mode());
+		output_ += Messages::RPL_CHANNELMODEIS(nickname_, params_[0], c->get_mode());
 	else if (c->IsClientAnOperator(nickname_) == false)
-		output_ = Messages::ERR_CHANOPRIVSNEEDED(nickname_, params_[0]);
+		output_ += Messages::ERR_CHANOPRIVSNEEDED(nickname_, params_[0]);
 	else if (params_[1].size() < 2)
-		output_ = Messages::ERR_UMODEUNKNOWNFLAG(nickname_);
+		output_ += Messages::ERR_UMODEUNKNOWNFLAG(nickname_);
 	else if (params_[1][0] != '+' && params_[1][0] != '-')
-		output_ = Messages::ERR_UMODEUNKNOWNFLAG(nickname_);
+		output_ += Messages::ERR_UMODEUNKNOWNFLAG(nickname_);
 	else
 	{
 		std::string letters = "itkol";
@@ -449,7 +467,7 @@ void Client::ModeCmd()
     // else
     // {
     //     if != "itkol+-";
-    //     return (output_ = Messages::ERR_UMODEUNKNOWNFLAG(nickname_));
+    //     return (output_ += Messages::ERR_UMODEUNKNOWNFLAG(nickname_));
     // }
     // std::string modes; // example "+i -okl"
     // bool set = false;
@@ -462,18 +480,18 @@ void Client::ModeCmd()
     //         // do nothing
     //     else if // it is a modeparams so it has to be preceeded by either a l or t
     //     ExecuteMode(params_[i]);
-    //     return (output_ = Messages::ERR_UMODEUNKNOWNFLAG(nickname_));
+    //     return (output_ += Messages::ERR_UMODEUNKNOWNFLAG(nickname_));
     // }
 
     // if ( /* is not op */ )
-    //     return (output_ = Messages::ERR_CHANOPRIVSNEEDED(nickname_, params_[0]));
+    //     return (output_ += Messages::ERR_CHANOPRIVSNEEDED(nickname_, params_[0]));
 
 
     // while (param_s)
     //     if != "itkol+-";
 
     // // append the different modes parameters;
-    // output_ = Messages::RPL_SETMODECHANNEL(nickname_, params_[0], mode); // Everything went fine
+    // output_ += Messages::RPL_SETMODECHANNEL(nickname_, params_[0], mode); // Everything went fine
 
     // bool is_inviteonly_;
     // void set_inviteonlyflag(bool status);
@@ -535,8 +553,8 @@ void Client::ModeCmd()
 void Client::NamesCmd()
 {
 	Channel* ch = server_->GetChannel(params_[0]);
-	ch->SendMessageToChannel(Messages::RPL_NAMREPLY(nickname_, params_[0], ch->GetChannelList()), nullptr);
-	ch->SendMessageToChannel(Messages::RPL_ENDOFNAMES(nickname_, params_[0]), nullptr);
+	ch->SendMessageToChannel(Messages::RPL_NAMREPLY(nickname_, params_[0], ch->GetChannelList()), 0);
+	ch->SendMessageToChannel(Messages::RPL_ENDOFNAMES(nickname_, params_[0]), 0);
 }
 
 // PART MESSAGE
@@ -548,7 +566,7 @@ void Client::NamesCmd()
 void Client::PartCmd()
 {
     if(params_.size() != 1)
-        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
     else
     {
         std::stringstream name(params_[0]);
@@ -556,14 +574,14 @@ void Client::PartCmd()
         while(getline(name, token, ','))
         {
             Channel* c = server_->GetChannel(token);
-            if(c == nullptr)
-                output_ = output_.append(Messages::ERR_NOSUCHCHANNEL(nickname_, token));
+            if(c == 0)
+                output_ += Messages::ERR_NOSUCHCHANNEL(nickname_, token);
             else if(c->IsClientOnChannel(this) == false)
-                output_ = output_.append(Messages::ERR_NOTONCHANNEL(nickname_, token));
+                output_ += Messages::ERR_NOTONCHANNEL(nickname_, token);
             else
             {
                 c->SendMessageToChannel(Messages::RPL_PART_OR(nickname_, username_, token, trailing_), this);
-                output_ = output_.append(Messages::RPL_PART(nickname_, username_, token, trailing_));
+                output_ += Messages::RPL_PART(nickname_, username_, token, trailing_);
                 c->RemoveClientFromChannel(this);
                 if(c->IsChannelNotEmpty() == false)
                     server_->DeleteChannel(token);
@@ -598,17 +616,17 @@ void	Client::NoticeCmd()
 void Client::PrivmsgCmd()
 {
     if(params_.size() != 1 || trailing_ == "")
-        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
     else
     {
         // MESSAGE TO CHANNEL
         if(params_[0][0] == '#' || params_[0][0] == '&')
         {
             Channel *chan = server_->GetChannel(params_[0]);
-            if(chan == nullptr)
-                output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
+            if(chan == 0)
+                output_ += Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
             else if (!chan->IsClientOnChannel(this))
-                output_ = Messages::ERR_NOTONCHANNEL(nickname_, chan->get_name());
+                output_ += Messages::ERR_NOTONCHANNEL(nickname_, chan->get_name());
             else
                 chan->SendMessageToChannel(Messages::RPL_PRIVMSG(nickname_, username_, chan->get_name(), &trailing_[1]), this);
         }
@@ -616,12 +634,17 @@ void Client::PrivmsgCmd()
         {
             // MESSAGE TO CLIENT
             Client *cli = server_->GetClient(params_[0]);
-            if(cli == nullptr)
-                output_ = Messages::ERR_NOSUCHNICK_NICKONLY(nickname_);
+            if(cli == 0)
+                output_ += Messages::ERR_NOSUCHNICK_NICKONLY(nickname_);
             else
 			{
-                // cli->set_output(Messages::RPL_PRIVMSG(nickname_, username_, cli->get_nickname(), &trailing_[1]));
-				output_ = Messages::RPL_PRIVMSG(nickname_, username_, cli->get_nickname(), &trailing_[1]);
+                cli->set_output(Messages::RPL_PRIVMSG(nickname_, username_, cli->get_nickname(), &trailing_[1]));
+                if(HaveAlreadyChatted(cli) == false)
+                {
+				    output_ += Messages::RPL_PRIVMSG(nickname_, username_, cli->get_nickname(), &trailing_[1]);
+                    AddChatClient(cli);
+                    cli->AddChatClient(this);
+                }
 			}
         }
     }
@@ -633,23 +656,23 @@ void Client::PrivmsgCmd()
 void Client::InviteCmd()
 {
     if(params_.size() != 2 || trailing_ != "")
-        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
     else
     {
         Client *c = server_->GetClient(params_[0]);
         Channel *chan = server_->GetChannel(params_[1]);
-        if(c == nullptr)
-            output_ = Messages::ERR_NOSUCHNICK_NICKONLY(params_[0]);
-        else if(chan == nullptr || chan->IsClientOnChannel(this) == false)
-            output_ = Messages::ERR_NOTONCHANNEL(nickname_, params_[1]);
+        if(c == 0)
+            output_ += Messages::ERR_NOSUCHNICK_NICKONLY(params_[0]);
+        else if(chan == 0 || chan->IsClientOnChannel(this) == false)
+            output_ += Messages::ERR_NOTONCHANNEL(nickname_, params_[1]);
         else if (chan->IsClientOnChannel(c) == true)
-            output_ = Messages::ERR_USERONCHANNEL(nickname_, params_[0], params_[1]);
+            output_ += Messages::ERR_USERONCHANNEL(nickname_, params_[0], params_[1]);
         else if(chan->get_inviteonlyflag() == true && chan->IsClientAnOperator(nickname_) == false)
-            output_ = Messages::ERR_CHANOPRIVSNEEDED(nickname_, chan->get_name());
+            output_ += Messages::ERR_CHANOPRIVSNEEDED(nickname_, chan->get_name());
         else
         {
             c->set_output(Messages::RPL_INVITED(nickname_, username_, params_[1], params_[0]));
-            output_ = Messages::RPL_INVITING(nickname_, params_[1], params_[0]);
+            output_ += Messages::RPL_INVITING(nickname_, params_[1], params_[0]);
 			chan->AddClientAsInvited(params_[0]);
         }
     }
@@ -660,13 +683,13 @@ void Client::TopicCmd()
     if(params_.size() < 1 || params_.size() > 1
         || (params_.size() != 1 && trailing_ != ""))
     {
-        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
     }
     Channel* c = server_->GetChannel(params_[0]);
-    if (c == nullptr)
+    if (c == 0)
     {
-        output_ = Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
+        output_ += Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
         return ;
     }
     if(params_.size() == 1)
@@ -674,29 +697,29 @@ void Client::TopicCmd()
         if(trailing_ == "")
         {
             if(c->get_topic() == "")
-                output_ = Messages::RPL_NOTOPIC(nickname_, params_[0]);
+                output_ += Messages::RPL_NOTOPIC(nickname_, params_[0]);
             else
-                output_ = Messages::RPL_TOPIC(nickname_, params_[0], c->get_topic());
+                output_ += Messages::RPL_TOPIC(nickname_, params_[0], c->get_topic());
         }
         else if(trailing_ == ":")
         {
 			if (c->IsClientAnOperator(nickname_) == false && c->get_topicflag() == true)
-				output_ = Messages::ERR_CHANOPRIVSNEEDED(nickname_, params_[0]);
+				output_ += Messages::ERR_CHANOPRIVSNEEDED(nickname_, params_[0]);
 			else
 			{
 				std::string clear = "";
 				c->set_topic(clear);
-				c->SendMessageToChannel(Messages::RPL_TOPICCHANGE(nickname_, username_, params_[0], clear), nullptr);
+				c->SendMessageToChannel(Messages::RPL_TOPICCHANGE(nickname_, username_, params_[0], clear), 0);
 			}
         }
         else if(trailing_.size() > 1)
         {
 			if (c->IsClientAnOperator(nickname_) == false && c->get_topicflag() == true)
-				output_ = Messages::ERR_CHANOPRIVSNEEDED(nickname_, params_[0]);
+				output_ += Messages::ERR_CHANOPRIVSNEEDED(nickname_, params_[0]);
 			else
 			{
 				c->set_topic(&trailing_[1]);
-				c->SendMessageToChannel(Messages::RPL_TOPICCHANGE(nickname_, username_, params_[0], &trailing_[1]), nullptr);
+				c->SendMessageToChannel(Messages::RPL_TOPICCHANGE(nickname_, username_, params_[0], &trailing_[1]), 0);
 			}
         }
     }
@@ -710,11 +733,11 @@ void Client::TopicCmd()
 void Client::KickCmd()
 {
     if(params_.size() != 2)
-        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
     else
     {
         if (params_[0].find(',') != std::string::npos && SameNumbChannelsClientsToKick() == false)
-            output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+            output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
         else
         {
             std::stringstream channels(params_[0]);
@@ -731,9 +754,9 @@ void Client::KickCmd()
                     channelptr->RemoveClientAsOperator(client->get_nickname()); //posisble?
                     client->RemoveChannel(channelptr);
                     if(trailing_ == "")
-                        output_ = output_.append(Messages::RPL_KICK(nickname_, username_, channel, user));
+                        output_ += Messages::RPL_KICK(nickname_, username_, channel, user);
                     else
-                        output_ = output_.append(Messages::RPL_KICK_MESSAGE(nickname_, username_, channel, user, trailing_));
+                        output_ += Messages::RPL_KICK_MESSAGE(nickname_, username_, channel, user, trailing_);
                 }
             }
         }
@@ -742,29 +765,29 @@ void Client::KickCmd()
 
 bool Client::IsPossibleToKick(Channel* channelptr, Client* client)
 {
-    if (channelptr == nullptr)
+    if (channelptr == 0)
     {
-        output_ = output_.append(Messages::ERR_NOSUCHCHANNEL(nickname_, channelptr->get_name()));
+        output_ += Messages::ERR_NOSUCHCHANNEL(nickname_, channelptr->get_name());
         return(false);
     }
-    else if (client == nullptr)
+    else if (client == 0)
     {
-        output_ = output_.append(Messages::ERR_NOSUCHNICK_NICKONLY(client->get_nickname()));
+        output_ += Messages::ERR_NOSUCHNICK_NICKONLY(client->get_nickname());
         return(false);
     }
     else if (channelptr->IsClientOnChannel(this) == false)
     {
-        output_ = output_.append(Messages::ERR_NOTONCHANNEL(nickname_, channelptr->get_name()));
+        output_ += Messages::ERR_NOTONCHANNEL(nickname_, channelptr->get_name());
         return(false);
     }
     else if (channelptr->IsClientAnOperator(nickname_) == false)
     {
-        output_ = output_.append(Messages::ERR_CHANOPRIVSNEEDED(nickname_, channelptr->get_name()));
+        output_ += Messages::ERR_CHANOPRIVSNEEDED(nickname_, channelptr->get_name());
         return(false);
     }
     else if (channelptr->IsClientOnChannel(client) == false)
     {
-        output_ = output_.append(Messages::ERR_USERNOTINCHANNEL(client->get_nickname(), channelptr->get_name()));
+        output_ += Messages::ERR_USERNOTINCHANNEL(client->get_nickname(), channelptr->get_name());
         return(false);
     }
     return(true);
@@ -799,7 +822,7 @@ void Client::QuitCmd()
 {
     if(params_.size() > 0)
     {
-        output_ = Messages::ERR_NEEDMOREPARAMS(cmd_);
+        output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
     }
 
@@ -815,9 +838,9 @@ void Client::QuitCmd()
     if(params_.size() == 0)
     {
         if (trailing_ == "")
-            output_ = Messages::RPL_QUIT(nickname_, username_);
+            output_ += Messages::RPL_QUIT(nickname_, username_);
         else
-            output_ = Messages::RPL_QUIT_MESSAGE(nickname_, username_, trailing_);
+            output_ += Messages::RPL_QUIT_MESSAGE(nickname_, username_, trailing_);
         ClientState_ = DISCONNECTED;
     }
 }
