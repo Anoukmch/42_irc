@@ -271,7 +271,7 @@ std::string Messages::ERR_USERSDONTMATCH(const std::string& nick, const std::str
 
 std::string Messages::ERR_UNKNOWNCOMMAND(const std::string& nick, const std::string& command)
 {
-	std::cout << RED << nick << " tried executing unknown command: " << command << "!" << RESET << "\n";
+	std::cout << RED "User tried executing unknown command: " << command << "!" << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 421 " + nick + " " + command + " :Unknown command\r\n";
 }
 
@@ -307,7 +307,7 @@ std::string Messages::ERR_NOPRIVS(const std::string& nick, const std::string& co
 
 std::string Messages::ERR_UMODEUNKNOWNFLAG(const std::string& nick)
 {
-	std::cout << RED << nick << " used invalid mode flags " << RESET << "\n";
+	std::cout << RED << "User used invalid mode flags " << RESET << "\n";
 	return std::string(":") + SERVERNAME + " 501 " + nick + " :Unknown MODE flags\r\n";
 }
 

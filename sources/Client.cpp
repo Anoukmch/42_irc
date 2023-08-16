@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 17:19:14 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 17:32:22 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,38 +130,36 @@ bool Client::HaveAlreadyChatted(Client* cl)
  *     RECEIVE & SEND      *
  ***************************/
 
-// Check if command is wrong, example "PASSpwd" (no space between command and param) or Nick (no capital letter)
 void Client::ReceiveCommand()
 {
 	std::string temp;
     char buffer[512];
 	memset(buffer, 0, 512);
-	while (true)
+	ssize_t received = recv(ClientFd_, buffer, sizeof(buffer), MSG_DONTWAIT);
+	if (received <= 0)
 	{
-		ssize_t received = recv(ClientFd_, buffer, sizeof(buffer), MSG_DONTWAIT);
-		if (received <= 0)
-		{
-			temp = std::string(buffer);
-			buffer_ += temp;
-			return ;
-		}
-		temp += std::string(buffer);
-		size_t rc = temp.find("\n");
-		if(rc != std::string::npos)
-		{
-            if (temp.find("\r") != std::string::npos)
-			    temp = temp.substr(0, rc - 1);
-            else
-                temp = temp.substr(0, rc);
-			break ;
-		}
+		this->ConnectionClosing();
+		return ;
 	}
-	buffer_ += temp;
-    CheckCommand(buffer_);
-    buffer_ = "";
+	temp = std::string(buffer);
+	size_t rc = temp.find("\n");
+	if(rc != std::string::npos)
+	{
+		if (temp.find("\r") != std::string::npos)
+			temp = temp.substr(0, rc - 1);
+		else
+			temp = temp.substr(0, rc);
+		buffer_ += temp;
+		CheckCommand(buffer_);
+		buffer_ = "";
+	}
+	else
+	{
+		buffer_ += temp;
+		return ;
+	}
 }
 
-// CHECK SCREENSHOT TERMINAL : The server is receiving somethign after sending a message to client ?
 
 void Client::SendData()
 {
@@ -287,10 +285,6 @@ void Client::NickCmd()
         nickname_ = params_[0];
     }
 }
-
-// Does the trailing need to start with ":" ?
-// How to change your username afterwards ? Can we use USER after registration ?
-// Error message "used invalid mode flags" pb when nickname is not set
 
 void Client::UserCmd()
 {
