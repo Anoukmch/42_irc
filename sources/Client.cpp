@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 17:06:45 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/16 17:09:54 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -303,12 +303,12 @@ void Client::UserCmd()
        output_ += Messages::ERR_ALREADYREGISTRED();
     else
     {
+        username_ = params_[0];
         if (!nickname_.empty())
         {
             ClientState_ = REGISTERED;
             output_ += Messages::RPL_WELCOME(nickname_, username_);
         }
-        username_ = params_[0];
     }
 }
 
