@@ -1,30 +1,21 @@
 #include "../includes/Messages.hpp"
 
 
-Messages::Messages()
-{
-	// std::cout << "Constructor" << std::endl;
-}
+Messages::Messages() {;}
 
 Messages::Messages(const Messages &copyclass)
 {
-	// std::cout << "Copy Constructor" << std::endl;
 	*this = copyclass;
 }
 
 Messages& Messages::operator= (const Messages& copyop)
 {
-	// std::cout << "Copy Assignment Operator" << std::endl;
 	if (this != &copyop)
-	{
-	}
+	{ ; }
 	return(*this);
 }
 
-Messages::~Messages()
-{
-	// std::cout << "Destructor" << std::endl;
-}
+Messages::~Messages(){;}
 
 // COMMAND REPLIES
 

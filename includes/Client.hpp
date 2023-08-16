@@ -36,11 +36,11 @@ class Client
 {
 
     public:
-		Client(); //Default Constructor
+		Client();
 		Client(int fd, Server* server);
-		Client(const Client &copyclass); //Copy Constructor
-		Client& operator= (const Client& copyop); //copy assignment operator
-		~Client(); //Destructor
+		Client(const Client &copyclass);
+		Client& operator= (const Client& copyop);
+		~Client();
 
 		// SETTER
 		void set_nickname(std::string& nickname);
@@ -78,7 +78,6 @@ class Client
 		int ClientFd_;
 		int ClientState_;
 
-		// PASS, NICK AND USER COMMAND
 		std::string pwd_;
 		std::string nickname_;
 		std::string username_;

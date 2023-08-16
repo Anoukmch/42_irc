@@ -14,32 +14,34 @@ static void	signal_handler(int signal)
 	server_shutdown = true;
 }
 
-bool ValidPort(std::string port)
+bool ValidPort(std::string port, float &port_nbr)
 {
     for(unsigned int i = 0; i < port.size(); i++)
     {
         if(std::isdigit(port[i]) == false)
             return(false);
     }
-    if(atoi(port.c_str()) <= 0) //check integer overflows????
+    std::istringstream iss(port);
+    iss >> port_nbr;
+    if(port_nbr <= 0 || port_nbr > INT_MAX)
         return(false);
     return (true);
 }
 
-// ./ircserv <port> <password>
 int main(int argc, char *argv[])
 {
     if (argc != 3)
         std::cout << "Error: Wrong number of arguments" << std::endl;
     else
     {
-        if (ValidPort(argv[1]) == false)
+        float port;
+        if (ValidPort(argv[1], port) == false)
         {
             std::cout << "Port Error: Invalid Port" << std::endl;
             return(1);
         }
 		signal(SIGINT, signal_handler);
-        Server serv(htons(atoi(argv[1])), argv[2]);
+        Server serv(htons((uint16_t)port), argv[2]);
         try
         {
             serv.server_setup();

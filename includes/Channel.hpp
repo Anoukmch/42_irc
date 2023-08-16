@@ -40,7 +40,7 @@ class Channel
 {
     public:
 		Channel(std::string name);
-		~Channel(); //Destructor
+		~Channel();
 
 		// SETTER
 		void set_topic(std::string topic);
@@ -78,9 +78,9 @@ class Channel
 		bool IsClientInvited(std::string nickname);
 
 	private:
-		Channel(); //Default Constructor
-		Channel(const Channel &copyclass); //Copy Constructor
-		Channel& operator= (const Channel& copyop); //copy assignment operator
+		Channel();
+		Channel(const Channel &copyclass);
+		Channel& operator= (const Channel& copyop);
 
 		std::vector<Client*> clients_;
 
@@ -88,8 +88,8 @@ class Channel
 		std::string topic_;
 		std::string mode_;
 		t_mode		chmode_;
-		
-		std::string key_; //key, if empty none
+
+		std::string key_;
 		int	limit_;
 		std::vector<std::string>operator_;
 		std::vector<std::string>invited_;

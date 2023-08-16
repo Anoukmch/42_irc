@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/14 22:43:16 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/16 11:40:43 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Client::Client()
 
 // Initialization of all attribute
 
-Client::Client(int fd, Server* server) : ClientFd_(fd), ClientState_(-1), nickname_("Unknown") , username_("Unknown"), server_(server), mode_('0')
+Client::Client(int fd, Server* server) : ClientFd_(fd), ClientState_(-1), server_(server), mode_('0')
 {
     std::cout << "Constructor" << std::endl;
 }
@@ -119,11 +119,9 @@ void Client::ConnectionClosing()
 
 }
 
-// END OF MESSAGE ALWAYS \r\n ????
 // Check if command is wrong, example "PASSpwd" (no space between command and param) or Nick (no capital letter)
 void Client::ReceiveCommand()
 {
-    // std::cout << "Receive Command" << std::endl;
 	std::string temp;
     char buffer[512];
 	memset(buffer, 0, 512);
@@ -176,10 +174,10 @@ void Client::SetCmdParamsTrailing(std::string buf)
     if (buf.find(' ') == std::string::npos)
     {
         cmd_ = buf;
-        std::cout << "Command: " << cmd_ << std::endl;
-        for(unsigned int i = 0; i < params_.size(); i++)
-            std::cout << "Param[" << i << "]: " << params_[i] << std::endl;
-        std::cout << "Trailing: " << trailing_ << std::endl;
+      //  std::cout << "Command: " << cmd_ << std::endl;
+      //  for(unsigned int i = 0; i < params_.size(); i++)
+      //      std::cout << "Param[" << i << "]: " << params_[i] << std::endl;
+     //   std::cout << "Trailing: " << trailing_ << std::endl;
         return ;
     }
     else
@@ -201,10 +199,10 @@ void Client::SetCmdParamsTrailing(std::string buf)
         params_.push_back(token);
 
     // PRINTING EVERYTHING CMD, PARAMS & TRAILING
-    std::cout << "Command: " << cmd_ << std::endl;
-    for(unsigned int i = 0; i < params_.size(); i++)
-        std::cout << "Param[" << i << "]: " << params_[i] << std::endl;
-    std::cout << "Trailing: " << trailing_ << std::endl;
+    //std::cout << "Command: " << cmd_ << std::endl;
+   // for(unsigned int i = 0; i < params_.size(); i++)
+    //    std::cout << "Param[" << i << "]: " << params_[i] << std::endl;
+   // std::cout << "Trailing: " << trailing_ << std::endl;
 }
 
 void Client::CheckCommand(std::string buf)
@@ -229,11 +227,8 @@ void Client::CheckCommand(std::string buf)
     output_ += Messages::ERR_UNKNOWNCOMMAND(nickname_, cmd_);
 }
 
-// COMMANDS
-
 void Client::PassCmd()
 {
-    std::cout << "PASS " << std::endl;
     if (ClientState_ >= REGISTERED)
         output_ += Messages::ERR_ALREADYREGISTRED();
     else if (ClientState_ == PASS)
@@ -256,7 +251,6 @@ void Client::CapCmd()
 
 void Client::NickCmd()
 {
-    std::cout << "NICK " << std::endl;
     if (ClientState_ < PASS)
         output_ += Messages::ERR_NOTREGISTERED(cmd_);
     else if(params_.empty() == true)
@@ -268,12 +262,12 @@ void Client::NickCmd()
         output_ += Messages::ERR_NICKNAMEINUSE(params_[0]);
     else
     {
-        if (nickname_.empty() == false)
+        if (!nickname_.empty())
             output_ += Messages::RPL_NICKCHANGE(nickname_, params_[0], username_);
-        else if (ClientState_ == PASS && username_ != "Unknown")
+        else if (ClientState_ == PASS && !username_.empty())
         {
             ClientState_ = REGISTERED;
-            // output_ += Messages::RPL_WELCOME(nickname_, username_);
+            output_ += Messages::RPL_WELCOME(nickname_, username_);
         }
         nickname_ = params_[0];
     }
@@ -292,14 +286,13 @@ void Client::UserCmd()
         output_ += Messages::ERR_UMODEUNKNOWNFLAG(nickname_);
     else if (ClientState_ < PASS)
         output_ += Messages::ERR_NOTREGISTERED(cmd_);
-    // else if ( ClientState_ >= REGISTERED)
-    //     output_ += Messages::ERR_ALREADYREGISTRED(); // Do I need the Append function here?
+    else if ( ClientState_ >= REGISTERED) // Why was it commented?
+       output_ += Messages::ERR_ALREADYREGISTRED(); // Do I need the Append function here?
     else
     {
         if (!nickname_.empty())
         {
             ClientState_ = REGISTERED;
-			username_ = params_[0];
             output_ += Messages::RPL_WELCOME(nickname_, username_);
         }
         username_ = params_[0];
@@ -450,90 +443,6 @@ void Client::ModeCmd()
     	}
 		output_ += Messages::RPL_CHANNELMODEIS(nickname_, params_[0], c->get_mode());
 	}
-    // else
-    // {
-    //     if != "itkol+-";
-    //     return (output_ += Messages::ERR_UMODEUNKNOWNFLAG(nickname_));
-    // }
-    // std::string modes; // example "+i -okl"
-    // bool set = false;
-
-    // for (size_t i = 0 ; i < params_.size() ; i++)
-    // {
-    //     if (params_[i].front() == '+')
-    //         set = true;
-    //     else if // params_[i].front() == '-'
-    //         // do nothing
-    //     else if // it is a modeparams so it has to be preceeded by either a l or t
-    //     ExecuteMode(params_[i]);
-    //     return (output_ += Messages::ERR_UMODEUNKNOWNFLAG(nickname_));
-    // }
-
-    // if ( /* is not op */ )
-    //     return (output_ += Messages::ERR_CHANOPRIVSNEEDED(nickname_, params_[0]));
-
-
-    // while (param_s)
-    //     if != "itkol+-";
-
-    // // append the different modes parameters;
-    // output_ += Messages::RPL_SETMODECHANNEL(nickname_, params_[0], mode); // Everything went fine
-
-    // bool is_inviteonly_;
-    // void set_inviteonlyflag(bool status);
-    // std::string mode_;
-
-    // MODE <channel> *( ( "-" / "+" ) *<modes> *<modeparams> )
-
-    // CHECKING ORDER
-    // step 1_ input line is well-written
-    // step 2_ channel, mode exists
-    // step 3_ user is not op
-
-    // INPUT PARSING
-   // +modemodemode
-   // +mode +mode +mode
-
-    // Checking parser :
-    /*
-        +t + parameter
-        -t without parameter
-        +l + parameter
-        -l without parameter
-
-
-    */
-
-   // MODE #channel +t +t
-    /* FLAG :
-        · i: Set/remove Invite-only channel
-        · t: Set/remove the restrictions of the TOPIC command to channel
-            operators
-        · k: Set/remove the channel key (password) + parameter
-        When a channel key is set (by using the mode ’k’), servers MUST
-        reject their local users request to join the channel unless this key
-        is given. The channel key MUST only be made visible to the channel members in
-        the reply sent by the server to a MODE query.
-        · o: Give/take channel operator privilege
-        · l: Set/remove the user limit to channel + parameter
-
-    */
-
-   /* ERROR/RPL FLAG
-
-        ERR_CHANOPRIVSNEEDED(nick, channel_name) : is not operator      - OK
-        ERR_UMODEUNKNOWNFLAG(nick) : invalid mode flag
-        RPL_SETMODECHANNEL : to announce a mode change                  - OK
-        ERR_NOSUCHCHANNEL : channel doesnt exists                       - OK
-
-        ~investigate- RPL_SETMODECLIENT : i don't know
-        ~investigate- RPL_CHANNELMODEIS : to announce a mode request
-
-        RPL_MODEUSER : user personal mode changing
-        ERR_USERSDONTMATCH : tried changing user mode of someoneelse
-        RPL_SETMODECLIENT : change the mode of another user
-        */
-
 }
 
 void Client::NamesCmd()

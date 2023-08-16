@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/14 17:56:46 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 11:45:06 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,8 +173,6 @@ bool Server::IsUniqueNickname(std::string poss_nick)
 
         if(poss_nick == (*it)->get_nickname())
             return(false);
-		std::cout << (*it)->get_nickname() << std::endl;
-		std::cout << poss_nick << std::endl;
         it++;
     }
     return(true);

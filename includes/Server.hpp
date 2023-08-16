@@ -72,7 +72,7 @@ class Server
 		const std::string getPassword();
 		// std::string get_mode();
 
-		~Server(); //Destructor
+		~Server();
 		class SetupError: public std::exception {
 			public:
 				virtual const char* what() const throw();
@@ -88,9 +88,9 @@ class Server
 		std::vector<Client*>ConnectedClients_;
 		std::vector<Channel*>channels_;
 
-		Server(); //Default Constructor
-		Server(const Server &copyclass); //Copy Constructor
-		Server& operator= (const Server& copyop); //copy assignment operator
+		Server();
+		Server(const Server &copyclass);
+		Server& operator= (const Server& copyop);
 
 };
 

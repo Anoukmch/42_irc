@@ -79,39 +79,10 @@ class Messages
 
 
 	private:
-		Messages(); //Default Constructor
-		Messages(const Messages &copyclass); //Copy Constructor
-		Messages& operator= (const Messages& copyop); //copy assignment operator
-		~Messages(); //Destructor
+		Messages();
+		Messages(const Messages &copyclass);
+		Messages& operator= (const Messages& copyop);
+		~Messages();
 };
 
 #endif
-
-
-
-// /server : list all servers
-
-// /server add [name] [where is the server (localhost)]'/'[port] -password=[pass]: to add ur server to weechat
-
-// /connect [servername]: to connect to a server
-
-
-
-
-
-// ------hoe to connect ot an irc server ----
-// 1* does it have a password ? 
-// 	if yes:   PASS password
-// 	if no: go next
-
-// under the hood shit:
-// 	-3 way handshake
-// 	-client (weechat) send CAP LS to the server. He is excpecting the server to give him a list of all his capabilites, this list will end when the server sends "CAP END.
-
-
-// 2* registration
-
-// 	- NICK nickname
-// 	- USER * * *:user_name
-
-// 3* if not registered fuck off else excute command
