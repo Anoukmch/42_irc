@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 17:05:13 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/16 17:06:45 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,11 +230,11 @@ void Client::CheckCommand(std::string buf)
     {
         if(cmd_ == cmds[i])
         {
-            // if (i >= 4 && ClientState_ < REGISTERED)
-            //     output_ += Messages::ERR_NOTREGISTERED(cmd_);
-            // else if (i > 0 && ClientState_ < PASS)
-            //     output_ += Messages::ERR_NOTREGISTERED(cmd_);
-            // else if (ClientState_ != DISCONNECTED)
+            if (i >= 4 && ClientState_ < REGISTERED)
+                output_ += Messages::ERR_NOTREGISTERED(cmd_);
+            else if (i > 0 && ClientState_ < PASS)
+                output_ += Messages::ERR_NOTREGISTERED(cmd_);
+            else if (ClientState_ != DISCONNECTED)
             (this->*fp[i])();
             return ;
         }
