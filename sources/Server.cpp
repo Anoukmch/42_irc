@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 13:50:13 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/16 16:29:55 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,10 @@ void Server::MainLoop()
             if(PollStructs_[i].revents & POLLERR)
                 ConnectedClients_[i-1]->ConnectionClosing();
             else if(PollStructs_[i].revents & POLLIN)
+            {
+                std::cout << "pollin" << std::endl;
                 ConnectedClients_[i-1]->ReceiveCommand();
+            }
             if(PollStructs_[i].revents & POLLOUT)
                 ConnectedClients_[i-1]->SendData();
         }
@@ -152,12 +155,11 @@ void Server::CheckForDisconnections()
         {
             if(ConnectedClients_[i]->get_state() == 2)
             {
+                close(ConnectedClients_[i]->get_fd());
                 PollStructs_.erase(PollStructs_.begin()+(i+1));
                 delete ConnectedClients_[i];
                 ConnectedClients_.erase(ConnectedClients_.begin()+i);
             }
-            else
-                i++;
         }
     }
     if(channels_.empty() == false)
