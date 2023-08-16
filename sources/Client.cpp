@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 16:54:00 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 17:18:41 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -303,12 +303,12 @@ void Client::UserCmd()
        output_ += Messages::ERR_ALREADYREGISTRED();
     else
     {
+        username_ = params_[0];
         if (!nickname_.empty())
         {
             ClientState_ = REGISTERED;
             output_ += Messages::RPL_WELCOME(nickname_, username_);
         }
-        username_ = params_[0];
     }
 }
 
@@ -647,7 +647,7 @@ void Client::KickCmd()
                 else if(IsPossibleToKick(channelptr, client) == true)
                 {
                     channelptr->RemoveClientFromChannel(client);
-                    channelptr->RemoveClientAsOperator(client->get_nickname()); //posisble?
+                    channelptr->RemoveClientAsOperator(client->get_nickname()); //possible?
                     client->RemoveChannel(channelptr);
                     if(trailing_ == "")
                         output_ += Messages::RPL_KICK(nickname_, username_, channel, user);
