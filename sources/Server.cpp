@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 17:52:46 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 17:55:07 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,10 +110,7 @@ void Server::MainLoop()
             if(PollStructs_[i].revents & POLLERR)
                 ConnectedClients_[i-1]->ConnectionClosing();
             else if(PollStructs_[i].revents & POLLIN)
-            {
-                std::cout << "pollin" << std::endl;
                 ConnectedClients_[i-1]->ReceiveCommand();
-            }
             if(PollStructs_[i].revents & POLLOUT)
                 ConnectedClients_[i-1]->SendData();
         }

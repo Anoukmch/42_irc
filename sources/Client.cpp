@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 17:35:18 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 18:10:54 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -303,7 +303,7 @@ void Client::UserCmd()
 
 void Client::JoinCmd()
 {
-    if(params_.size() < 1 || params_.size() > 2)
+    if(params_.size() < 1 || params_.size() > 2 || !trailing_.empty())
     {
         output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
         return ;
@@ -389,7 +389,7 @@ void Client::JoinCmd()
 
 void Client::PingCmd()
 {
-    if (params_.empty())
+    if (params_.empty() || !trailing_.empty())
         output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
     else if (params_[0] != "localhost" && params_[0] != "127.0.0.1" && params_[0] != SERVERNAME)
          output_ += Messages::ERR_NOSUCHSERVER(nickname_, params_[0]);
@@ -400,7 +400,7 @@ void Client::PingCmd()
 void Client::ModeCmd()
 {
 	Channel *c = server_->GetChannel(params_[0]);
-    if (params_.empty())
+    if (params_.empty() || !trailing_.empty())
         output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
     else if ((params_[0][0] != '#' && params_[0][0] != '&') || c == 0)
        output_ += Messages::ERR_NOSUCHCHANNEL(nickname_, params_[0]);
@@ -469,8 +469,8 @@ void Client::PartCmd()
                 output_ += Messages::ERR_NOTONCHANNEL(nickname_, token);
             else
             {
-                c->SendMessageToChannel(Messages::RPL_PART_OR(nickname_, username_, token, trailing_), this);
-                output_ += Messages::RPL_PART(nickname_, username_, token, trailing_);
+                c->SendMessageToChannel(Messages::RPL_PART_OR(nickname_, username_, token, &trailing_[1]), this);
+                output_ += Messages::RPL_PART(nickname_, username_, token, &trailing_[1]);
                 c->RemoveClientFromChannel(this);
                 RemoveChannel(c);
             }
@@ -636,12 +636,12 @@ void Client::KickCmd()
                 else if(IsPossibleToKick(channelptr, client) == true)
                 {
                     channelptr->RemoveClientFromChannel(client);
-                    channelptr->RemoveClientAsOperator(client->get_nickname()); //possible?
+                    channelptr->RemoveClientAsOperator(client->get_nickname());
                     client->RemoveChannel(channelptr);
                     if(trailing_ == "")
                         output_ += Messages::RPL_KICK(nickname_, username_, channel, user);
                     else
-                        output_ += Messages::RPL_KICK_MESSAGE(nickname_, username_, channel, user, trailing_);
+                        output_ += Messages::RPL_KICK_MESSAGE(nickname_, username_, channel, user, &trailing_[1]);
                 }
             }
         }
@@ -670,7 +670,7 @@ void Client::QuitCmd()
         if (trailing_ == "")
             output_ += Messages::RPL_QUIT(nickname_, username_);
         else
-            output_ += Messages::RPL_QUIT_MESSAGE(nickname_, username_, trailing_);
+            output_ += Messages::RPL_QUIT_MESSAGE(nickname_, username_, &trailing_[1]);
         ConnectionClosing();
     }
 }
