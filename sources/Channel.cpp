@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/14 18:20:35 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 11:50:15 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ name_(name), limit_(100)
 	chmode_.o = true;
 	chmode_.l = false;
 	mode_ = "+";
-    std::cout << "Constructor" << std::endl;
+    // std::cout << "Constructor" << std::endl;
 }
 
 Channel::Channel(const Channel &copyclass)
@@ -49,7 +49,7 @@ Channel& Channel::operator= (const Channel& copyop)
 
 Channel::~Channel()
 {
-    std::cout << "Destructor" << std::endl;
+    // std::cout << "Destructor" << std::endl;
 }
 
 

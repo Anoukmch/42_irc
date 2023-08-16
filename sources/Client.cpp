@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 11:55:19 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 12:26:41 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ Client::Client()
 
 Client::Client(int fd, Server* server) : ClientFd_(fd), ClientState_(-1), server_(server), mode_('0')
 {
-    std::cout << "Constructor" << std::endl;
+    // std::cout << "Constructor" << std::endl;
 }
 
 Client::Client(const Client &copyclass) : ClientFd_(copyclass.ClientFd_)
@@ -42,7 +42,7 @@ Client& Client::operator= (const Client& copyop)
 
 Client::~Client()
 {
-    std::cout << "Destructor" << std::endl;
+    // std::cout << "Destructor" << std::endl;
 }
 
 
@@ -174,10 +174,6 @@ void Client::SetCmdParamsTrailing(std::string buf)
     if (buf.find(' ') == std::string::npos)
     {
         cmd_ = buf;
-        std::cout << "Command: " << cmd_ << std::endl;
-        for(unsigned int i = 0; i < params_.size(); i++)
-            std::cout << "Param[" << i << "]: " << params_[i] << std::endl;
-        std::cout << "Trailing: " << trailing_ << std::endl;
         return ;
     }
     else
@@ -232,7 +228,7 @@ void Client::PassCmd()
     if (ClientState_ >= REGISTERED)
         output_ += Messages::ERR_ALREADYREGISTRED();
     else if (ClientState_ == PASS)
-        output_ += "Client already authenticated\n"; // Can we create an error message?
+        output_ += Messages::ERR_ALREADYREGISTRED();
     else if (params_.empty())
         output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
     else if (server_->CheckPassword(params_[0]) == false)
@@ -255,9 +251,6 @@ void Client::NickCmd()
         output_ += Messages::ERR_NOTREGISTERED(cmd_);
     else if(params_.empty() == true)
         output_ += Messages::ERR_NONICKNAMEGIVEN();
-    // ONLY 8 CHARACTERS ????
-    // CHECK FOR SOME SPECIAL SIGNS,?? ...
-
     else if(server_->IsUniqueNickname(params_[0]) == false)
         output_ += Messages::ERR_NICKNAMEINUSE(params_[0]);
     else
@@ -287,7 +280,7 @@ void Client::UserCmd()
     else if (ClientState_ < PASS)
         output_ += Messages::ERR_NOTREGISTERED(cmd_);
     else if ( ClientState_ >= REGISTERED) // Why was it commented?
-       output_ += Messages::ERR_ALREADYREGISTRED(); // Do I need the Append function here?
+       output_ += Messages::ERR_ALREADYREGISTRED();
     else
     {
         if (!nickname_.empty())
@@ -452,12 +445,7 @@ void Client::NamesCmd()
 	ch->SendMessageToChannel(Messages::RPL_ENDOFNAMES(nickname_, params_[0]), 0);
 }
 
-// PART MESSAGE
-// ERR_NOSUCHCHANNEL
-// ERR_NOTONCHANNEL
-// leave other channels if one is wrong???
 // /PART channels(with ,) [part message]
-// IS PART MESSAGE NECESSARY???
 void Client::PartCmd()
 {
     if(params_.size() != 1)

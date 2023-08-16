@@ -61,16 +61,8 @@ class Server
 
 		Client* GetClient(std::string name);
 
-
-		// void handleClient();
-		// void broadcastMessage();
-		// // SETTER
-		// void set_topic(std::string& topic);
-		// void set_mode(std::string& mode);
-
 		// // GETTER
 		const std::string getPassword();
-		// std::string get_mode();
 
 		~Server();
 		class SetupError: public std::exception {
