@@ -41,9 +41,6 @@ int main(int argc, char *argv[])
             return(1);
         }
 		signal(SIGINT, signal_handler);
-        std::cout << "htons port : " << htons((uint16_t)port) << std::endl;
-        std::cout << "port : " << (uint16_t)port << std::endl;
-        std::cout << "float : " << port << std::endl;
         Server serv(htons((uint16_t)port), argv[2]);
         try
         {
