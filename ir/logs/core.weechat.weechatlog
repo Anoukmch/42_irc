@@ -83,3 +83,25 @@
 2023-08-14 16:14:19		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
 2023-08-14 16:28:58		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
 2023-08-14 22:36:41		Installierte Erweiterungen: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-16 14:09:16		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-16 14:09:38		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-16 14:10:06		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-16 14:10:10		
+2023-08-16 14:10:10		All servers:
+2023-08-16 14:10:10		   sec
+2023-08-16 14:10:10		   first
+2023-08-16 14:10:10		   ircserv
+2023-08-16 14:10:12		irc: server sec has been deleted
+2023-08-16 14:10:16		irc: server first has been deleted
+2023-08-16 14:10:20	=!=	Error with command "/server ircserv del" (help on command: /help server)
+2023-08-16 14:10:25		irc: server ircserv has been deleted
+2023-08-16 14:10:39		irc: server added: ircserv
+2023-08-16 14:11:30		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-16 14:11:41		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-16 14:11:44	=!=	irc: command "nick" must be executed on irc buffer (server, channel or private)
+2023-08-16 14:11:47	=!=	irc: command "nick" must be executed on irc buffer (server, channel or private)
+2023-08-16 14:13:09	=!=	Too few arguments for command "/KICK" (help on command: /help KICK)
+2023-08-16 15:23:55		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-16 15:26:39		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-16 15:29:28		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
+2023-08-16 15:29:52		Plugins loaded: alias, buflist, charset, exec, fifo, fset, irc, logger, lua, perl, python, relay, ruby, script, spell, tcl, trigger, typing, xfer
