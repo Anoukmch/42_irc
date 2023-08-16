@@ -35,7 +35,6 @@ YELLOW		=	\e[93;5;226m
 $(NAME) : $(OBJS) $(M_HEADER)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $@
 	@printf "$(GREEN)Successful compilation\n$(RESET)"
-#@printf "$(_SUCCESS) $(GREEN)Successful compilation\n$(RESET)"
 
 %.o: %.cpp $(M_HEADER)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
@@ -43,7 +42,7 @@ $(NAME) : $(OBJS) $(M_HEADER)
 all: $(NAME)
 
 clean:
-	$(RM) $(OBJS) 
+	$(RM) $(OBJS)
 
 fclean: clean
 	$(RM) $(NAME)

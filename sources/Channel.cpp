@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 13:17:04 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/16 17:35:31 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,7 @@ Channel& Channel::operator= (const Channel& copyop)
     return(*this);
 }
 
-Channel::~Channel()
-{
-    // std::cout << "Destructor" << std::endl;
-}
+Channel::~Channel() { }
 
 /***************************
  * CONSTRUCTOR WITH PARAMS *
@@ -56,7 +53,6 @@ Channel::Channel(std::string name) : name_(name), limit_(100)
 	chmode_.o = true;
 	chmode_.l = false;
 	mode_ = "+";
-    // std::cout << "Constructor" << std::endl;
 }
 
 /***************************

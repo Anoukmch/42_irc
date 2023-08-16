@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 17:32:22 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 17:35:18 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,19 +37,14 @@ Client& Client::operator= (const Client& copyop)
     return(*this);
 }
 
-Client::~Client()
-{
-    // std::cout << "Destructor" << std::endl;
-}
+Client::~Client() { }
 
 /***************************
  * CONSTRUCTOR WITH PARAMS *
  ***************************/
 
-// Initialization of all attribute
 Client::Client(int fd, Server* server) : ClientFd_(fd), ClientState_(-1), server_(server), mode_('0')
 {
-    // std::cout << "Constructor" << std::endl;
 }
 
 /***************************

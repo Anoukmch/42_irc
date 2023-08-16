@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 17:05:59 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/16 17:52:46 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-
 
 /***************************
  * ORTHODOX CANONICAL FORM *
@@ -59,7 +58,6 @@ Server::Server(uint16_t port, std::string password) : port_(port)
     address_.sin_family = AF_INET;
     address_.sin_addr.s_addr = INADDR_ANY;
     address_.sin_port = port_;
-    // INPUT HANDLING
 }
 
 /***************************
@@ -92,7 +90,7 @@ void Server::server_setup()
     }
 
     pollfd tmp;
-    memset(&tmp, 0, sizeof(tmp)); // Initialize the struct to zero
+    memset(&tmp, 0, sizeof(tmp));
     tmp.events = EVENTS;
     tmp.fd = serverSocket_;
 
@@ -134,7 +132,7 @@ void Server::acceptConnection()
     }
 
     pollfd tmp;
-    memset(&tmp, 0, sizeof(tmp)); // Initialize the struct to zero
+    memset(&tmp, 0, sizeof(tmp));
     tmp.events = EVENTS;
     tmp.fd = new_client_fd;
 
@@ -143,8 +141,6 @@ void Server::acceptConnection()
     std::cout << "Accept Connection" << std::endl;
 }
 
-// CHECK DISCONNECTED CLIENTS
-// CHECK CHANNELS THAT ARE 0 (-> no users in channel)
 void Server::CheckForDisconnections()
 {
     if(ConnectedClients_.empty() == false)
