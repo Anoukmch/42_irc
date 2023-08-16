@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 17:03:08 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/16 17:05:13 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,7 +212,7 @@ void Client::SetCmdParamsTrailing(std::string buf)
     std::cout << "Command: " << cmd_ << std::endl;
     for(unsigned int i = 0; i < params_.size(); i++)
         std::cout << "Param[" << i << "]: " << params_[i] << std::endl;
-    std::cout << "Trailing: " << trailing_ << std::endl;
+    std::cout << "Trailing: " << trailing_ << std::endl << std::endl;
 }
 
 void Client::CheckCommand(std::string buf)
@@ -230,12 +230,12 @@ void Client::CheckCommand(std::string buf)
     {
         if(cmd_ == cmds[i])
         {
-            if (i >= 4 && ClientState_ < REGISTERED)
-                output_ += Messages::ERR_NOTREGISTERED(cmd_);
-            else if (i > 0 && ClientState_ < PASS)
-                output_ += Messages::ERR_NOTREGISTERED(cmd_);
-            else if (ClientState_ != DISCONNECTED)
-                (this->*fp[i])();
+            // if (i >= 4 && ClientState_ < REGISTERED)
+            //     output_ += Messages::ERR_NOTREGISTERED(cmd_);
+            // else if (i > 0 && ClientState_ < PASS)
+            //     output_ += Messages::ERR_NOTREGISTERED(cmd_);
+            // else if (ClientState_ != DISCONNECTED)
+            (this->*fp[i])();
             return ;
         }
     }
@@ -312,12 +312,6 @@ void Client::UserCmd()
     }
 }
 
-// Protect registration
-
-// CHANNEL = FULL?, TOO MANY CHANNELS?, INVITEONLY CHANNEL?
-// Channel already exists, channel has key that user doesn't know
-//  /JOIN 0 ->leave all channels
-// IF CHANNEL DOESN'T EXIST ->CLIENT BECOMES OPERATOR
 void Client::JoinCmd()
 {
     if(params_.size() < 1 || params_.size() > 2)
@@ -469,7 +463,6 @@ void Client::NamesCmd()
 	ch->SendMessageToChannel(Messages::RPL_ENDOFNAMES(nickname_, params_[0]), 0);
 }
 
-// /PART channels(with ,) [part message]
 void Client::PartCmd()
 {
     if(params_.size() != 1)
@@ -557,8 +550,6 @@ void Client::PrivmsgCmd()
 
 }
 
-// if invite-only flag -> only channel operators may invite others
-// only invited user and the inviting user will receive the message
 void Client::InviteCmd()
 {
     if(params_.size() != 2 || trailing_ != "")
@@ -631,11 +622,6 @@ void Client::TopicCmd()
     }
 }
 
-// <channel> *( "," <channel> ) <user> *( "," <user> ) [<comment>]
-// For the message to be syntactically correct, there MUST be
-// either one channel parameter and multiple user parameter, or as many
-// channel parameters as there are user parameters.
-// ONLY CHANNEL OPERATOR IS ALLOWED TO KICK ANOTHER USER OUT OF A CHANNEL
 void Client::KickCmd()
 {
     if(params_.size() != 2)

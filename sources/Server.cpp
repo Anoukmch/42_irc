@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 16:29:55 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/16 17:05:59 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 Server::Server()
 {
     serverSocket_ = 0;
-    // std::cout << "Default Constructor" << std::endl;
 }
 
 Server::Server(const Server &copyclass)
@@ -41,7 +40,6 @@ Server& Server::operator= (const Server& copyop)
 
 Server::~Server()
 {
-    // std::cout << "Destructor" << std::endl;
     close(serverSocket_);
     for (std::vector<Client*>::iterator it = ConnectedClients_.begin(); it != ConnectedClients_.end(); ++it)
         delete *it;
