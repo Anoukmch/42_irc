@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 11:45:06 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 11:55:31 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 Server::Server()
 {
     serverSocket_ = 0;
-    std::cout << "Default Constructor" << std::endl;
+    // std::cout << "Default Constructor" << std::endl;
 }
 
 Server::Server(const Server &copyclass)
@@ -35,7 +35,7 @@ Server& Server::operator= (const Server& copyop)
 
 Server::~Server()
 {
-    std::cout << "Destructor" << std::endl;
+    // std::cout << "Destructor" << std::endl;
     close(serverSocket_);
     for (std::vector<Client*>::iterator it = ConnectedClients_.begin(); it != ConnectedClients_.end(); ++it)
         delete *it;
@@ -161,8 +161,6 @@ void Server::CheckForDisconnections()
             }
         }
     }
-
-    // CHECK AS WELL FOR CHANNELS
 }
 
 bool Server::IsUniqueNickname(std::string poss_nick)
@@ -170,7 +168,6 @@ bool Server::IsUniqueNickname(std::string poss_nick)
     std::vector<Client*>::iterator it = ConnectedClients_.begin();
     while(it != ConnectedClients_.end())
     {
-
         if(poss_nick == (*it)->get_nickname())
             return(false);
         it++;
@@ -197,15 +194,6 @@ bool Server::CheckPassword(std::string pass)
 
 
 // // SETTER
-
-// void Server::set_topic(std::string& topic)
-// {
-//     topic_ = topic;
-// }
-// void Server::set_mode(std::string& mode)
-// {
-//     mode_ = mode;
-// }
 
 // // GETTER
 
@@ -247,16 +235,6 @@ const std::string Server::getPassword()
 {
     return(connection_pd_);
 }
-
-// std::string Server::get_topic()
-// {
-//     return(topic_);
-// }
-
-// std::string Server::get_mode()
-// {
-//     return(mode_);
-// }
 
 // EXCEPTIONS
 
