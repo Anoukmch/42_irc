@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 15:14:49 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 16:54:00 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,7 +171,6 @@ void Client::SendData()
 
     if(output_.empty())
         return ;
-
     send(ClientFd_, output_.data(), output_.size(), 0);
     buffer_.clear();
     output_ = "";
@@ -354,6 +353,7 @@ void Client::JoinCmd()
                 else
                 {
                     exist->AddClientToChannel(this);
+                    channels_.push_back(exist);
                     exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
                     output_ += Messages::RPL_JOIN(nickname_, username_, token);
                     exist->SendMessageToChannel(Messages::RPL_NAMREPLY(nickname_, token, exist->GetChannelList()), 0);
@@ -367,6 +367,7 @@ void Client::JoinCmd()
                 else
                 {
                     exist->AddClientToChannel(this);
+                    channels_.push_back(exist);
                     exist->SendMessageToChannel(Messages::RPL_JOIN_OR(nickname_, username_, token), this);
                     output_ += Messages::RPL_JOIN_WITHKEY(nickname_, username_, token, *it);
                     exist->SendMessageToChannel(Messages::RPL_NAMREPLY(nickname_, token, exist->GetChannelList()), 0);
@@ -482,6 +483,7 @@ void Client::PartCmd()
                 c->SendMessageToChannel(Messages::RPL_PART_OR(nickname_, username_, token, trailing_), this);
                 output_ += Messages::RPL_PART(nickname_, username_, token, trailing_);
                 c->RemoveClientFromChannel(this);
+                RemoveChannel(c);
             }
         }
     }
@@ -638,7 +640,11 @@ void Client::KickCmd()
             {
                 Channel* channelptr = server_->GetChannel(channel);
                 Client* client = server_->GetClient(user);
-                if(IsPossibleToKick(channelptr, client) == true)
+                if (channelptr == 0)
+                    output_ += Messages::ERR_NOSUCHCHANNEL(nickname_, channel);
+                else if (client == 0)
+                    output_ += Messages::ERR_NOSUCHNICK_NICKONLY(user);
+                else if(IsPossibleToKick(channelptr, client) == true)
                 {
                     channelptr->RemoveClientFromChannel(client);
                     channelptr->RemoveClientAsOperator(client->get_nickname()); //posisble?
@@ -676,7 +682,7 @@ void Client::QuitCmd()
             output_ += Messages::RPL_QUIT(nickname_, username_);
         else
             output_ += Messages::RPL_QUIT_MESSAGE(nickname_, username_, trailing_);
-        ClientState_ = DISCONNECTED;
+        ConnectionClosing();
     }
 }
 
@@ -686,17 +692,7 @@ void Client::QuitCmd()
 
 bool Client::IsPossibleToKick(Channel* channelptr, Client* client)
 {
-    if (channelptr == 0)
-    {
-        output_ += Messages::ERR_NOSUCHCHANNEL(nickname_, channelptr->get_name());
-        return(false);
-    }
-    else if (client == 0)
-    {
-        output_ += Messages::ERR_NOSUCHNICK_NICKONLY(client->get_nickname());
-        return(false);
-    }
-    else if (channelptr->IsClientOnChannel(this) == false)
+    if (channelptr->IsClientOnChannel(this) == false)
     {
         output_ += Messages::ERR_NOTONCHANNEL(nickname_, channelptr->get_name());
         return(false);
@@ -742,4 +738,12 @@ void Client::RemoveChannel(Channel* chan)
 void Client::ConnectionClosing()
 {
     ClientState_ = DISCONNECTED;
+    for(unsigned int i = 0; i < channels_.size(); i++)
+    {
+        channels_[i]->SendMessageToChannel(Messages::RPL_QUIT(nickname_, username_), this);
+        channels_[i]->RemoveClientFromChannel(this);
+        channels_[i]->RemoveClientAsOperator(this->get_nickname());
+    }
+    for (unsigned int i = 0; i < chatclients_.size(); i++)
+        chatclients_[i]->set_output(Messages::RPL_QUIT(nickname_, username_));
 }

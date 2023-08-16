@@ -43,3 +43,72 @@
 2023-08-14 22:36:47	=!=	irc: Befehl "Client" nicht gefunden: "Client already authenticated"
 2023-08-14 22:36:47	--	Welcome to the ft_irc network jmatheis!jmatheis@localhost
 2023-08-14 22:36:52	--	MSG(juliama): hello
+2023-08-16 14:09:19	--	irc: connecting to server localhost/8081...
+2023-08-16 14:09:19	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-16 14:09:19	--	irc: client capability, server supports: cap reply...
+2023-08-16 14:09:19	--	irc: nickname "jmatheis" is already in use, trying nickname "jmatheis1"
+2023-08-16 14:09:19	--	
+2023-08-16 14:09:41	--	irc: connecting to server localhost/8081...
+2023-08-16 14:09:41	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-16 14:09:41	--	irc: client capability, server supports: cap reply...
+2023-08-16 14:09:41	--	irc: nickname "jmatheis" is already in use, trying nickname "jmatheis1"
+2023-08-16 14:09:41	--	irc: nickname "jmatheis1" is already in use, trying nickname "jmatheis2"
+2023-08-16 14:09:41	--	
+2023-08-16 14:10:49	--	irc: connecting to server localhost/8081...
+2023-08-16 14:10:49	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-16 14:10:49	--	irc: client capability, server supports: cap reply...
+2023-08-16 14:10:49	--	irc: nickname "jmatheis" is already in use, trying nickname "jmatheis1"
+2023-08-16 14:10:49	--	irc: nickname "jmatheis1" is already in use, trying nickname "jmatheis2"
+2023-08-16 14:10:49	--	
+2023-08-16 14:11:35	--	irc: connecting to server localhost/8081...
+2023-08-16 14:11:35	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-16 14:11:35	--	irc: client capability, server supports: cap reply...
+2023-08-16 14:11:35	--	irc: nickname "jmatheis" is already in use, trying nickname "jmatheis1"
+2023-08-16 14:11:35	--	irc: nickname "jmatheis1" is already in use, trying nickname "jmatheis2"
+2023-08-16 14:11:35	--	
+2023-08-16 14:11:53	--	irc: connecting to server localhost/8081...
+2023-08-16 14:11:53	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-16 14:11:53	--	irc: client capability, server supports: cap reply...
+2023-08-16 14:11:53	--	irc: nickname "jmatheis" is already in use, trying nickname "jmatheis1"
+2023-08-16 14:11:53	--	irc: nickname "jmatheis1" is already in use, trying nickname "jmatheis2"
+2023-08-16 14:11:53	--	
+2023-08-16 14:12:28	--	Nicks #test: [@other]
+2023-08-16 14:12:28	--	#test: END of NAMES list
+2023-08-16 14:12:33	--	Nicks #test: [@other jmatheis]
+2023-08-16 14:12:33	--	#test: END of NAMES list
+2023-08-16 14:12:58	=!=	irc: "kick" command can only be executed in a channel buffer
+2023-08-16 14:13:17	=!=	irc: "kick" command can only be executed in a channel buffer
+2023-08-16 15:23:58	--	irc: connecting to server localhost/8081...
+2023-08-16 15:23:58	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-16 15:23:58	--	irc: client capability, server supports: cap reply...
+2023-08-16 15:23:58	--	irc: nickname "jmatheis" is already in use, trying nickname "jmatheis1"
+2023-08-16 15:23:58	--	
+2023-08-16 15:24:06	--	Nicks #test: [@jmatheis jmatheis1]
+2023-08-16 15:24:06	--	#test: END of NAMES list
+2023-08-16 15:24:43	--	MSG(#test): gekk
+2023-08-16 15:26:42	--	irc: connecting to server localhost/8081...
+2023-08-16 15:26:42	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-16 15:26:42	--	irc: client capability, server supports: cap reply...
+2023-08-16 15:26:42	--	Welcome to the ft_irc network jmatheis!@localhost
+2023-08-16 15:26:55	--	MSG(other): hi
+2023-08-16 15:27:49	=!=	irc: reading data on socket: error 22 (connection closed by peer)
+2023-08-16 15:27:49	--	irc: disconnecting from server...
+2023-08-16 15:27:49	--	irc: disconnected from server
+2023-08-16 15:27:49	--	irc: reconnecting to server in 10 seconds
+2023-08-16 15:27:59	--	irc: reconnecting to server...
+2023-08-16 15:27:59	--	irc: connecting to server localhost/8081...
+2023-08-16 15:27:59	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-16 15:27:59	--	irc: client capability, server supports: cap reply...
+2023-08-16 15:27:59	--	irc: nickname "jmatheis" is already in use, trying nickname "jmatheis1"
+2023-08-16 15:27:59	--	
+2023-08-16 15:28:30	--	Nicks #test: [@jmatheis jmatheis1]
+2023-08-16 15:28:30	--	#test: END of NAMES list
+2023-08-16 15:28:33	--	jmatheis1: No such nick/channel
+2023-08-16 15:28:51	--	MSG(#test): hge
+2023-08-16 15:29:32	--	irc: connecting to server localhost/8081...
+2023-08-16 15:29:32	--	irc: connected to localhost/8081 (127.0.0.1)
+2023-08-16 15:29:32	--	irc: client capability, server supports: cap reply...
+2023-08-16 15:29:32	--	irc: nickname "jmatheis" is already in use, trying nickname "jmatheis1"
+2023-08-16 15:29:32	--	irc: nickname "jmatheis1" is already in use, trying nickname "jmatheis2"
+2023-08-16 15:29:32	--	
+2023-08-16 15:29:36	--	MSG(jmatheis): hello
