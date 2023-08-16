@@ -50,7 +50,6 @@ class Channel
 		void set_inviteonlyflag(bool status);
 		void set_topicflag(bool status);
 
-
 		// GETTER
 		std::string get_topic();
 		std::string get_mode();
@@ -62,20 +61,26 @@ class Channel
 		std::string	GetChannelList();
 		int			GetClientNumbers();
 		int			GetOperatorNumbers();
+		
+		// CLIENT OPERATIONS
 
-		void SendMessageToChannel(std::string mess, Client* exclude);
 		void AddClientToChannel(Client* c);
 		void RemoveClientFromChannel(Client* c);
+
 		void AddClientAsOperator(std::string nickname);
-		void AddClientAsInvited(std::string nickname);
 		void RemoveClientAsOperator(std::string nickname);
+
+		void AddClientAsInvited(std::string nickname);
 		void RemoveClientAsInvited(std::string nickname);
 
-
+		// CHECKER
 		bool IsClientOnChannel(Client *c);
 		bool IsChannelNotEmpty();
 		bool IsClientAnOperator(std::string nickname);
 		bool IsClientInvited(std::string nickname);
+
+		// CHANNEL MESSAGE
+		void SendMessageToChannel(std::string mess, Client* exclude);
 
 	private:
 		Channel();
@@ -83,6 +88,8 @@ class Channel
 		Channel& operator= (const Channel& copyop);
 
 		std::vector<Client*> clients_;
+		std::vector<std::string>operator_;
+		std::vector<std::string>invited_;
 
 		std::string name_;
 		std::string topic_;
@@ -91,8 +98,6 @@ class Channel
 
 		std::string key_;
 		int	limit_;
-		std::vector<std::string>operator_;
-		std::vector<std::string>invited_;
 };
 
 #endif

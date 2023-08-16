@@ -36,28 +36,26 @@ class Client
 {
 
     public:
-		Client();
 		Client(int fd, Server* server);
-		Client(const Client &copyclass);
-		Client& operator= (const Client& copyop);
 		~Client();
 
 		// SETTER
 		void set_nickname(std::string& nickname);
 		void set_username(std::string& username);
+		void set_output(std::string mess);
 		void set_mode(unsigned char c);
 
+		void SetCmdParamsTrailing(std::string buf);
+		
 		// GETTER
 		std::string get_nickname();
 		std::string get_username();
-		void set_output(std::string mess);
 		int get_state();
 		int get_fd();
 		unsigned char get_mode();
 
 		// OTHER
 		bool HaveAlreadyChatted(Client* cl);
-		void ConnectionClosing();
 		void ReceiveCommand();
 		void SendData();
 		void RemoveChannel(Channel* chan);
@@ -65,7 +63,6 @@ class Client
 		void CheckCommand(std::string buf);
 		void AddChatClient(Client* cl);
 
-		void SetCmdParamsTrailing(std::string buf);
 
 		enum State
 		{
@@ -75,6 +72,10 @@ class Client
 		};
 
 	private:
+		Client();
+		Client(const Client &copyclass);
+		Client& operator= (const Client& copyop);
+
 		int ClientFd_;
 		int ClientState_;
 

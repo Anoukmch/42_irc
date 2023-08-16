@@ -6,22 +6,19 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 13:37:05 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 13:43:06 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Client.hpp"
 
+/***************************
+ * ORTHODOX CANONICAL FORM *
+ ***************************/
+
 Client::Client()
 {
     std::cout << "Default Constructor" << std::endl;
-}
-
-// Initialization of all attribute
-
-Client::Client(int fd, Server* server) : ClientFd_(fd), ClientState_(-1), server_(server), mode_('0')
-{
-    // std::cout << "Constructor" << std::endl;
 }
 
 Client::Client(const Client &copyclass) : ClientFd_(copyclass.ClientFd_)
@@ -45,8 +42,19 @@ Client::~Client()
     // std::cout << "Destructor" << std::endl;
 }
 
+/***************************
+ * CONSTRUCTOR WITH PARAMS *
+ ***************************/
 
-// SETTER
+// Initialization of all attribute
+Client::Client(int fd, Server* server) : ClientFd_(fd), ClientState_(-1), server_(server), mode_('0')
+{
+    // std::cout << "Constructor" << std::endl;
+}
+
+/***************************
+ *          SETTER         *
+ ***************************/
 
 void Client::set_nickname(std::string& nickname)
 {
@@ -67,19 +75,9 @@ void Client::set_mode(unsigned char c)
     mode_ = c;
 }
 
-// GETTER
-
-bool Client::HaveAlreadyChatted(Client* cl)
-{
-    if(chatclients_.size() == 0)
-        return (false);
-    for(unsigned int i = 0; i < chatclients_.size(); i++)
-    {
-        if(chatclients_[i] == cl)
-            return(true);
-    }
-    return(false);
-}
+/***************************
+ *          GETTER         *
+ ***************************/
 
 void Client::AddChatClient(Client* cl)
 {
@@ -112,12 +110,25 @@ unsigned char Client::get_mode()
     return(mode_);
 }
 
-// OTHER
+/***************************
+ *         CHECKER         *
+ ***************************/
 
-void Client::ConnectionClosing()
+bool Client::HaveAlreadyChatted(Client* cl)
 {
-
+    if(chatclients_.size() == 0)
+        return (false);
+    for(unsigned int i = 0; i < chatclients_.size(); i++)
+    {
+        if(chatclients_[i] == cl)
+            return(true);
+    }
+    return(false);
 }
+
+/***************************
+ *     RECEIVE & SEND      *
+ ***************************/
 
 // Check if command is wrong, example "PASSpwd" (no space between command and param) or Nick (no capital letter)
 void Client::ReceiveCommand()
@@ -165,6 +176,10 @@ void Client::SendData()
     buffer_.clear();
     output_ = "";
 }
+
+/***************************
+ *     COMMAND PARSING     *
+ ***************************/
 
 void Client::SetCmdParamsTrailing(std::string buf)
 {
@@ -227,6 +242,11 @@ void Client::CheckCommand(std::string buf)
     }
     output_ += Messages::ERR_UNKNOWNCOMMAND(nickname_, cmd_);
 }
+
+
+/***************************
+ *         COMMANDS        *
+ ***************************/
 
 void Client::PassCmd()
 {
@@ -469,6 +489,7 @@ void Client::PartCmd()
                 c->SendMessageToChannel(Messages::RPL_PART_OR(nickname_, username_, token, trailing_), this);
                 output_ += Messages::RPL_PART(nickname_, username_, token, trailing_);
                 c->RemoveClientFromChannel(this);
+                // CHECK IN SERVER???
                 if(c->IsChannelNotEmpty() == false)
                     server_->DeleteChannel(token);
             }
@@ -649,6 +670,37 @@ void Client::KickCmd()
     }
 }
 
+void Client::QuitCmd()
+{
+    if(params_.size() > 0)
+    {
+        output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
+        return ;
+    }
+
+    if(channels_.empty() == false)
+    {
+        std::vector<Channel*>::iterator it = channels_.begin();
+        while(it != channels_.end())
+        {
+            (*it)->RemoveClientFromChannel(this);
+            it++;
+        }
+    }
+    if(params_.size() == 0)
+    {
+        if (trailing_ == "")
+            output_ += Messages::RPL_QUIT(nickname_, username_);
+        else
+            output_ += Messages::RPL_QUIT_MESSAGE(nickname_, username_, trailing_);
+        ClientState_ = DISCONNECTED;
+    }
+}
+
+/***************************
+ *    COMMAND HELPERS      *
+ ***************************/
+
 bool Client::IsPossibleToKick(Channel* channelptr, Client* client)
 {
     if (channelptr == 0)
@@ -701,32 +753,5 @@ void Client::RemoveChannel(Channel* chan)
     {
         if(channels_[i] == chan)
             channels_.erase(channels_.begin()+i);
-    }
-}
-
-void Client::QuitCmd()
-{
-    if(params_.size() > 0)
-    {
-        output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
-        return ;
-    }
-
-    if(channels_.empty() == false)
-    {
-        std::vector<Channel*>::iterator it = channels_.begin();
-        while(it != channels_.end())
-        {
-            (*it)->RemoveClientFromChannel(this);
-            it++;
-        }
-    }
-    if(params_.size() == 0)
-    {
-        if (trailing_ == "")
-            output_ += Messages::RPL_QUIT(nickname_, username_);
-        else
-            output_ += Messages::RPL_QUIT_MESSAGE(nickname_, username_, trailing_);
-        ClientState_ = DISCONNECTED;
     }
 }

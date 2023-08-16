@@ -6,27 +6,19 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 11:50:15 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/16 13:17:04 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Channel.hpp"
 
+/***************************
+ * ORTHODOX CANONICAL FORM *
+ ***************************/
+
 Channel::Channel()
 {
     std::cout << "Default Constructor" << std::endl;
-}
-
-Channel::Channel(std::string name) :
-name_(name), limit_(100)
-{
-	chmode_.i = false;
-	chmode_.t = false;
-	chmode_.k = false;
-	chmode_.o = true;
-	chmode_.l = false;
-	mode_ = "+";
-    // std::cout << "Constructor" << std::endl;
 }
 
 Channel::Channel(const Channel &copyclass)
@@ -52,8 +44,24 @@ Channel::~Channel()
     // std::cout << "Destructor" << std::endl;
 }
 
+/***************************
+ * CONSTRUCTOR WITH PARAMS *
+ ***************************/
 
-// SETTER
+Channel::Channel(std::string name) : name_(name), limit_(100)
+{
+	chmode_.i = false;
+	chmode_.t = false;
+	chmode_.k = false;
+	chmode_.o = true;
+	chmode_.l = false;
+	mode_ = "+";
+    // std::cout << "Constructor" << std::endl;
+}
+
+/***************************
+ *          SETTER         *
+ ***************************/
 
 void Channel::set_topic(std::string topic)
 {
@@ -150,7 +158,9 @@ void Channel::set_topicflag(bool status)
     chmode_.t = status;
 }
 
-// GETTER
+/***************************
+ *          GETTER         *
+ ***************************/
 
 std::string Channel::get_name()
 {
@@ -217,7 +227,9 @@ std::string	Channel::GetChannelList()
 	return(channel_list);
 }
 
-// OTHER
+/***************************
+ *    CLIENT OPERATIONS    *
+ ***************************/
 
 void Channel::AddClientToChannel(Client* c)
 {
@@ -241,11 +253,6 @@ void Channel::AddClientAsOperator(std::string nickname)
     operator_.push_back(nickname);
 }
 
-void Channel::AddClientAsInvited(std::string nickname)
-{
-    invited_.push_back(nickname);
-}
-
 void Channel::RemoveClientAsOperator(std::string nickname)
 {
     std::vector<std::string>::iterator it = operator_.begin();
@@ -258,6 +265,12 @@ void Channel::RemoveClientAsOperator(std::string nickname)
     }
 }
 
+void Channel::AddClientAsInvited(std::string nickname)
+{
+    invited_.push_back(nickname);
+}
+
+
 void Channel::RemoveClientAsInvited(std::string nickname)
 {
     std::vector<std::string>::iterator it = invited_.begin();
@@ -269,6 +282,10 @@ void Channel::RemoveClientAsInvited(std::string nickname)
             it++;
     }
 }
+
+/***************************
+ *         CHECKER         *
+ ***************************/
 
 bool Channel::IsClientOnChannel(Client *c)
 {
@@ -312,6 +329,10 @@ bool Channel::IsChannelNotEmpty()
         return(false);
     return(true);
 }
+
+/***************************
+ *     CHANNEL MESSAGE     *
+ ***************************/
 
 void Channel::SendMessageToChannel(std::string mess, Client* exclude)
 {

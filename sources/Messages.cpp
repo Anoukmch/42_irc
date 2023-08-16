@@ -1,5 +1,8 @@
 #include "../includes/Messages.hpp"
 
+/***************************
+ * ORTHODOX CANONICAL FORM *
+ ***************************/
 
 Messages::Messages() {;}
 
@@ -17,7 +20,9 @@ Messages& Messages::operator= (const Messages& copyop)
 
 Messages::~Messages(){;}
 
-// COMMAND REPLIES
+/***************************
+ *     COMMAND REPLIES     *
+ ***************************/
 
 std::string Messages::RPL_NICKCHANGE(const std::string& old_nick, const std::string& new_nick, const std::string& user)
 {
@@ -137,7 +142,9 @@ std::string	Messages::RPL_INVITED(const std::string& nick, const std::string& us
 }
 
 
-// NUMERIC REPLIES
+/***************************
+ *     NUMERIC REPLIES     *
+ ***************************/
 
 std::string Messages::RPL_WELCOME(const std::string& nick, const std::string user)
 {
@@ -198,7 +205,9 @@ std::string Messages::RPL_TOPIC(const std::string& nick, const std::string& chan
 	return std::string(":") + SERVERNAME + " 332 " + nick + " " + channel_name + " :" + topic + "\r\n";
 }
 
-// ERROR REPLIES
+/***************************
+ *      ERROR REPLIES      *
+ ***************************/
 
 std::string Messages::ERR_BADCHANNELKEY(const std::string& nick, const std::string& channel_name)
 {

@@ -6,11 +6,16 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 13:35:06 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 13:43:10 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+
+
+/***************************
+ * ORTHODOX CANONICAL FORM *
+ ***************************/
 
 Server::Server()
 {
@@ -28,7 +33,8 @@ Server& Server::operator= (const Server& copyop)
 {
     std::cout << "Copy Assignment Operator" << std::endl;
     if(this != &copyop)
-    { ;
+    {
+
     }
     return(*this);
 }
@@ -43,6 +49,10 @@ Server::~Server()
         delete *it;
 }
 
+/***************************
+ * CONSTRUCTOR WITH PARAMS *
+ ***************************/
+
 Server::Server(uint16_t port, std::string password) : port_(port)
 {
     connection_pd_ = password;
@@ -53,6 +63,10 @@ Server::Server(uint16_t port, std::string password) : port_(port)
     address_.sin_port = port_;
     // INPUT HANDLING
 }
+
+/***************************
+ *      SERVER SET UP      *
+ ***************************/
 
 void Server::server_setup()
 {
@@ -79,13 +93,12 @@ void Server::server_setup()
         throw SetupError();
     }
 
-    // pollfd tmp = {.revents = 0, .events = EVENTS, .fd = serverSocket_};
     pollfd tmp;
     memset(&tmp, 0, sizeof(tmp)); // Initialize the struct to zero
     tmp.events = EVENTS;
     tmp.fd = serverSocket_;
-    PollStructs_.push_back(tmp);
 
+    PollStructs_.push_back(tmp);
 }
 
 void Server::MainLoop()
@@ -111,9 +124,6 @@ void Server::MainLoop()
 
 void Server::acceptConnection()
 {
-    // ACCEPT MUST BE IN WHILE LOOP while(true)
-    // When does while end ????
-    // accept function blocks until a client connects to the server
     int address_length = sizeof(address_);
     int new_client_fd = accept(serverSocket_, (struct sockaddr*)&address_, (socklen_t*)&address_length);
     if (new_client_fd == -1)
@@ -121,7 +131,7 @@ void Server::acceptConnection()
         std::cout << "Accept ";
         throw SetupError();
     }
-    // pollfd tmp = {.revents = 0, .events = EVENTS, .fd = new_client_fd};
+
     pollfd tmp;
     memset(&tmp, 0, sizeof(tmp)); // Initialize the struct to zero
     tmp.events = EVENTS;
@@ -132,9 +142,10 @@ void Server::acceptConnection()
     std::cout << "Accept Connection" << std::endl;
 }
 
+// CHECK DISCONNECTED CLIENTS
+// CHECK CHANNELS THAT ARE 0 (-> no users in channel)
 void Server::CheckForDisconnections()
 {
-    // CHECK DISCONNECTED CLIENTS
     if(ConnectedClients_.empty() == false)
     {
         for(unsigned int i = 0; i < ConnectedClients_.size(); i++)
@@ -149,7 +160,6 @@ void Server::CheckForDisconnections()
                 i++;
         }
     }
-    // CHECK CHANNELS THAT ARE 0 (-> no users in channel)
     if(channels_.empty() == false)
     {
         for(unsigned int i = 0; i < channels_.size(); i++)
@@ -163,39 +173,23 @@ void Server::CheckForDisconnections()
     }
 }
 
-bool Server::IsUniqueNickname(std::string poss_nick)
-{
-    std::vector<Client*>::iterator it = ConnectedClients_.begin();
-    while(it != ConnectedClients_.end())
-    {
-        if(poss_nick == (*it)->get_nickname())
-            return(false);
-        it++;
-    }
-    return(true);
-}
+/***************************
+ *          SETTER         *
+ ***************************/
 
 void Server::AddChannel(std::string name)
 {
     channels_.push_back(new Channel(name));
 }
 
+/***************************
+ *          GETTER         *
+ ***************************/
+
 Channel* Server::GetLastChannel()
 {
     return(channels_.back());
 }
-
-bool Server::CheckPassword(std::string pass)
-{
-    if(connection_pd_ != pass)
-        return(false);
-    return(true);
-}
-
-
-// // SETTER
-
-// // GETTER
 
 Channel* Server::GetChannel(std::string name)
 {
@@ -207,18 +201,6 @@ Channel* Server::GetChannel(std::string name)
             return(channels_[i]);
     }
     return(0);
-}
-
-void Server::DeleteChannel(std::string name)
-{
-    for(unsigned int i = 0; i < channels_.size(); i++)
-    {
-        if(channels_[i]->get_name() == name)
-        {
-            delete (channels_[i]);
-            channels_[i] = 0;
-        }
-    }
 }
 
 Client* Server::GetClient(std::string name)
@@ -236,7 +218,48 @@ const std::string Server::getPassword()
     return(connection_pd_);
 }
 
-// EXCEPTIONS
+/***************************
+ *         CHECKER         *
+ ***************************/
+
+bool Server::IsUniqueNickname(std::string poss_nick)
+{
+    std::vector<Client*>::iterator it = ConnectedClients_.begin();
+    while(it != ConnectedClients_.end())
+    {
+        if(poss_nick == (*it)->get_nickname())
+            return(false);
+        it++;
+    }
+    return(true);
+}
+
+bool Server::CheckPassword(std::string pass)
+{
+    if(connection_pd_ != pass)
+        return(false);
+    return(true);
+}
+
+/***************************
+ *           OTHER         *
+ ***************************/
+
+void Server::DeleteChannel(std::string name)
+{
+    for(unsigned int i = 0; i < channels_.size(); i++)
+    {
+        if(channels_[i]->get_name() == name)
+        {
+            delete (channels_[i]);
+            channels_[i] = 0;
+        }
+    }
+}
+
+/***************************
+ *        EXCEPTIONS       *
+ ***************************/
 
 const char* Server::SetupError::what() const throw()
 {

@@ -45,23 +45,26 @@ class Server
     public:
 		Server(uint16_t port, std::string password);
 
+		// PARSING & SET UP
 		bool ValidPort();
 		void MainLoop();
 		void server_setup();
+		
 		void acceptConnection();
 		void CheckForDisconnections();
 
-
 		bool IsUniqueNickname(std::string poss_nick);
-		void AddChannel(std::string name);
-		bool CheckPassword(std::string pass);
-		Channel* GetChannel(std::string name);
-		Channel* GetLastChannel();
-		void DeleteChannel(std::string name);
 
-		Client* GetClient(std::string name);
+		void AddChannel(std::string name);
+		void DeleteChannel(std::string name);
+		
+		bool CheckPassword(std::string pass);
+
 
 		// // GETTER
+		Channel* GetChannel(std::string name);
+		Channel* GetLastChannel();
+		Client* GetClient(std::string name);
 		const std::string getPassword();
 
 		~Server();
@@ -70,6 +73,10 @@ class Server
 				virtual const char* what() const throw();
 		};
 	private:
+		Server();
+		Server(const Server &copyclass);
+		Server& operator= (const Server& copyop);
+
 		int serverSocket_;
 		uint16_t port_;
 		std::string connection_pd_;
@@ -80,9 +87,6 @@ class Server
 		std::vector<Client*>ConnectedClients_;
 		std::vector<Channel*>channels_;
 
-		Server();
-		Server(const Server &copyclass);
-		Server& operator= (const Server& copyop);
 
 };
 
