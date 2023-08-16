@@ -6,7 +6,7 @@
 /*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 15:30:46 by jmatheis         ###   ########.fr       */
+/*   Updated: 2023/08/16 16:16:15 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -654,7 +654,11 @@ void Client::KickCmd()
             {
                 Channel* channelptr = server_->GetChannel(channel);
                 Client* client = server_->GetClient(user);
-                if(IsPossibleToKick(channelptr, client) == true)
+                if (channelptr == 0)
+                    output_ += Messages::ERR_NOSUCHCHANNEL(nickname_, channel);
+                else if (client == 0)
+                    output_ += Messages::ERR_NOSUCHNICK_NICKONLY(user);
+                else if(IsPossibleToKick(channelptr, client) == true)
                 {
                     channelptr->RemoveClientFromChannel(client);
                     channelptr->RemoveClientAsOperator(client->get_nickname()); //posisble?
@@ -702,17 +706,7 @@ void Client::QuitCmd()
 
 bool Client::IsPossibleToKick(Channel* channelptr, Client* client)
 {
-    if (channelptr == 0)
-    {
-        output_ += Messages::ERR_NOSUCHCHANNEL(nickname_, channelptr->get_name());
-        return(false);
-    }
-    else if (client == 0)
-    {
-        output_ += Messages::ERR_NOSUCHNICK_NICKONLY(client->get_nickname());
-        return(false);
-    }
-    else if (channelptr->IsClientOnChannel(this) == false)
+    if (channelptr->IsClientOnChannel(this) == false)
     {
         output_ += Messages::ERR_NOTONCHANNEL(nickname_, channelptr->get_name());
         return(false);
