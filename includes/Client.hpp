@@ -63,7 +63,8 @@ class Client
 		void CheckCommand(std::string buf);
 		void AddChatClient(Client* cl);
 
-
+		void ConnectionClosing();
+	
 		enum State
 		{
 			PASS,

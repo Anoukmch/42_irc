@@ -56,7 +56,6 @@ class Server
 		bool IsUniqueNickname(std::string poss_nick);
 
 		void AddChannel(std::string name);
-		void DeleteChannel(std::string name);
 		
 		bool CheckPassword(std::string pass);
 

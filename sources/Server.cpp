@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 13:43:10 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 13:50:13 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,9 +164,9 @@ void Server::CheckForDisconnections()
     {
         for(unsigned int i = 0; i < channels_.size(); i++)
         {
-            if(channels_[i] == 0)
+            if(channels_[i]->IsChannelNotEmpty() == false)
             {
-                // delete channels_[i]; already deleted
+                delete (channels_[i]);
                 channels_.erase(channels_.begin()+i);
             }
         }
@@ -239,22 +239,6 @@ bool Server::CheckPassword(std::string pass)
     if(connection_pd_ != pass)
         return(false);
     return(true);
-}
-
-/***************************
- *           OTHER         *
- ***************************/
-
-void Server::DeleteChannel(std::string name)
-{
-    for(unsigned int i = 0; i < channels_.size(); i++)
-    {
-        if(channels_[i]->get_name() == name)
-        {
-            delete (channels_[i]);
-            channels_[i] = 0;
-        }
-    }
 }
 
 /***************************

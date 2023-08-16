@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
+/*   By: jmatheis <jmatheis@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 13:43:06 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 13:54:12 by jmatheis         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,7 +235,7 @@ void Client::CheckCommand(std::string buf)
                 output_ += Messages::ERR_NOTREGISTERED(cmd_);
             else if (i > 0 && ClientState_ < PASS)
                 output_ += Messages::ERR_NOTREGISTERED(cmd_);
-            else
+            else if (ClientState_ != DISCONNECTED)
                 (this->*fp[i])();
             return ;
         }
@@ -489,9 +489,6 @@ void Client::PartCmd()
                 c->SendMessageToChannel(Messages::RPL_PART_OR(nickname_, username_, token, trailing_), this);
                 output_ += Messages::RPL_PART(nickname_, username_, token, trailing_);
                 c->RemoveClientFromChannel(this);
-                // CHECK IN SERVER???
-                if(c->IsChannelNotEmpty() == false)
-                    server_->DeleteChannel(token);
             }
         }
     }
@@ -754,4 +751,9 @@ void Client::RemoveChannel(Channel* chan)
         if(channels_[i] == chan)
             channels_.erase(channels_.begin()+i);
     }
+}
+
+void Client::ConnectionClosing()
+{
+    ClientState_ = DISCONNECTED;
 }
