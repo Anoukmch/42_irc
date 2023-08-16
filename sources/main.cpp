@@ -23,7 +23,7 @@ bool ValidPort(std::string port, float &port_nbr)
     }
     std::istringstream iss(port);
     iss >> port_nbr;
-    if(port_nbr <= 0 || port_nbr > INT_MAX)
+    if(port_nbr <= 0 || port_nbr > MAX_PORT_NUMBER)
         return(false);
     return (true);
 }
@@ -41,6 +41,9 @@ int main(int argc, char *argv[])
             return(1);
         }
 		signal(SIGINT, signal_handler);
+        std::cout << "htons port : " << htons((uint16_t)port) << std::endl;
+        std::cout << "port : " << (uint16_t)port << std::endl;
+        std::cout << "float : " << port << std::endl;
         Server serv(htons((uint16_t)port), argv[2]);
         try
         {

@@ -34,7 +34,7 @@
 #include "Channel.hpp"
 
 #define EVENTS (POLLIN | POLLOUT | POLLERR)
-#define OPERPWD "LALALA"
+#define MAX_PORT_NUMBER 65535
 
 class Client;
 class Channel;

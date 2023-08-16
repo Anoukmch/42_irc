@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 11:40:43 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 11:55:19 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,10 +174,10 @@ void Client::SetCmdParamsTrailing(std::string buf)
     if (buf.find(' ') == std::string::npos)
     {
         cmd_ = buf;
-      //  std::cout << "Command: " << cmd_ << std::endl;
-      //  for(unsigned int i = 0; i < params_.size(); i++)
-      //      std::cout << "Param[" << i << "]: " << params_[i] << std::endl;
-     //   std::cout << "Trailing: " << trailing_ << std::endl;
+        std::cout << "Command: " << cmd_ << std::endl;
+        for(unsigned int i = 0; i < params_.size(); i++)
+            std::cout << "Param[" << i << "]: " << params_[i] << std::endl;
+        std::cout << "Trailing: " << trailing_ << std::endl;
         return ;
     }
     else
@@ -199,10 +199,10 @@ void Client::SetCmdParamsTrailing(std::string buf)
         params_.push_back(token);
 
     // PRINTING EVERYTHING CMD, PARAMS & TRAILING
-    //std::cout << "Command: " << cmd_ << std::endl;
-   // for(unsigned int i = 0; i < params_.size(); i++)
-    //    std::cout << "Param[" << i << "]: " << params_[i] << std::endl;
-   // std::cout << "Trailing: " << trailing_ << std::endl;
+    std::cout << "Command: " << cmd_ << std::endl;
+    for(unsigned int i = 0; i < params_.size(); i++)
+        std::cout << "Param[" << i << "]: " << params_[i] << std::endl;
+    std::cout << "Trailing: " << trailing_ << std::endl;
 }
 
 void Client::CheckCommand(std::string buf)
