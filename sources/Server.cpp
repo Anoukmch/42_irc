@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 12:26:09 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 13:35:06 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,7 @@ void Server::CheckForDisconnections()
     // CHECK DISCONNECTED CLIENTS
     if(ConnectedClients_.empty() == false)
     {
-        for(unsigned int i = 1; i < ConnectedClients_.size(); i++)
+        for(unsigned int i = 0; i < ConnectedClients_.size(); i++)
         {
             if(ConnectedClients_[i]->get_state() == 2)
             {

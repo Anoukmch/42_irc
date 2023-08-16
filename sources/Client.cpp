@@ -6,7 +6,7 @@
 /*   By: amechain <amechain@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 11:23:14 by jmatheis          #+#    #+#             */
-/*   Updated: 2023/08/16 12:26:41 by amechain         ###   ########.fr       */
+/*   Updated: 2023/08/16 13:37:05 by amechain         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,7 +216,12 @@ void Client::CheckCommand(std::string buf)
     {
         if(cmd_ == cmds[i])
         {
-            (this->*fp[i])();
+            if (i >= 4 && ClientState_ < REGISTERED)
+                output_ += Messages::ERR_NOTREGISTERED(cmd_);
+            else if (i > 0 && ClientState_ < PASS)
+                output_ += Messages::ERR_NOTREGISTERED(cmd_);
+            else
+                (this->*fp[i])();
             return ;
         }
     }
@@ -225,15 +230,13 @@ void Client::CheckCommand(std::string buf)
 
 void Client::PassCmd()
 {
-    if (ClientState_ >= REGISTERED)
-        output_ += Messages::ERR_ALREADYREGISTRED();
-    else if (ClientState_ == PASS)
+    if (ClientState_ >= PASS)
         output_ += Messages::ERR_ALREADYREGISTRED();
     else if (params_.empty())
         output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
     else if (server_->CheckPassword(params_[0]) == false)
         output_ += Messages::ERR_PASSWDMISMATCH();
-    else if (params_.size() != 1)
+    else if (params_.size() != 1 || !trailing_.empty())
         output_ += Messages::ERR_PASSWDMISMATCH();
     else
         ClientState_ = PASS;
@@ -247,11 +250,11 @@ void Client::CapCmd()
 
 void Client::NickCmd()
 {
-    if (ClientState_ < PASS)
-        output_ += Messages::ERR_NOTREGISTERED(cmd_);
-    else if(params_.empty() == true)
+    if(params_.empty() == true)
         output_ += Messages::ERR_NONICKNAMEGIVEN();
-    else if(server_->IsUniqueNickname(params_[0]) == false)
+    else if (params_.size() != 1 || !trailing_.empty())
+        output_ += Messages::ERR_NEEDMOREPARAMS(cmd_);
+    else if(server_->IsUniqueNickname(params_[0]) == false && params_[0] != nickname_)
         output_ += Messages::ERR_NICKNAMEINUSE(params_[0]);
     else
     {
@@ -277,9 +280,7 @@ void Client::UserCmd()
     else if ((params_[1] != "0" && params_[1] != "*")
         || (params_[2] != "0" && params_[2] != "*"))
         output_ += Messages::ERR_UMODEUNKNOWNFLAG(nickname_);
-    else if (ClientState_ < PASS)
-        output_ += Messages::ERR_NOTREGISTERED(cmd_);
-    else if ( ClientState_ >= REGISTERED) // Why was it commented?
+    else if ( ClientState_ >= REGISTERED)
        output_ += Messages::ERR_ALREADYREGISTRED();
     else
     {
@@ -291,6 +292,8 @@ void Client::UserCmd()
         username_ = params_[0];
     }
 }
+
+// Protect registration
 
 // CHANNEL = FULL?, TOO MANY CHANNELS?, INVITEONLY CHANNEL?
 // Channel already exists, channel has key that user doesn't know
